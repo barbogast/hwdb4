@@ -96,10 +96,10 @@ def parse_table_rows(table_string):
     # parse + remove header
     if table_rows[0].startswith('!'):
         headers = [cell.strip() for cell in table_rows[0].strip('!').split('||')]
+        table_rows.pop(0)
+        table_rows.pop(0)
     else:
         headers = None
-    table_rows.pop(0)
-    table_rows = [row for row in table_string.split('\n') if row.strip()]
 
     # join rows again and split them by |- to get table rows spanning multiple
     # physical rows
