@@ -77,7 +77,7 @@ class MultiAttr(Base):
     value = Column(String, nullable=False)
 
 
-def insert(session):
+def get_initial_objects():
     u_mm = Unit(name='Milimeter')
     u_hz = Unit(name='Herz')
     u_date = Unit(name='Date')
@@ -116,9 +116,7 @@ def insert(session):
     at_part_number = AttrType(name='Part number', unit=u_text, multi_value=True, part=p_cpu)
     at_url = AttrType(name='URL', unit=u_url, part=p_cpu)
 
-    all_objects = locals().values()
-    session.add_all(all_objects)
-    session.commit()
+    return locals().values()
 
 
 def get_engine():
@@ -149,7 +147,10 @@ def main():
     engine = get_engine()
     create_all(engine)
     session = get_session(engine)
-    insert(session)
+    obj_list = get_initial_objects()
+
+    session.add_all(obj_list)
+    session.commit()
 
     app = Flask(__name__)
     init_admin(session, app)
