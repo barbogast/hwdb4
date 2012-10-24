@@ -5,7 +5,7 @@ import re
 
 import requests
 
-
+from model import Part, Attr, AttrType
 
 # https://github.com/earwig/mwparserfromhell
 # https://bitbucket.org/JanKanis/wiki2csv
@@ -173,22 +173,43 @@ def replace_html_chars(table_row_dicts):
                 raise Exception()
 
 
-def main():
+def _add_attr(session, part, attr_name, dict_key, d):
+    attr_type = session.query(AttrType).filter_by(name=attr_name).one()
+    attr = Attr(attr_type=attr_type, part=part, value=d[dict_key])
+    session.add(attr)
+
+
+def insert_record(session, d):
+    parent_part = session.query(Part).filter_by(name='CPU').one()
+    part = Part(parent_part=parent_part, name=d['name'])
+    session.flush()
+    _add_attr(session, part, 'Frequency', 'frequency', d)
+    _add_attr(session, part, 'Front side bus', 'fsb', d)
+    _add_attr(session, part, 'L2 cache', 'l2cache', d)
+    _add_attr(session, part, 'Clock multiplier', 'multiplier', d)
+    _add_attr(session, part, 'Release price', 'price', d)
+    _add_attr(session, part, 'Release date', 'release', d)
+    # TODO: _add_attr(session, part, 'Socket', 'socket', d)
+    _add_attr(session, part, 'Thermal design power', 'tdp', d)
+    _add_attr(session, part, 'URL', 'url', d)
+    # TODO: _add_attr(session, part, 'Voltage range', 'voltage', d)
+    # TODO: _add_attr(session, part, 'Part number', 'part_numbers', d)
+    # TODO: _add_attr(session, part, '??', 'sspecs', d)
+
+
+def get_all_rows():
+    all_dicts = []
     #wikitext = fetch_from_wikipedia()
     wikitext = open('wikiarticle.txt').read()
     tables = split_table_strings(wikitext)
     for table in tables:
-        row_dict = parse_table_rows(table)
-        fixed_row_dict = fix_table_row_dict(row_dict)
-        replace_html_chars(fixed_row_dict)
+        row_dicts = parse_table_rows(table)
+        fixed_row_dicts = fix_table_row_dict(row_dicts)
+        replace_html_chars(fixed_row_dicts)
+        all_dicts.extend(fixed_row_dicts)
 
-    print fixed_row_dict
-    import pprint;pprint.pprint(fixed_row_dict)
-
-    return fixed_row_dict
+    return all_dicts
 
 
 if __name__ == '__main__':
-
-
-    main()
+    get_all_rows()

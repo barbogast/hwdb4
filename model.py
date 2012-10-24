@@ -35,6 +35,8 @@ class Unit(_DisplayName, Base):
 
 class Part(_DisplayName, Base):
     parent_part_id = Column(Integer, ForeignKey('part.id'))
+    parent_part = relationship('Part', remote_side='Part.id')
+    #children = relationship('Part', backref('parent_part', remote_side=['Part.id']))
     #parent_part = relationship('Part', remote_side=[id])
     #parent_part = relationship('Part', backref=backref('children', remote_side=[id]))
     # TODO: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#adjacency-list-relationships
@@ -120,7 +122,7 @@ def get_initial_objects():
 
 
 def get_engine():
-    return create_engine('sqlite:///:memory:', echo=True)
+    return create_engine('sqlite:///:memory:', echo=debug)
 
 
 def create_all(engine):
@@ -150,12 +152,18 @@ def main():
     obj_list = get_initial_objects()
 
     session.add_all(obj_list)
+
+    from wikipedia import get_all_rows, insert_record
+    all_rows = get_all_rows()
+    for d in all_rows:
+        insert_record(session, d)
+
     session.commit()
 
     app = Flask(__name__)
     init_admin(session, app)
     app.run(port=50001)
 
-
+debug = False
 if __name__ == '__main__':
     main()
