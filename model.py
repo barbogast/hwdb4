@@ -2,7 +2,7 @@ import re
 import os
 
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Boolean, Float, create_engine
-from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 from flask import Flask
@@ -132,8 +132,8 @@ def create_all(engine):
 
 
 def get_session(engine):
-    Session = sessionmaker(bind=engine)
-    return Session()
+    Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    return Session
 
 
 def init_admin(session, app):
@@ -148,13 +148,15 @@ def init_admin(session, app):
 
 
 def create_db(engine):
-    print 'Create db...',
+    print 'Creating db...',
     create_all(engine)
-    session = get_session(engine)
+    Session = get_session(engine)
+    session = Session()
 
     obj_list = get_initial_objects()
 
     session.add_all(obj_list)
+    session.flush()
 
     from wikipedia import get_all_rows, insert_record
     all_rows = get_all_rows()
@@ -173,7 +175,10 @@ if __name__ == '__main__':
     if not os.path.exists(filepath):
         create_db(engine)
 
-    session = get_session(engine)
+    Session = get_session(engine)
+    session = scoped_session(Session)()
     app = Flask(__name__)
+    app.debug = True
+    app.secret_key = 'Todo'
     init_admin(session, app)
     app.run(port=50001)
