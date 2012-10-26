@@ -1,0 +1,8 @@
+<h1>{{part.name}}</h1>
+
+<dl>
+{% for attr in part.attrs %}
+    <dt>{{attr.attr_type.name}}<dt>
+    <dd>{{attr.value}}<dd>
+{% endfor %}
+</dl>

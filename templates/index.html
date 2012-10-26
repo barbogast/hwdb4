@@ -1,0 +1,5 @@
+<ul>
+{% for part in parts %}
+<li><a href="/part?id={{part.id}}">{{ part.name }}</a></li>
+{% endfor %}
+</ul>
