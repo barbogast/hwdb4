@@ -34,5 +34,10 @@ def attributes():
     attributes = db_session.query(M.AttrType).order_by('name')
     return render_template('attributes.html', attributes=attributes)
 
+@app.route('/units')
+def units():
+    units = db_session.query(M.Unit).order_by('name')
+    return render_template('units.html', units=units)
+
 if __name__ == "__main__":
     app.run()

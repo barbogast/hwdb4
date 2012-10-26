@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Unit</h1>
+
+    <ul>
+    {% for unit in units %}
+        <li>{{unit.name}} {{'<small>('|safe + unit.note + ')</small>'|safe if unit.note else ''}}</li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
