@@ -18,8 +18,8 @@ def shutdown_session(exception=None):
 
 @app.route("/")
 def index():
-    parts = db_session.query(M.Part)
-    return render_template('index.html', parts=parts)
+    root_parts = db_session.query(M.Part).filter_by(parent_part=None)
+    return render_template('index.html', root_parts=root_parts)
 
 @app.route("/part")
 def part():

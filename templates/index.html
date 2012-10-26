@@ -1,5 +1,10 @@
 <ul>
-{% for part in parts %}
-<li><a href="/part?id={{part.id}}">{{ part.name }}</a></li>
+{% for root_part in root_parts %}
+<li><a href="/part?id={{root_part.id}}">{{ root_part.name }}</a></li>
+    <ul>
+        {% for child_part in root_part.children %}
+        <li><a href="/part?id={{child_part.id}}">{{ child_part.name }}</a></li>
+        {% endfor %}
+    </ul>
 {% endfor %}
 </ul>
