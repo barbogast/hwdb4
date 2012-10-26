@@ -122,7 +122,8 @@ def get_initial_objects():
 
 
 def get_engine():
-    return create_engine('sqlite:///:memory:', echo=debug)
+    #return create_engine('sqlite:///:memory:', echo=debug)
+    return create_engine('sqlite:///test.db', echo=debug)
 
 
 def create_all(engine):
