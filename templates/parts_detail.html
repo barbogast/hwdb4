@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-
+  <div class="container">
     {{part.parent_part.name}}
     <h1>{{part.name}}</h1>
 
@@ -10,5 +10,5 @@
         <dd>{{attr.value}}<dd>
     {% endfor %}
     </dl>
-
+  </div>
 {% endblock %}

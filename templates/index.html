@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
-    <h1>Parts</h1>
+  <div class="container">
+    <h1>Welcome to HWDB</h1>
     <ul>
-    {% for root_part in root_parts %}
-    <li><a href="/part?id={{root_part.id}}">{{ root_part.name }}</a></li>
-      <ul>{% for child_part in root_part.children %}
-        <li><a href="/part?id={{child_part.id}}">{{ child_part.name }}</a></li>{% endfor %}
-      </ul>
-      {% endfor %}
+    <li><a href="/parts">Parts</a></li>
+    <li><a href="/attributes">Attributes</a></li>
+    <li><a href="/units">Units</a></li>
     </ul>
+    <div>
 {% endblock %}
