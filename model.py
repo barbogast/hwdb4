@@ -36,7 +36,7 @@ class Unit(_DisplayName, Base):
 
 class Part(_DisplayName, Base):
     parent_part_id = Column(Integer, ForeignKey('part.id'))
-    parent_part = relationship('Part', remote_side='Part.id')
+    parent_part = relationship('Part', remote_side='Part.id', backref='children')
     #children = relationship('Part', backref('parent_part', remote_side=['Part.id']))
     #parent_part = relationship('Part', remote_side=[id])
     #parent_part = relationship('Part', backref=backref('children', remote_side=[id]))
