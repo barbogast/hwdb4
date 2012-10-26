@@ -1,4 +1,5 @@
 import re
+import os
 
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Boolean, Float, create_engine
 from sqlalchemy.orm import relationship, backref, sessionmaker
@@ -121,7 +122,7 @@ def get_initial_objects():
     return locals().values()
 
 
-def get_engine():
+def get_engine(filepath):
     #return create_engine('sqlite:///:memory:', echo=debug)
     return create_engine('sqlite:///test.db', echo=debug)
 
@@ -146,10 +147,11 @@ def init_admin(session, app):
     return admin
 
 
-def main():
-    engine = get_engine()
+def create_db(engine):
+    print 'Create db...',
     create_all(engine)
     session = get_session(engine)
+
     obj_list = get_initial_objects()
 
     session.add_all(obj_list)
@@ -160,11 +162,18 @@ def main():
         insert_record(session, d)
 
     session.commit()
+    session.close()
+    print ' done'
 
-    app = Flask(__name__)
-    init_admin(session, app)
-    app.run(port=50001)
 
 debug = False
 if __name__ == '__main__':
-    main()
+    filepath = 'test.db'
+    engine = get_engine(filepath)
+    if not os.path.exists(filepath):
+        create_db(engine)
+
+    session = get_session(engine)
+    app = Flask(__name__)
+    init_admin(session, app)
+    app.run(port=50001)
