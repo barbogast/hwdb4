@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Attributes</h1>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Unit</th>
+          <th>Part</th>
+          <th>From..to</th>
+          <th>Multi value</th>
+          <th>Note</th>
+        </tr>
+      <thead>
+      <tbody>
+        {% for attr in attributes %}
+        <tr>
+          <td>{{attr.name}}</td>
+          <td><a href="/units?id={{attr.unit.id}}">{{attr.unit.name}}</a></td>
+          <td><a href="/parts?id={{attr.part.id}}">{{attr.part.name}}</a></td>
+          <td>{{'<i class="icon-ok"></i>'|safe if attr.from_to else ''}}</td>
+          <td>{{'<i class="icon-ok"></i>'|safe if attr.multi_value else ''}}</td>
+          <td>{{attr.note if attr.note else ''}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

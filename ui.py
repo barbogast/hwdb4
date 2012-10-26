@@ -29,6 +29,10 @@ def parts():
         root_parts = db_session.query(M.Part).filter_by(parent_part=None)
         return render_template('parts.html', root_parts=root_parts)
 
+@app.route('/attributes')
+def attributes():
+    attributes = db_session.query(M.AttrType).order_by('name')
+    return render_template('attributes.html', attributes=attributes)
 
 if __name__ == "__main__":
     app.run()
