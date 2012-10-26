@@ -19,7 +19,6 @@ def shutdown_session(exception=None):
 @app.route("/")
 def index():
     parts = db_session.query(M.Part)
-    #return '<ul>%s</ul>' % '\n'.join(('<li>%s</li>' % r.name for r in rows))
     return render_template('index.html', parts=parts)
 
 @app.route("/part")
