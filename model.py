@@ -169,16 +169,17 @@ def create_db(engine):
 
 
 debug = False
+filepath = 'test.db'
+
 if __name__ == '__main__':
-    filepath = 'test.db'
     engine = get_engine(filepath)
     if not os.path.exists(filepath):
         create_db(engine)
 
     Session = get_session(engine)
-    session = scoped_session(Session)()
+    session = scoped_session(Session)
     app = Flask(__name__)
-    app.debug = True
+    app.debug = debug
     app.secret_key = 'Todo'
     init_admin(session, app)
     app.run(port=50001)
