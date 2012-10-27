@@ -158,8 +158,10 @@ def create_db(engine):
     session.add_all(obj_list)
     session.flush()
 
-    from wikipedia import get_all_rows, insert_record
-    all_rows = get_all_rows()
+    # inner import to avoid circular imports
+    from wikipedia import get_all_rows, insert_record, fetch_from_wikipedia
+    wikitext = fetch_from_wikipedia()
+    all_rows = get_all_rows(wikitext)
     for d in all_rows:
         insert_record(session, d)
 

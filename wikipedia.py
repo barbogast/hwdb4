@@ -70,7 +70,11 @@ def split_table_strings(wikitext):
 
     for line in wikitext.split('\n'):
         if line.strip().startswith('|}'):
-            tables.append('\n'.join(current_table))
+            table_text = '\n'.join(current_table)
+            # Hack to skip tables which have spanning rows
+            # (for which parsing is not yet implemented)
+            if not 'rowspan' in table_text:
+                tables.append(table_text)
             table_is_active = False
             current_table = []
 
@@ -163,7 +167,10 @@ def replace_html_chars(table_row_dicts):
     for row in table_row_dicts:
         for k in row:
             if isinstance(row[k], basestring):
-                row[k] = row[k].replace('&nbsp;', ' ').decode('utf-8')
+                row[k] = row[k].replace('&nbsp;', ' ')
+
+                # doesnt seem to work when getting the text via HTTP (and not from the file)
+                #row[k] = row[k].decode('utf-8')
             elif isinstance(row[k], list):
                 #row[k] = [x.replace('&nbsp;', ' ') for x in row[k]]
                 pass
@@ -197,10 +204,8 @@ def insert_record(session, d):
     # TODO: _add_attr(session, part, '??', 'sspecs', d)
 
 
-def get_all_rows():
+def get_all_rows(wikitext):
     all_dicts = []
-    #wikitext = fetch_from_wikipedia()
-    wikitext = open('wikiarticle.txt').read()
     tables = split_table_strings(wikitext)
     for table in tables:
         row_dicts = parse_table_rows(table)
@@ -212,4 +217,5 @@ def get_all_rows():
 
 
 if __name__ == '__main__':
-    get_all_rows()
+    wikitext = open('wikiarticle.txt').read()
+    print get_all_rows(wikitext)
