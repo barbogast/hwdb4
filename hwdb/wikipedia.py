@@ -1,3 +1,7 @@
+"""
+Author: Benjamin Arbogast
+"""
+
 #-*-encoding=utf-8-*-
 
 import json
@@ -5,7 +9,8 @@ import re
 
 import requests
 
-from model import Part, Attr, AttrType
+import hwdb.model as M
+
 
 # https://github.com/earwig/mwparserfromhell
 # https://bitbucket.org/JanKanis/wiki2csv
@@ -180,25 +185,25 @@ def replace_html_chars(table_row_dicts):
                 raise Exception()
 
 
-def _add_attr(session, part, attr_name, dict_key, d):
-    attr_type = session.query(AttrType).filter_by(name=attr_name).one()
-    attr = Attr(attr_type=attr_type, part=part, value=d[dict_key])
-    session.add(attr)
+def _add_attr(part, attr_name, dict_key, d):
+    attr_type = M.db_session.query(M.AttrType).filter_by(name=attr_name).one()
+    attr = M.Attr(attr_type=attr_type, part=part, value=d[dict_key])
+    M.db_session.add(attr)
 
 
-def insert_record(session, d):
-    parent_part = session.query(Part).filter_by(name='CPU').one()
-    part = Part(parent_part=parent_part, name=d['name'])
-    session.flush()
-    _add_attr(session, part, 'Frequency', 'frequency', d)
-    _add_attr(session, part, 'Front side bus', 'fsb', d)
-    _add_attr(session, part, 'L2 cache', 'l2cache', d)
-    _add_attr(session, part, 'Clock multiplier', 'multiplier', d)
-    _add_attr(session, part, 'Release price', 'price', d)
-    _add_attr(session, part, 'Release date', 'release', d)
+def insert_record(d):
+    parent_part = M.db_session.query(M.Part).filter_by(name='CPU').one()
+    part = M.Part(parent_part=parent_part, name=d['name'])
+    M.db_session.flush()
+    _add_attr(part, 'Frequency', 'frequency', d)
+    _add_attr(part, 'Front side bus', 'fsb', d)
+    _add_attr(part, 'L2 cache', 'l2cache', d)
+    _add_attr(part, 'Clock multiplier', 'multiplier', d)
+    _add_attr(part, 'Release price', 'price', d)
+    _add_attr(part, 'Release date', 'release', d)
     # TODO: _add_attr(session, part, 'Socket', 'socket', d)
-    _add_attr(session, part, 'Thermal design power', 'tdp', d)
-    _add_attr(session, part, 'URL', 'url', d)
+    _add_attr(part, 'Thermal design power', 'tdp', d)
+    _add_attr(part, 'URL', 'url', d)
     # TODO: _add_attr(session, part, 'Voltage range', 'voltage', d)
     # TODO: _add_attr(session, part, 'Part number', 'part_numbers', d)
     # TODO: _add_attr(session, part, '??', 'sspecs', d)

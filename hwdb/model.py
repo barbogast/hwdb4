@@ -1,4 +1,6 @@
 """
+Author: Benjamin Arbogast
+
 Open questions:
  * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
    Attr.value_to and the table MultiAttr could be removed?
@@ -11,9 +13,11 @@ from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Bo
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
-from flask import Flask
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
+
+
+db_session = None
 
 
 class _DisplayName(object):
@@ -128,66 +132,27 @@ def get_initial_objects():
     return locals().values()
 
 
-def get_engine(filepath):
+def get_engine(dbpath, debug):
     #return create_engine('sqlite:///:memory:', echo=debug)
-    return create_engine('sqlite:///test.db', echo=debug)
+    return create_engine(dbpath, echo=debug)
 
 
 def create_all(engine):
     Base.metadata.create_all(engine)
 
 
-def get_session(engine):
+def init_scoped_session(engine):
     Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-    return Session
+    global db_session
+    db_session = scoped_session(Session)
 
 
-def init_admin(session, app):
+def init_admin(app):
     admin = Admin(app)
-    admin.add_view(ModelView(Part, session))
-    admin.add_view(ModelView(Attr, session))
-    admin.add_view(ModelView(AttrType, session))
-    admin.add_view(ModelView(MultiAttr, session))
-    admin.add_view(ModelView(PartMapping, session))
-    admin.add_view(ModelView(Unit, session))
+    admin.add_view(ModelView(Part, db_session))
+    admin.add_view(ModelView(Attr, db_session))
+    admin.add_view(ModelView(AttrType, db_session))
+    admin.add_view(ModelView(MultiAttr, db_session))
+    admin.add_view(ModelView(PartMapping, db_session))
+    admin.add_view(ModelView(Unit, db_session))
     return admin
-
-
-def create_db(engine):
-    print 'Creating db...',
-    create_all(engine)
-    Session = get_session(engine)
-    session = Session()
-
-    obj_list = get_initial_objects()
-
-    session.add_all(obj_list)
-    session.flush()
-
-    # inner import to avoid circular imports
-    from wikipedia import get_all_rows, insert_record, fetch_from_wikipedia
-    wikitext = fetch_from_wikipedia()
-    all_rows = get_all_rows(wikitext)
-    for d in all_rows:
-        insert_record(session, d)
-
-    session.commit()
-    session.close()
-    print ' done'
-
-
-debug = False
-filepath = 'test.db'
-
-if __name__ == '__main__':
-    engine = get_engine(filepath)
-    if not os.path.exists(filepath):
-        create_db(engine)
-
-    Session = get_session(engine)
-    session = scoped_session(Session)
-    app = Flask(__name__)
-    app.debug = debug
-    app.secret_key = 'Todo'
-    init_admin(session, app)
-    app.run(port=50001)
