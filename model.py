@@ -1,3 +1,9 @@
+"""
+Open questions:
+ * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
+   Attr.value_to and the table MultiAttr could be removed?
+"""
+
 import re
 import os
 
