@@ -30,6 +30,11 @@ def _convert_camel_to_underscore(s):
 
 
 class _MyBase(object):
+    """ 
+    Base class for SQLAlchemy model classes:
+    Generate the "__tablename__" attribute from the name of the class
+    and add an id attribute 
+    """
     @declared_attr
     def __tablename__(cls):
         return _convert_camel_to_underscore(cls.__name__)
