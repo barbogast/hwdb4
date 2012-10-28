@@ -22,7 +22,7 @@ debug = False
 def run_admin():
     engine = M.get_engine(dbpath, debug)
     if not os.path.exists(filepath):
-        M.create_db(engine)
+        M.create_all(engine)
 
     M.init_scoped_session(engine)
     app = Flask(__name__)
