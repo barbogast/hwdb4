@@ -97,7 +97,7 @@ class MultiAttr(Base):
 
 def get_initial_objects():
     u_mm = Unit(name='Milimeter')
-    u_hz = Unit(name='Herz')
+    u_hz = Unit(name='Hertz')
     u_date = Unit(name='Date')
     u_year = Unit(name='Year')
     u_count = Unit(name='Count')
