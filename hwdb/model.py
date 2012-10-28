@@ -20,7 +20,7 @@ from flask.ext.admin.contrib.sqlamodel import ModelView
 db_session = None
 
 
-class _DisplayName(object):
+class _DisplayNameMixin(object):
     def __unicode__(self):
         return self.name
 
@@ -40,11 +40,11 @@ class _MyBase(object):
 Base = declarative_base(cls=_MyBase)
 
 
-class Unit(_DisplayName, Base):
+class Unit(_DisplayNameMixin, Base):
     name = Column(String, nullable=False, unique=True)
     note = Column(String, nullable=True, unique=False)
 
-class Part(_DisplayName, Base):
+class Part(_DisplayNameMixin, Base):
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
     #children = relationship('Part', backref('parent_part', remote_side=['Part.id']))
@@ -53,7 +53,7 @@ class Part(_DisplayName, Base):
     # TODO: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#adjacency-list-relationships
     name = Column(String, nullable=False)
 
-class AttrType(_DisplayName, Base):
+class AttrType(_DisplayNameMixin, Base):
     __table_args__ = (UniqueConstraint('name', 'part_id'),)
     name = Column(String, nullable=False, unique=False)
     note = Column(String, nullable=True, unique=False)
