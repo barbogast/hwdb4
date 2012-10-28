@@ -2,8 +2,14 @@
 Author: Benjamin Arbogast
 
 Open questions:
- * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
-   Attr.value_to and the table MultiAttr could be removed?
+ * saving single values and ranges in table Attr:
+    - store single values in a "value"-column and min/max in extra columns
+    - store single values in min. fill max only for ranges (problem: ranges with max=unlimited)
+    - store single values in min and max (min=max)
+    - store the values in a postgres array. array length 1 = single value, array length 2 = min/max, array length > 2 = multi value
+    * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
+      Attr.value_to and the table MultiAttr could be removed?
+   
 """
 
 import re
