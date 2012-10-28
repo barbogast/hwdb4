@@ -24,7 +24,7 @@ class _DisplayNameMixin(object):
     def __unicode__(self):
         return self.name
 
-def _convert_camel_to_undersocre(s):
+def _convert_camel_to_underscore(s):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
@@ -32,7 +32,7 @@ def _convert_camel_to_undersocre(s):
 class _MyBase(object):
     @declared_attr
     def __tablename__(cls):
-        return _convert_camel_to_undersocre(cls.__name__)
+        return _convert_camel_to_underscore(cls.__name__)
 
     id =  Column(Integer, primary_key=True)
 
