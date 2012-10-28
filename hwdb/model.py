@@ -107,6 +107,8 @@ def get_initial_objects():
 
     p_socket = Part(name='CPU-Socket')
     p_cpu = Part(name='CPU')
+    p_pentium = Part(name='Pentium', parent_part=p_cpu)
+    p_pentium4 = Part(name='Pentium 4', parent_part=p_pentium)
 
     at_name = AttrType(name='Name', unit=u_text)
 

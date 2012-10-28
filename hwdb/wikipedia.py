@@ -192,7 +192,7 @@ def _add_attr(part, attr_name, dict_key, d):
 
 
 def insert_record(d):
-    parent_part = M.db_session.query(M.Part).filter_by(name='CPU').one()
+    parent_part = M.db_session.query(M.Part).filter_by(name='Pentium 4').one()
     part = M.Part(parent_part=parent_part, name=d['name'])
     M.db_session.flush()
     _add_attr(part, 'Frequency', 'frequency', d)
