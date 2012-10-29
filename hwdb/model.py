@@ -101,6 +101,7 @@ class PartMapping(Base):
     content_part = relationship(Part, primaryjoin='Part.id==PartMapping.content_part_id', backref='content_map')
     # Todo: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#self-referential-many-to-many-relationship
     occurrence = Column(Integer, nullable=False, server_default='1')
+    position = Column(Integer)
 
 class Attr(Base):
     __table_args__ = (UniqueConstraint('attr_type_id', 'part_id'),)
@@ -135,6 +136,7 @@ def get_initial_objects():
     u_url = Unit(name='Url')
     u_text = Unit(name='Text')
     u_boolean = Unit(name='Boolean')
+    u_hex = Unit(name='Hex')
 
     p_socket = Part(name='CPU-Socket')
     p_cpu = Part(name='CPU')
@@ -167,12 +169,22 @@ def get_initial_objects():
     at_url = AttrType(name='URL', unit=u_url, part=p_cpu)
 
     # PC of BA
-    p_hpd530 = Part(name='HP d530 CMT(DF368A)')
+    p_hpd530 = Part(name='HP d530 CMT(DF368A)', parent_part=p_desktop)
     p_casing = Part(name='Casing', note='Computer casing')
+    p_casing = Part(name='Motherboard')
+    p_ram = Part(name='RAM')
+    p_ddr = Part(name='DDR RAM', parent_part=p_ram)
+    p_flash = Part(name='Flash memory', parent_part=p_ram)
 
     at_modified = AttrType(name='Modified', unit=u_boolean, part=p_computer, note='Was this computer modified after initial delivery?')
-    at_vendor = AttrType(name='Vendor', unit=u_text, part=p_computer)
-    at_serial = AttrType(name='Serial', unit=u_text, part=p_computer)
+    at_vendor = AttrType(name='Vendor', unit=u_text, note='p_computer, p_motherboard')
+    at_serial = AttrType(name='Serial', unit=u_text, note='p_computer, p_mainboard')
+    at_width = AttrType(name='Width', unit=u_text, note='cpu, ram, 32 bit oder 64 bit')
+    at_l1cache = AttrType(name='L1 cache', unit=u_byte, part=p_cpu)
+    at_hyperthreading = AttrType(name='Hyperthreading', unit=u_boolean, part=p_cpu)
+    at_size = AttrType(name='Size', unit=u_byte, part=p_ram)
+    at_vendor_hex = AttrType(name='Vendor hex', unit=u_hex, part=p_ram)
+
 
     return locals().values()
 
