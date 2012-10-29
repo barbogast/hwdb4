@@ -192,12 +192,11 @@ def init_scoped_session(engine):
     db_session = scoped_session(Session)
 
 
+_objects = locals()
 def init_admin(app):
     admin = Admin(app)
-    admin.add_view(ModelView(Part, db_session))
-    admin.add_view(ModelView(Attr, db_session))
-    admin.add_view(ModelView(AttrType, db_session))
-    admin.add_view(ModelView(MultiAttr, db_session))
-    admin.add_view(ModelView(PartMapping, db_session))
-    admin.add_view(ModelView(Unit, db_session))
+    for k in sorted(_objects.keys()):
+        obj = _objects[k]
+        if isinstance(obj, type) and issubclass(obj, Base) and not obj is Base:
+            admin.add_view(ModelView(obj, db_session))
     return admin
