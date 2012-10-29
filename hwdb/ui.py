@@ -27,7 +27,7 @@ def parts():
 
         parent_part = part
         while parent_part:
-            li = [H.a(href='/part?id=%s' % parent_part.id)(parent_part.name)]
+            li = [H.a(href='/parts?id=%s' % parent_part.id)(parent_part.name)]
             # Omit the divider for the first elemement
             if li_elements:
                 li.append(divider)
