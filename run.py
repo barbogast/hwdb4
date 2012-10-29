@@ -10,6 +10,7 @@ from flask import Flask
 from sqlalchemy.orm import scoped_session
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqlamodel import ModelView
+import sadisplay
 
 import hwdb.model as M
 from hwdb import ui
@@ -35,7 +36,7 @@ def run_admin():
     model_classes = M.get_model_classes()
     admin = Admin(app)
     for klass in model_classes:
-		admin.add_view(ModelView(klass, M.db_session))
+        admin.add_view(ModelView(klass, M.db_session))
 
     # Add redirect from / to /admin
     app.add_url_rule('/', 'index', app.view_functions['admin.index'])
@@ -83,11 +84,16 @@ def reset_db():
     print ' done'
 
 
+def make_ER():
+    desc = sadisplay.describe(M.get_model_classes())
+    open('schema.dot', 'w').write(sadisplay.dot(desc))
+
 
 COMMANDS = {
     'run_admin': run_admin,
     'run_ui': run_ui,
-    'reset_db': reset_db
+    'reset_db': reset_db,
+    'make_er': make_ER,
 }
 
 
