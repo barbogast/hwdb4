@@ -5,6 +5,7 @@ Author: Benjamin Arbogast
 
 import argparse
 import os
+import subprocess
 
 from flask import Flask
 from sqlalchemy.orm import scoped_session
@@ -46,7 +47,7 @@ def run_admin():
 def run_ui():
     engine = M.get_engine(dbpath, debug)
     M.init_scoped_session(engine)
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder='hwdb/static')
     app.debug = True
     app.register_blueprint(ui.bp)
 
@@ -86,7 +87,17 @@ def reset_db():
 
 def make_ER():
     desc = sadisplay.describe(M.get_model_classes())
-    open('schema.dot', 'w').write(sadisplay.dot(desc))
+    path = 'hwdb/static'
+    if not os.path.exists(path):
+		os.mkdir(path)
+
+    dot_filename = os.path.join(path, 'schema.dot')
+    png_filename = os.path.join(path, 'schema.png')
+    if os.path.exists(dot_filename): os.remove(dot_filename)
+    if os.path.exists(png_filename): os.remove(png_filename)
+    open(dot_filename, 'w').write(sadisplay.dot(desc))
+    subprocess.call("dot -Tpng %s > %s" % (dot_filename, png_filename), shell=True)
+    os.remove(dot_filename)
 
 
 COMMANDS = {
