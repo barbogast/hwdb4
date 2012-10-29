@@ -2,6 +2,11 @@
 Author: Benjamin Arbogast
 
 Open questions:
+ * at the moment it is not possible to define which attribute_types are allowed
+   for which part. Should this be possible? This way, a admin could restrict the
+   attributes which can be set for a given part. This could be implemented as
+   a mapping table from Part to AttrType. Then each part could have the attributes which
+   are associated with its parent part. This would replace the FK from AttrType to Part
  * saving single values and ranges in table Attr:
     - store single values in a "value"-column and min/max in extra columns
     - store single values in min. fill max only for ranges (problem: ranges with max=unlimited)
@@ -9,7 +14,6 @@ Open questions:
     - store the values in a postgres array. array length 1 = single value, array length 2 = min/max, array length > 2 = multi value
     * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
       Attr.value_to and the table MultiAttr could be removed?
-   
 """
 
 import re
@@ -36,10 +40,10 @@ def _convert_camel_to_underscore(s):
 
 
 class _MyBase(object):
-    """ 
+    """
     Base class for SQLAlchemy model classes:
     Generate the "__tablename__" attribute from the name of the class
-    and add an id attribute 
+    and add an id attribute
     """
     @declared_attr
     def __tablename__(cls):
@@ -50,6 +54,16 @@ class _MyBase(object):
 
 Base = declarative_base(cls=_MyBase)
 
+
+class StandardSet(_DisplayNameMixin, Base):
+    name = Column(String, nullable=False, unique=True)
+    note = Column(String, nullable=True, unique=False)
+
+class Standard(_DisplayNameMixin, Base):
+    name = Column(String, nullable=False, unique=True)
+    note = Column(String, nullable=True, unique=False)
+    standard_set_id = Column(Integer, ForeignKey(StandardSet.id))
+    standard_set = relationship(StandardSet, backref='standards')
 
 class Unit(_DisplayNameMixin, Base):
     name = Column(String, nullable=False, unique=True)
@@ -63,6 +77,7 @@ class Part(_DisplayNameMixin, Base):
     #parent_part = relationship('Part', backref=backref('children', remote_side=[id]))
     # TODO: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#adjacency-list-relationships
     name = Column(String, nullable=False)
+    note = Column(String, nullable=True, unique=False)
 
 class AttrType(_DisplayNameMixin, Base):
     __table_args__ = (UniqueConstraint('name', 'part_id'),)
@@ -75,6 +90,8 @@ class AttrType(_DisplayNameMixin, Base):
     part = relationship(Part, backref='attr_types')
     unit_id = Column(Integer, ForeignKey(Unit.id), nullable=False)
     unit = relationship(Unit, backref='attr_types')
+    standard_set_id = Column(Integer, ForeignKey(StandardSet.id))
+    standard_set = relationship(StandardSet, backref='attr_types')
 
 class PartMapping(Base):
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
@@ -94,6 +111,8 @@ class Attr(Base):
     value = Column(String, nullable=True)
     value_from = Column(Float, nullable=True)
     value_to = Column(Float, nullable=True)
+    standard_id = Column(Integer, ForeignKey(Standard.id))
+    standard = relationship(Standard, backref='attrs')
 
 class MultiAttr(Base):
     attr_id = Column(Integer, ForeignKey(Attr.id), nullable=False)
@@ -115,11 +134,16 @@ def get_initial_objects():
     u_dollar = Unit(name='Dollar')
     u_url = Unit(name='Url')
     u_text = Unit(name='Text')
+    u_boolean = Unit(name='Boolean')
 
     p_socket = Part(name='CPU-Socket')
     p_cpu = Part(name='CPU')
     p_pentium = Part(name='Pentium', parent_part=p_cpu)
     p_pentium4 = Part(name='Pentium 4', parent_part=p_pentium)
+    p_computer = Part(name='Computer', note='Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)')
+    p_desktop = Part(name='Desktop', parent_part=p_computer)
+    p_laptop = Part(name='Laptop', parent_part=p_computer)
+    p_server = Part(name='Server', parent_part=p_computer)
 
     at_name = AttrType(name='Name', unit=u_text)
 
@@ -141,6 +165,14 @@ def get_initial_objects():
     at_release_price = AttrType(name='Release price', unit=u_dollar, part=p_cpu)
     at_part_number = AttrType(name='Part number', unit=u_text, multi_value=True, part=p_cpu)
     at_url = AttrType(name='URL', unit=u_url, part=p_cpu)
+
+    # PC of BA
+    p_hpd530 = Part(name='HP d530 CMT(DF368A)')
+    p_casing = Part(name='Casing', note='Computer casing')
+
+    at_modified = AttrType(name='Modified', unit=u_boolean, part=p_computer, note='Was this computer modified after initial delivery?')
+    at_vendor = AttrType(name='Vendor', unit=u_text, part=p_computer)
+    at_serial = AttrType(name='Serial', unit=u_text, part=p_computer)
 
     return locals().values()
 
