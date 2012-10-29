@@ -8,6 +8,8 @@ import os
 
 from flask import Flask
 from sqlalchemy.orm import scoped_session
+from flask.ext.admin import Admin
+from flask.ext.admin.contrib.sqlamodel import ModelView
 
 import hwdb.model as M
 from hwdb import ui
@@ -29,7 +31,12 @@ def run_admin():
     app = Flask(__name__)
     app.debug = debug
     app.secret_key = 'Todo'
-    M.init_admin(app)
+
+    model_classes = M.get_model_classes()
+    admin = Admin(app)
+    for klass in model_classes:
+		admin.add_view(ModelView(klass, M.db_session))
+
     # Add redirect from / to /admin
     app.add_url_rule('/', 'index', app.view_functions['admin.index'])
     app.run(port=50000)

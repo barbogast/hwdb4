@@ -23,9 +23,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Bo
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
-from flask.ext.admin import Admin
-from flask.ext.admin.contrib.sqlamodel import ModelView
-
 
 db_session = None
 
@@ -137,9 +134,9 @@ def init_scoped_session(engine):
 
 
 _objects = locals()
-def init_admin(app):
-    admin = Admin(app)
+def get_model_classes():
+    models = []
     for k, obj in sorted(_objects.items()):
         if isinstance(obj, type) and issubclass(obj, Base) and not obj is Base:
-            admin.add_view(ModelView(obj, db_session))
-    return admin
+            models.append(obj)
+    return models
