@@ -12,6 +12,7 @@ from sqlalchemy.orm import scoped_session
 import hwdb.model as M
 from hwdb import ui
 from hwdb import wikipedia
+from hwdb.init_data import get_initial_objects
 
 
 filepath = 'test.db'
@@ -60,7 +61,7 @@ def reset_db():
     print 'Creating db...',
     M.create_all(engine)
     M.init_scoped_session(engine)
-    obj_list = M.get_initial_objects()
+    obj_list = get_initial_objects()
 
     M.db_session.add_all(obj_list)
     M.db_session.flush()
