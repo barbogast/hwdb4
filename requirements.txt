@@ -2,3 +2,4 @@ Flask
 Flask-Admin
 SQLAlchemy
 requests
+Flask-HTMLBuilder
