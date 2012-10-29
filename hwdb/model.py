@@ -139,8 +139,7 @@ def init_scoped_session(engine):
 _objects = locals()
 def init_admin(app):
     admin = Admin(app)
-    for k in sorted(_objects.keys()):
-        obj = _objects[k]
+    for k, obj in sorted(_objects.items()):
         if isinstance(obj, type) and issubclass(obj, Base) and not obj is Base:
             admin.add_view(ModelView(obj, db_session))
     return admin
