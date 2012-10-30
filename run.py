@@ -31,9 +31,8 @@ def init_admin(app):
         def index(self):
             return self.render('admin_index.html')
 
-    model_classes = M.get_model_classes()
     admin = Admin(app, index_view=MyIndexView())
-    for klass in model_classes:
+    for name, klass in sorted(M.get_model_classes().items()):
         admin.add_view(ModelView(klass, M.db_session))
 
 

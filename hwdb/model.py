@@ -49,8 +49,8 @@ class _MyBase(object):
 
     id =  Column(Integer, primary_key=True)
 
-
-Base = declarative_base(cls=_MyBase)
+_model_classes = {}
+Base = declarative_base(cls=_MyBase, class_registry=_model_classes)
 
 
 class Unit(_DisplayNameMixin, Base):
@@ -156,10 +156,5 @@ def init_scoped_session(engine):
     db_session = scoped_session(Session)
 
 
-_objects = locals()
 def get_model_classes():
-    models = []
-    for k, obj in sorted(_objects.items()):
-        if isinstance(obj, type) and issubclass(obj, Base) and not obj is Base:
-            models.append(obj)
-    return models
+    return _model_classes
