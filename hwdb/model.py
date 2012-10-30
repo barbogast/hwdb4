@@ -28,6 +28,7 @@ db_session = None
 
 
 class _DisplayNameMixin(object):
+    """ Adds a default representation for SQLAlchemy objects """
     def __unicode__(self):
         return self.name
 
@@ -63,10 +64,24 @@ class Standard(_DisplayNameMixin, Base):
     standard_set = relationship(StandardSet, backref='standards')
 
 class Unit(_DisplayNameMixin, Base):
+    """
+    The unit which describes the values of Attributes. Examples: meter, volt
+    """
     name = Column(String, nullable=False, unique=True)
     note = Column(String, nullable=True, unique=False)
 
 class Part(_DisplayNameMixin, Base):
+    """
+    A hardware part. Can be a abstract part like 'cpu' or a specific part like
+    'Pentium 4 Willamette 1.3'
+    A part can have a parent to categorize similar parts (See the class
+    PartMapping). For example a 'Pentium 4 Willamette 1.3' has the parent
+    'Pentium 4 Willamette' which has in turn the parent 'Pentium 4' which has
+    the parent 'CPU'.
+    A part can contain multiple other parts. For example a 'Laptop Sony XX'
+    contains the 'Mainboard YY' and the 'Display ZZ'. The 'Mainboard YY'
+    contains the 'CPU-Socket QQ'.
+    """
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
     #children = relationship('Part', backref('parent_part', remote_side=['Part.id']))
@@ -77,6 +92,12 @@ class Part(_DisplayNameMixin, Base):
     note = Column(String, nullable=True, unique=False)
 
 class AttrType(_DisplayNameMixin, Base):
+    """
+    An AttrType describes an type of attribute. It will be associated with an
+    Attr which is in turn associated with a part and has the actual value.
+    Examples are 'Bus speed', 'Frequency', 'Release date'.
+    TODO: describe the connection with part and from_to/multi_value
+    """
     __table_args__ = (UniqueConstraint('name', 'part_id'),)
     name = Column(String, nullable=False, unique=False)
     note = Column(String, nullable=True, unique=False)
@@ -91,6 +112,11 @@ class AttrType(_DisplayNameMixin, Base):
     standard_set = relationship(StandardSet, backref='attr_types')
 
 class PartMapping(Base):
+    """
+    A m:n connection from Part to itself. Used to describe that a Part contains
+    other Parts. For examples see docstring of Part.
+    TODO: Position and occurrence rule each other out.
+    """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     container_part = relationship(Part, primaryjoin='Part.id==PartMapping.container_part_id', backref='container_map')
@@ -101,6 +127,11 @@ class PartMapping(Base):
     position = Column(Integer)
 
 class Attr(Base):
+    """
+    A attr represents an actual attribute of a Part. It is associated with an
+    AttrType and a Part and contains the actual value of the attribute.
+    TODO: describe value_to, value_from
+    """
     __table_args__ = (UniqueConstraint('attr_type_id', 'part_id'),)
     attr_type_id = Column(Integer, ForeignKey(AttrType.id), nullable=False)
     attr_type = relationship(AttrType, backref='attrs')
