@@ -89,7 +89,7 @@ def make_ER():
     desc = sadisplay.describe(M.get_model_classes())
     path = 'hwdb/static'
     if not os.path.exists(path):
-		os.mkdir(path)
+        os.mkdir(path)
 
     dot_filename = os.path.join(path, 'schema.dot')
     png_filename = os.path.join(path, 'schema.png')
