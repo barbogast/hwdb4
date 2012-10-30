@@ -67,7 +67,7 @@ def reset_db():
         os.remove(filepath)
 
     engine = M.get_engine(dbpath, debug)
-    print 'Creating db...',
+    print 'Creating db...'
     M.create_all(engine)
     M.init_scoped_session(engine)
     obj_list = get_initial_objects()
@@ -82,10 +82,12 @@ def reset_db():
 
     M.db_session.commit()
     M.db_session.close()
-    print ' done'
+    print 'done'
+    _make_ER()
 
 
-def make_ER():
+
+def _make_ER():
     desc = sadisplay.describe(M.get_model_classes())
     path = 'hwdb/static'
     if not os.path.exists(path):
@@ -96,15 +98,19 @@ def make_ER():
     if os.path.exists(dot_filename): os.remove(dot_filename)
     if os.path.exists(png_filename): os.remove(png_filename)
     open(dot_filename, 'w').write(sadisplay.dot(desc))
-    subprocess.call("dot -Tpng %s > %s" % (dot_filename, png_filename), shell=True)
-    os.remove(dot_filename)
+    try:
+        subprocess.check_call("dot -Tpng %s > %s" % (dot_filename, png_filename), shell=True)
+    except subprocess.CalledProcessError:
+        print 'Error: Conversion of dot file %r to png failed. Maybe the program "dot" is missing?' % dot_filename
+    else:
+        os.remove(dot_filename)
+        print 'Written ER-diagram to file %r' % png_filename
 
 
 COMMANDS = {
     'run_admin': run_admin,
     'run_ui': run_ui,
     'reset_db': reset_db,
-    'make_er': make_ER,
 }
 
 
