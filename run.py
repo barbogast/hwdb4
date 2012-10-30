@@ -24,16 +24,7 @@ dbpath = 'sqlite:///' + filepath
 debug = False
 
 
-def run_admin():
-    engine = M.get_engine(dbpath, debug)
-    if not os.path.exists(filepath):
-        M.create_all(engine)
-
-    M.init_scoped_session(engine)
-    app = Flask(__name__, template_folder='hwdb/templates')
-    app.debug = False
-    app.secret_key = 'Todo'
-
+def init_admin(app):
     # Custom AdminIndexView to change the rendered template
     class MyIndexView(AdminIndexView):
         @expose()
@@ -45,28 +36,15 @@ def run_admin():
     for klass in model_classes:
         admin.add_view(ModelView(klass, M.db_session))
 
-    # Hack to serve a static file outside the static folder of flask-admin
-    @app.route('/flask_static/schema.png')
-    def schema_png():
-        return send_file('hwdb/static/schema.png')
-
-    # Add redirect from / to /admin
-    app.add_url_rule('/', 'index', app.view_functions['admin.index'])
-
-    app.run(port=50000)
-
 
 def run_ui():
     engine = M.get_engine(dbpath, debug)
     M.init_scoped_session(engine)
-    app = Flask(__name__, static_folder='hwdb/static')
+    app = Flask(__name__, static_folder='hwdb/static', template_folder='hwdb/templates')
     app.debug = True
+    app.secret_key = 'Todo'
     app.register_blueprint(ui.bp)
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        M.db_session.remove()
-
+    init_admin(app)
     app.run()
 
 
@@ -98,7 +76,6 @@ def reset_db():
     _make_ER()
 
 
-
 def _make_ER():
     desc = sadisplay.describe(M.get_model_classes())
     path = 'hwdb/static'
@@ -120,7 +97,6 @@ def _make_ER():
 
 
 COMMANDS = {
-    'run_admin': run_admin,
     'run_ui': run_ui,
     'reset_db': reset_db,
 }
