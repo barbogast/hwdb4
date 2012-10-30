@@ -53,16 +53,6 @@ class _MyBase(object):
 Base = declarative_base(cls=_MyBase)
 
 
-class StandardSet(_DisplayNameMixin, Base):
-    name = Column(String, nullable=False, unique=True)
-    note = Column(String, nullable=True, unique=False)
-
-class Standard(_DisplayNameMixin, Base):
-    name = Column(String, nullable=False, unique=True)
-    note = Column(String, nullable=True, unique=False)
-    standard_set_id = Column(Integer, ForeignKey(StandardSet.id))
-    standard_set = relationship(StandardSet, backref='standards')
-
 class Unit(_DisplayNameMixin, Base):
     """
     The unit which describes the values of Attributes. Examples: meter, volt
@@ -72,15 +62,20 @@ class Unit(_DisplayNameMixin, Base):
 
 class Part(_DisplayNameMixin, Base):
     """
-    A hardware part. Can be a abstract part like 'cpu' or a specific part like
-    'Pentium 4 Willamette 1.3'
-    A part can have a parent to categorize similar parts (See the class
+    A Part represents a hardware part or an IT standard.
+    As a hardware part it can be an abstract part like 'cpu' or a specific part
+    like 'Pentium 4 Willamette 1.3'.
+    A hardware part can have a parent to categorize similar parts (See the class
     PartMapping). For example a 'Pentium 4 Willamette 1.3' has the parent
     'Pentium 4 Willamette' which has in turn the parent 'Pentium 4' which has
     the parent 'CPU'.
     A part can contain multiple other parts. For example a 'Laptop Sony XX'
     contains the 'Mainboard YY' and the 'Display ZZ'. The 'Mainboard YY'
     contains the 'CPU-Socket QQ'.
+    As a standard it represents a standard like 'ATX' or 'PCI Express 3.0'. The
+    parent relation is used to group standards. For example the standard 'ATX'
+    could have the parent 'Casing standard'. To indicate that a Part supports a
+    standard the Part should `contain` the standard like it contains other Parts.
     """
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
@@ -90,6 +85,7 @@ class Part(_DisplayNameMixin, Base):
     # TODO: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#adjacency-list-relationships
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
+    is_standard = Column(Boolean)
 
 class AttrType(_DisplayNameMixin, Base):
     """
@@ -108,8 +104,6 @@ class AttrType(_DisplayNameMixin, Base):
     part = relationship(Part, backref='attr_types')
     unit_id = Column(Integer, ForeignKey(Unit.id), nullable=False)
     unit = relationship(Unit, backref='attr_types')
-    standard_set_id = Column(Integer, ForeignKey(StandardSet.id))
-    standard_set = relationship(StandardSet, backref='attr_types')
 
 class PartMapping(Base):
     """
@@ -140,8 +134,6 @@ class Attr(Base):
     value = Column(String, nullable=True)
     value_from = Column(Float, nullable=True)
     value_to = Column(Float, nullable=True)
-    standard_id = Column(Integer, ForeignKey(Standard.id))
-    standard = relationship(Standard, backref='attrs')
 
 class MultiAttr(Base):
     attr_id = Column(Integer, ForeignKey(Attr.id), nullable=False)
