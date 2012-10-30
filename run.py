@@ -7,9 +7,9 @@ import argparse
 import os
 import subprocess
 
-from flask import Flask
+from flask import Flask, send_file
 from sqlalchemy.orm import scoped_session
-from flask.ext.admin import Admin
+from flask.ext.admin import Admin, expose, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 import sadisplay
 
@@ -30,17 +30,29 @@ def run_admin():
         M.create_all(engine)
 
     M.init_scoped_session(engine)
-    app = Flask(__name__)
-    app.debug = debug
+    app = Flask(__name__, template_folder='hwdb/templates')
+    app.debug = False
     app.secret_key = 'Todo'
 
+    # Custom AdminIndexView to change the rendered template
+    class MyIndexView(AdminIndexView):
+        @expose()
+        def index(self):
+            return self.render('admin_index.html')
+
     model_classes = M.get_model_classes()
-    admin = Admin(app)
+    admin = Admin(app, index_view=MyIndexView())
     for klass in model_classes:
         admin.add_view(ModelView(klass, M.db_session))
 
+    # Hack to serve a static file outside the static folder of flask-admin
+    @app.route('/flask_static/schema.png')
+    def schema_png():
+        return send_file('hwdb/static/schema.png')
+
     # Add redirect from / to /admin
     app.add_url_rule('/', 'index', app.view_functions['admin.index'])
+
     app.run(port=50000)
 
 
