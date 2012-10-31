@@ -76,7 +76,7 @@ def reset_db():
 
 
 def _make_ER():
-    desc = sadisplay.describe(M.get_model_classes())
+    desc = sadisplay.describe(M.get_model_classes().values())
     path = 'hwdb/static'
     if not os.path.exists(path):
         os.mkdir(path)
