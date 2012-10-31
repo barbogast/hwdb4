@@ -14,6 +14,13 @@ Open questions:
     - store the values in a postgres array. array length 1 = single value, array length 2 = min/max, array length > 2 = multi value
     * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
       Attr.value_to and the table MultiAttr could be removed?
+ * Vendors: A vendor of a Part could be represented as attribute or as parent_part.
+   Which one is better? Vendors as attribute is bad because there is no single entry which
+   represents the vendor but multiple attributes containing the name of the vendor.
+   Vendors as parents are bad because the parent-child-relationship of Parts represents
+   the category by hardware type, not by vendor. Maybe an extra table? Or with the N:M-Mapping of Parts?
+ * Enums: Should AttrTypes be able to store allowed values?
+   For example: casing_size=>(mini_tower, Midi_tower, big_tower)
 """
 
 import re
