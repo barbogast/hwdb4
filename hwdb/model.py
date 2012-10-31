@@ -86,10 +86,6 @@ class Part(_DisplayNameMixin, Base):
     """
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
-    #children = relationship('Part', backref('parent_part', remote_side=['Part.id']))
-    #parent_part = relationship('Part', remote_side=[id])
-    #parent_part = relationship('Part', backref=backref('children', remote_side=[id]))
-    # TODO: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#adjacency-list-relationships
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
     is_standard = Column(Boolean)
@@ -119,11 +115,11 @@ class PartMapping(Base):
     TODO: Position and occurrence rule each other out.
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
+
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartMapping.container_part_id', backref='container_map')
+    container_part = relationship(Part, primaryjoin='Part.id==PartMapping.container_part_id', backref='content_map')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    content_part = relationship(Part, primaryjoin='Part.id==PartMapping.content_part_id', backref='content_map')
-    # Todo: http://docs.sqlalchemy.org/en/rel_0_7/orm/relationships.html#self-referential-many-to-many-relationship
+    content_part = relationship(Part, primaryjoin='Part.id==PartMapping.content_part_id', backref='container_map')
     occurrence = Column(Integer, nullable=False, server_default='1')
     position = Column(Integer)
 
