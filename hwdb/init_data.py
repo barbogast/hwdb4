@@ -49,22 +49,44 @@ def get_initial_objects():
     at_url = M.AttrType(name='URL', unit=u_url, part=p_cpu)
 
     # PC of BA
-    p_hpd530 = M.Part(name='HP d530 CMT(DF368A)', parent_part=p_desktop)
     p_casing = M.Part(name='Casing', note='Computer casing')
-    p_casing = M.Part(name='Motherboard')
+    p_motherboard = M.Part(name='Motherboard')
     p_ram = M.Part(name='RAM')
     p_ddr = M.Part(name='DDR RAM', parent_part=p_ram)
     p_flash = M.Part(name='Flash memory', parent_part=p_ram)
 
     at_modified = M.AttrType(name='Modified', unit=u_boolean, part=p_computer, note='Was this computer modified after initial delivery?')
     at_vendor = M.AttrType(name='Vendor', unit=u_text, note='p_computer, p_motherboard')
-    at_serial = M.AttrType(name='Serial', unit=u_text, note='p_computer, p_mainboard')
-    at_width = M.AttrType(name='Width', unit=u_text, note='cpu, ram, 32 bit oder 64 bit')
+    at_serial = M.AttrType(name='Serial number', unit=u_text, note='p_computer, p_mainboard')
+    at_cpuwidth = M.AttrType(name='Width', unit=u_text, note='cpu, ram, 32 bit oder 64 bit')
     at_l1cache = M.AttrType(name='L1 cache', unit=u_byte, part=p_cpu)
     at_hyperthreading = M.AttrType(name='Hyperthreading', unit=u_boolean, part=p_cpu)
-    at_size = M.AttrType(name='Size', unit=u_byte, part=p_ram)
+    at_ram_size = M.AttrType(name='Size', unit=u_byte, part=p_ram)
+    at_casing_size = M.AttrType(name='Size', unit=u_text, part=p_casing, note='Minitower, miditower, bigtower')
     at_vendor_hex = M.AttrType(name='Vendor hex', unit=u_hex, part=p_ram)
+    at_version = M.AttrType(name='Version', unit=u_text, part=p_pentium4)
 
+    p_hpd530 = M.Part(name='HP d530 CMT(DF368A)', parent_part=p_desktop)
+    a_hpd530_a_hp = M.Attr(part=p_hpd530, attr_type=at_vendor, value='Hewlett-Packard')
+    a_hpd530_a_serial = M.Attr(part=p_hpd530, attr_type=at_serial, value='CZC4301WB9')
+
+    p_mini_tower = M.Part(name='Anonymous Mini Tower', parent_part=p_casing)
+    a_mini_tower_vendor = M.Attr(part=p_mini_tower, attr_type=at_vendor, value='Hewlett-Packard')
+    a_mini_tower_casing_size = M.Attr(part=p_mini_tower, attr_type=at_casing_size, value='Minitower')
+
+    p_hpmboard = M.Part(name='085Ch', parent_part=p_motherboard)
+    a_hpmboard_a_hp = M.Attr(part=p_hpmboard, attr_type=at_vendor, value='Hewlett-Packard')
+    a_hpmboard_a_serial = M.Attr(part=p_hpmboard, attr_type=at_serial, value='CZC4301WB9')
+
+    p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=p_pentium4)
+    a_hp_pentium4_vendor = M.Attr(part=p_hp_pentium4, attr_type=at_vendor, value='Intel Corp.')
+    a_hp_pentium4_version = M.Attr(part=p_hp_pentium4, attr_type=at_version, value='15.2.9')
+    a_hp_pentium4_frequency = M.Attr(part=p_hp_pentium4, attr_type=at_frequency, value='2800000000')
+    a_hp_pentium4_width = M.Attr(part=p_hp_pentium4, attr_type=at_cpuwidth, value='32') # TODO: this should be an extra Part (is_standard=True)
+
+    pm_hpd530_minitower = M.PartMapping(container_part=p_hpd530, content_part=p_mini_tower)
+    pm_minitower_hpmboard = M.PartMapping(container_part=p_mini_tower, content_part=p_hpmboard)
+    pm_hpmboard_hp_pentium4 = M.PartMapping(container_part=p_hpmboard, content_part=p_hp_pentium4)
 
     return locals().values()
 
