@@ -4,6 +4,7 @@ Author: Benjamin Arbogast
 
 from flask import Blueprint, render_template, request
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.sql import and_
 from flaskext.htmlbuilder import html as H
 
 import hwdb.model as M
@@ -50,3 +51,8 @@ def attributes():
 def units():
     units = M.db_session.query(M.Unit).order_by('name')
     return render_template('units.html', units=units)
+
+@bp.route("/combinations")
+def combinations():
+    root_parts = M.db_session.query(M.Part).filter(and_(M.Part.content_map!=None, M.Part.container_map==None))
+    return render_template('combinations.html', root_parts=root_parts)

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Combinations</h1>
+    <ul>
+    {% for root_part in root_parts %}
+    <li>
+      {{ root_part.parent_part.name }}:
+      <a href="/parts?id={{root_part.id}}">{{ root_part.name }}</a>
+      <ul>
+        {% for content_map in root_part.content_map %}
+        <li>
+          {{content_map.content_part.parent_part.name}}: <a href="/parts?id={{content_map.content_part.id}}">{{ content_map.content_part.name }}</a>
+
+          <ul>
+            {% for content_map_inner in content_map.content_part.content_map %}
+            <li>
+              {{content_map_inner.content_part.parent_part.name }}:
+              <a href="/parts?id={{content_map_inner.content_part.id}}">{{ content_map_inner.content_part.name }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+
+    </ul>
+  </div>
+{% endblock %}
