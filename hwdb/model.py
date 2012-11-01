@@ -159,5 +159,11 @@ def init_scoped_session(engine):
     db_session = scoped_session(Session)
 
 
+def init_session(engine):
+    Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    global db_session
+    db_session = Session()
+
+
 def get_model_classes():
     return _model_classes
