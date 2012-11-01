@@ -1,6 +1,11 @@
+python-packages:
 Flask
 Flask-Admin
 SQLAlchemy
 requests
 Flask-HTMLBuilder
 sadisplay
+argparse
+
+programs:
+dot (for image conversion)
