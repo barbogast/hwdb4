@@ -4,3 +4,4 @@ SQLAlchemy
 requests
 Flask-HTMLBuilder
 sadisplay
+nose
