@@ -18,6 +18,8 @@ Open questions:
    For example: casing_size=>(mini_tower, Midi_tower, big_tower)
  * Does Parts inherit the connections to Attributes and Attribute Types from its
    parents?
+ * How should be stored, that Motherboard xyz has one cpu socket 1155 (which
+   support Standard Socket 1155), 5 PCIe x16-Slots (which support PCIe x16), 5x Audio, ...?
 """
 
 import re
