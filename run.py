@@ -76,7 +76,7 @@ def reset_db(args):
 
     M.db_session.commit()
     M.db_session.close()
-    print 'done'
+    print 'Creation of db was successful'
     _make_ER()
 
 
@@ -94,7 +94,7 @@ def _make_ER():
     try:
         subprocess.check_call("dot -Tpng %s > %s" % (dot_filename, png_filename), shell=True)
     except subprocess.CalledProcessError:
-        print 'Error: Conversion of dot file %r to png failed. Maybe the program "dot" is missing?' % dot_filename
+        print 'Info: Conversion of dot file %r to png failed. Maybe the program "dot" (Graphviz) is missing?' % dot_filename
     else:
         os.remove(dot_filename)
         print 'Written ER-diagram to file %r' % png_filename
