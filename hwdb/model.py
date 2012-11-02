@@ -65,6 +65,7 @@ class Unit(_DisplayNameMixin, Base):
     name = Column(String, nullable=False, unique=True)
     note = Column(String, nullable=True, unique=False)
 
+
 class Part(_DisplayNameMixin, Base):
     """
     A Part represents a hardware part or an IT standard.
@@ -89,6 +90,7 @@ class Part(_DisplayNameMixin, Base):
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
     is_standard = Column(Boolean)
+
 
 class AttrType(_DisplayNameMixin, Base):
     """
@@ -127,6 +129,7 @@ class PartAttrTypeMap(Base):
     def __unicode__(self):
         return '%s - %s' % (self.part.name, self.attr_type.name)
 
+
 class PartMap(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
@@ -134,13 +137,13 @@ class PartMap(Base):
     TODO: Position and occurrence rule each other out.
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
-
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     container_part = relationship(Part, primaryjoin='Part.id==PartMap.container_part_id', backref='content_maps')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     content_part = relationship(Part, primaryjoin='Part.id==PartMap.content_part_id', backref='container_maps')
     occurrence = Column(Integer, nullable=False, server_default='1')
     position = Column(Integer)
+
 
 class Attr(Base):
     """
