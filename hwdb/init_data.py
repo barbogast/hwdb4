@@ -68,30 +68,34 @@ def get_initial_objects():
     at_casing_size = M.AttrType.init(name='Size', unit=u_text, parts=[p_casing], note='Minitower, miditower, bigtower')
     at_vendor_hex = M.AttrType.init(name='Vendor hex', unit=u_hex, parts=[p_ram])
     at_version = M.AttrType.init(name='Version', unit=u_text, parts=[p_pentium4])
+    return locals()
 
-    M.db_session.add_all(locals().values())
-    M.db_session.flush()
 
-    p_hpd530 = M.Part(name='HP d530 CMT(DF368A)', parent_part=p_desktop)
-    a_hpd530_a_hp = M.Attr.init(part=p_hpd530, value='Hewlett-Packard', attr_type=at_vendor)
-    a_hpd530_a_serial = M.Attr.init(part=p_hpd530, attr_type=at_serial, value='CZC4301WB9')
+def get_objects_computer_BA(o):
+    p_hpd530 = M.Part(name='HP d530 CMT(DF368A)', parent_part=o['p_desktop'])
+    a_hpd530_a_hp = M.Attr.init(part=p_hpd530, value='Hewlett-Packard', attr_type=o['at_vendor'])
+    a_hpd530_a_serial = M.Attr.init(part=p_hpd530, attr_type=o['at_serial'], value='CZC4301WB9')
 
-    p_mini_tower = M.Part(name='Anonymous Mini Tower', parent_part=p_casing)
-    a_mini_tower_vendor = M.Attr.init(part=p_mini_tower, attr_type=at_vendor, value='Hewlett-Packard')
-    a_mini_tower_casing_size = M.Attr.init(part=p_mini_tower, attr_type=at_casing_size, value='Minitower')
+    p_mini_tower = M.Part(name='Anonymous Mini Tower', parent_part=o['p_casing'])
+    a_mini_tower_vendor = M.Attr.init(part=p_mini_tower, attr_type=o['at_vendor'], value='Hewlett-Packard')
+    a_mini_tower_casing_size = M.Attr.init(part=p_mini_tower, attr_type=o['at_casing_size'], value='Minitower')
 
-    p_hpmboard = M.Part(name='085Ch', parent_part=p_motherboard)
-    a_hpmboard_a_hp = M.Attr.init(part=p_hpmboard, attr_type=at_vendor, value='Hewlett-Packard')
-    a_hpmboard_a_serial = M.Attr.init(part=p_hpmboard, attr_type=at_serial, value='CZC4301WB9')
+    p_hpmboard = M.Part(name='085Ch', parent_part=o['p_motherboard'])
+    a_hpmboard_a_hp = M.Attr.init(part=p_hpmboard, attr_type=o['at_vendor'], value='Hewlett-Packard')
+    a_hpmboard_a_serial = M.Attr.init(part=p_hpmboard, attr_type=o['at_serial'], value='CZC4301WB9')
 
-    p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=p_pentium4)
-    a_hp_pentium4_vendor = M.Attr.init(part=p_hp_pentium4, attr_type=at_vendor, value='Intel Corp.')
-    a_hp_pentium4_version = M.Attr.init(part=p_hp_pentium4, attr_type=at_version, value='15.2.9')
-    a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=at_frequency, value='2800000000')
-    a_hp_pentium4_width = M.Attr.init(part=p_hp_pentium4, attr_type=at_cpuwidth, value='32') # TODO: this should be an extra Part (is_standard=True)
+    p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'])
+    a_hp_pentium4_vendor = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_vendor'], value='Intel Corp.')
+    a_hp_pentium4_version = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_version'], value='15.2.9')
+    a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_frequency'], value='2800000000')
+    a_hp_pentium4_width = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_cpuwidth'], value='32') # TODO: this should be an extra Part (is_standard=True)
 
     pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
     pm_minitower_hpmboard = M.PartMap(container_part=p_mini_tower, content_part=p_hpmboard)
     pm_hpmboard_hp_pentium4 = M.PartMap(container_part=p_hpmboard, content_part=p_hp_pentium4)
 
-    return locals().values()
+    obj = locals()
+    # Remove argument
+    del(obj['o'])
+
+    return obj

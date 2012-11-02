@@ -16,7 +16,7 @@ import sadisplay
 import hwdb.model as M
 from hwdb import ui
 from hwdb import wikipedia
-from hwdb.init_data import get_initial_objects
+from hwdb import init_data
 
 
 filepath = 'test.db'
@@ -60,9 +60,13 @@ def reset_db(args):
     print 'Creating db...'
     M.create_all(engine)
     M.init_scoped_session(engine)
-    obj_list = get_initial_objects()
 
-    M.db_session.add_all(obj_list)
+    obj_dict = init_data.get_initial_objects()
+    M.db_session.add_all(obj_dict.values())
+    M.db_session.flush()
+
+    obj_dict = init_data.get_objects_computer_BA(obj_dict)
+    M.db_session.add_all(obj_dict.values())
     M.db_session.flush()
 
     wikitext = wikipedia.fetch_from_wikipedia()
