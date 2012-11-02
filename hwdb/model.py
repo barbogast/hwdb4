@@ -108,6 +108,10 @@ class AttrType(_DisplayNameMixin, Base):
 
     @classmethod
     def init(cls, parts, **kwargs):
+        """
+        Creates + returns an AttrType object with a PartAttrTypeMap for every
+        given Part.
+        """
         attr_type = cls(**kwargs)
         maps = [PartAttrTypeMap(part=part, attr_type=attr_type) for part in parts]
 
@@ -162,6 +166,10 @@ class Attr(Base):
 
     @classmethod
     def init(cls, attr_type, part, **kwargs):
+        """
+        Creates + returns an Attr object. The PartAttrTypeMap is looked up with
+        the given AttrType and Part in the parents of the Part.
+        """
         mapping = search_PartAttrTypeMap(attr_type, part.parent_part)
         if not mapping:
             raise Exception(('No PartAttrTypeMap is found for attr_type '
