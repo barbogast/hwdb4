@@ -3,7 +3,7 @@ from hwdb import model as M
 
 def get_initial_objects():
     u_mm = M.Unit(name='Milimeter')
-    u_hz = M.Unit(name='Hertz')
+    u_mhz = M.Unit(name='Megahertz', note='We dont use the minimal unit Hertz because processors are in the mhz area')
     u_date = M.Unit(name='Date')
     u_year = M.Unit(name='Year')
     u_count = M.Unit(name='Count')
@@ -43,10 +43,10 @@ def get_initial_objects():
 
     at_pin_count = M.AttrType.init(name='Pin count', unit=u_count, parts=[p_socket])
     at_pin_count = M.AttrType.init(name='Pin pitch', unit=u_mm, parts=[p_socket])
-    at_bus_speed = M.AttrType.init(name='Bus speed', unit=u_hz, from_to=True, parts=[p_socket])
+    at_bus_speed = M.AttrType.init(name='Bus speed', unit=u_mhz, from_to=True, parts=[p_socket])
 
     # CPU
-    at_frequency = M.AttrType.init(name='Frequency', unit=u_hz, parts=[p_cpu])
+    at_frequency = M.AttrType.init(name='Frequency', unit=u_mhz, parts=[p_cpu])
     at_l2cache = M.AttrType.init(name='L2 cache', unit=u_byte, parts=[p_cpu])
     at_front_side_bus = M.AttrType.init(name='Front side bus', unit=u_transfer, parts=[p_cpu])
     at_clock_multiplier = M.AttrType.init(name='Clock multiplier', unit=u_factor, parts=[p_cpu])
@@ -87,8 +87,8 @@ def get_objects_computer_BA(o):
     p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'])
     a_hp_pentium4_vendor = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_vendor'], value='Intel Corp.')
     a_hp_pentium4_version = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_version'], value='15.2.9')
-    a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_frequency'], value='2800000000')
     a_hp_pentium4_width = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_cpuwidth'], value='32') # TODO: this should be an extra Part (is_standard=True)
+    a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_frequency'], value='2800')
 
     pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
     pm_minitower_hpmboard = M.PartMap(container_part=p_mini_tower, content_part=p_hpmboard)
