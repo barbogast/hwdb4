@@ -81,7 +81,7 @@ class Part(_DisplayNameMixin, Base):
     parent relation is used to group standards. For example the standard 'ATX'
     could have the parent 'Casing standard'. To indicate that a Part supports a
     standard the Part should `contain` the standard like it contains other Parts.
-    attr_type_maps are a n:m relation to AttrTypes using PartAttrTypeMapping to
+    attr_type_maps are a n:m relation to AttrTypes using PartAttrTypeMap to
     mark which Attr Types are allowed for this Part
     """
     parent_part_id = Column(Integer, ForeignKey('part.id'))
@@ -107,13 +107,13 @@ class AttrType(_DisplayNameMixin, Base):
     @classmethod
     def init(cls, parts, **kwargs):
         attr_type = cls(**kwargs)
-        maps = [PartAttrTypeMapping(part=part, attr_type=attr_type) for part in parts]
+        maps = [PartAttrTypeMap(part=part, attr_type=attr_type) for part in parts]
 
         attr_type.part_maps = maps
         return attr_type
 
 
-class PartAttrTypeMapping(Base):
+class PartAttrTypeMap(Base):
     """
     Relates AttrTypes with Parts to show which attribute types are allowed for a
     Part
@@ -127,7 +127,7 @@ class PartAttrTypeMapping(Base):
     def __unicode__(self):
         return '%s - %s' % (self.part.name, self.attr_type.name)
 
-class PartMapping(Base):
+class PartMap(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
     other Parts. For examples see docstring of Part.
@@ -136,9 +136,9 @@ class PartMapping(Base):
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
 
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartMapping.container_part_id', backref='content_map')
+    container_part = relationship(Part, primaryjoin='Part.id==PartMap.container_part_id', backref='content_map')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    content_part = relationship(Part, primaryjoin='Part.id==PartMapping.content_part_id', backref='container_map')
+    content_part = relationship(Part, primaryjoin='Part.id==PartMap.content_part_id', backref='container_map')
     occurrence = Column(Integer, nullable=False, server_default='1')
     position = Column(Integer)
 
@@ -149,8 +149,8 @@ class Attr(Base):
     TODO: describe value_to, value_from
     """
     __table_args__ = (UniqueConstraint('part_attr_type_mapping_id', 'part_id'),)
-    part_attr_type_mapping_id = Column(Integer, ForeignKey(PartAttrTypeMapping.id), nullable=False)
-    part_attr_type_mapping = relationship(PartAttrTypeMapping, backref='attrs')
+    part_attr_type_mapping_id = Column(Integer, ForeignKey(PartAttrTypeMap.id), nullable=False)
+    part_attr_type_mapping = relationship(PartAttrTypeMap, backref='attrs')
     part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     part = relationship(Part, backref='attrs')
     value = Column(String, nullable=True)
@@ -159,9 +159,9 @@ class Attr(Base):
 
     @classmethod
     def init(cls, attr_type, part, **kwargs):
-        mapping = search_PartAttrTypeMapping(attr_type, part.parent_part)
+        mapping = search_PartAttrTypeMap(attr_type, part.parent_part)
         if not mapping:
-            raise Exception(('No PartAttrTypeMapping is found for attr_type '
+            raise Exception(('No PartAttrTypeMap is found for attr_type '
                              '"%s" and part "%s"' % (attr_type.__unicode__(),
                                                      part.__unicode__())))
 
@@ -200,19 +200,19 @@ def get_model_classes():
     return _model_classes
 
 
-def search_PartAttrTypeMapping(attr_type, part):
+def search_PartAttrTypeMap(attr_type, part):
     """
-    Searches a part and its parent recursivly for an PartAttrTypeMapping
+    Searches a part and its parent recursivly for an PartAttrTypeMap
     with the given attr_type.
 
-    :return: PartAttrTypeMapping object or None"""
-    mapping = db_session.query(PartAttrTypeMapping).\
-        filter(and_(PartAttrTypeMapping.attr_type==attr_type, PartAttrTypeMapping.part==part)).first()
+    :return: PartAttrTypeMap object or None"""
+    mapping = db_session.query(PartAttrTypeMap).\
+        filter(and_(PartAttrTypeMap.attr_type==attr_type, PartAttrTypeMap.part==part)).first()
 
     if mapping:
         return mapping
     elif part.parent_part:
-        return search_PartAttrTypeMapping(attr_type, part.parent_part)
+        return search_PartAttrTypeMap(attr_type, part.parent_part)
     else:
         return None
 

@@ -90,8 +90,8 @@ def get_initial_objects():
     a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=at_frequency, value='2800000000')
     a_hp_pentium4_width = M.Attr.init(part=p_hp_pentium4, attr_type=at_cpuwidth, value='32') # TODO: this should be an extra Part (is_standard=True)
 
-    pm_hpd530_minitower = M.PartMapping(container_part=p_hpd530, content_part=p_mini_tower)
-    pm_minitower_hpmboard = M.PartMapping(container_part=p_mini_tower, content_part=p_hpmboard)
-    pm_hpmboard_hp_pentium4 = M.PartMapping(container_part=p_hpmboard, content_part=p_hp_pentium4)
+    pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
+    pm_minitower_hpmboard = M.PartMap(container_part=p_mini_tower, content_part=p_hpmboard)
+    pm_hpmboard_hp_pentium4 = M.PartMap(container_part=p_hpmboard, content_part=p_hp_pentium4)
 
     return locals().values()
