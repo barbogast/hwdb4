@@ -36,7 +36,7 @@ def init_admin(app):
         admin.add_view(ModelView(klass, M.db_session))
 
 
-def run_ui():
+def run_ui(args):
     engine = M.get_engine(dbpath, debug)
     M.init_scoped_session(engine)
     app = Flask(__name__, static_folder='hwdb/static', template_folder='hwdb/templates')
@@ -47,12 +47,13 @@ def run_ui():
     app.run()
 
 
-def reset_db():
+def reset_db(args):
     if os.path.exists(filepath):
-        answer = raw_input('Really delete file %r (y,N)? ' % filepath)
-        if answer != 'y':
-            print 'Abort'
-            return
+        if not args.force:
+            answer = raw_input('Really delete file %r (y,N)? ' % filepath)
+            if answer != 'y':
+                print 'Abort'
+                return
         os.remove(filepath)
 
     engine = M.get_engine(dbpath, debug)
@@ -102,8 +103,9 @@ COMMANDS = {
 
 
 parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('command', choices=COMMANDS.keys())
+parser.add_argument('command', choices=COMMANDS.keys(), help='Run one of the commands')
+parser.add_argument('--force', action="store_true", help='Force yes on user input for the given command')
 
 args = parser.parse_args()
 
-COMMANDS[args.command]()
+COMMANDS[args.command](args)
