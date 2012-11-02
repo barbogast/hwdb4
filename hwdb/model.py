@@ -2,11 +2,6 @@
 Author: Benjamin Arbogast
 
 Open questions:
- * at the moment it is not possible to define which attribute_types are allowed
-   for which part. Should this be possible? This way, a admin could restrict the
-   attributes which can be set for a given part. This could be implemented as
-   a mapping table from Part to AttrType. Then each part could have the attributes which
-   are associated with its parent part. This would replace the FK from AttrType to Part
  * saving single values and ranges in table Attr:
     - store single values in a "value"-column and min/max in extra columns
     - store single values in min. fill max only for ranges (problem: ranges with max=unlimited)
@@ -21,12 +16,15 @@ Open questions:
    the category by hardware type, not by vendor. Maybe an extra table? Or with the N:M-Mapping of Parts?
  * Enums: Should AttrTypes be able to store allowed values?
    For example: casing_size=>(mini_tower, Midi_tower, big_tower)
+ * Does Parts inherit the connections to Attributes and Attribute Types from its
+   parents?
 """
 
 import re
 import os
 
-from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint, Boolean, Float, create_engine
+from sqlalchemy import (Column, Integer, String, ForeignKey, UniqueConstraint,
+                        Boolean, Float, Table, create_engine, and_)
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
@@ -83,6 +81,8 @@ class Part(_DisplayNameMixin, Base):
     parent relation is used to group standards. For example the standard 'ATX'
     could have the parent 'Casing standard'. To indicate that a Part supports a
     standard the Part should `contain` the standard like it contains other Parts.
+    attr_type_maps are a n:m relation to AttrTypes using PartAttrTypeMapping to
+    mark which Attr Types are allowed for this Part
     """
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
@@ -97,16 +97,35 @@ class AttrType(_DisplayNameMixin, Base):
     Examples are 'Bus speed', 'Frequency', 'Release date'.
     TODO: describe the connection with part and from_to/multi_value
     """
-    __table_args__ = (UniqueConstraint('name', 'part_id'),)
     name = Column(String, nullable=False, unique=False)
     note = Column(String, nullable=True, unique=False)
     from_to = Column(Boolean)
     multi_value = Column(Boolean)
-    # Reference to a Part to declare that this AttrType should only be used for the given Part
-    part_id = Column(Integer, ForeignKey(Part.id), nullable=True)
-    part = relationship(Part, backref='attr_types')
     unit_id = Column(Integer, ForeignKey(Unit.id), nullable=False)
     unit = relationship(Unit, backref='attr_types')
+
+    @classmethod
+    def init(cls, parts, **kwargs):
+        attr_type = cls(**kwargs)
+        maps = [PartAttrTypeMapping(part=part, attr_type=attr_type) for part in parts]
+
+        attr_type.part_maps = maps
+        return attr_type
+
+
+class PartAttrTypeMapping(Base):
+    """
+    Relates AttrTypes with Parts to show which attribute types are allowed for a
+    Part
+    """
+    __table_args__ = (UniqueConstraint('part_id', 'attr_type_id'),)
+    part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    part = relationship(Part, backref='attr_type_maps')
+    attr_type_id = Column(Integer, ForeignKey(AttrType.id), nullable=False)
+    attr_type = relationship(AttrType, backref='part_maps')
+
+    def __unicode__(self):
+        return '%s - %s' % (self.part.name, self.attr_type.name)
 
 class PartMapping(Base):
     """
@@ -129,14 +148,26 @@ class Attr(Base):
     AttrType and a Part and contains the actual value of the attribute.
     TODO: describe value_to, value_from
     """
-    __table_args__ = (UniqueConstraint('attr_type_id', 'part_id'),)
-    attr_type_id = Column(Integer, ForeignKey(AttrType.id), nullable=False)
-    attr_type = relationship(AttrType, backref='attrs')
+    __table_args__ = (UniqueConstraint('part_attr_type_mapping_id', 'part_id'),)
+    part_attr_type_mapping_id = Column(Integer, ForeignKey(PartAttrTypeMapping.id), nullable=False)
+    part_attr_type_mapping = relationship(PartAttrTypeMapping, backref='attrs')
     part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     part = relationship(Part, backref='attrs')
     value = Column(String, nullable=True)
     value_from = Column(Float, nullable=True)
     value_to = Column(Float, nullable=True)
+
+    @classmethod
+    def init(cls, attr_type, part, **kwargs):
+        mapping = search_PartAttrTypeMapping(attr_type, part.parent_part)
+        if not mapping:
+            raise Exception(('No PartAttrTypeMapping is found for attr_type '
+                             '"%s" and part "%s"' % (attr_type.__unicode__(),
+                                                     part.__unicode__())))
+
+        attr = cls(part_attr_type_mapping=mapping, part=part, **kwargs)
+        return attr
+
 
 class MultiAttr(Base):
     attr_id = Column(Integer, ForeignKey(Attr.id), nullable=False)
@@ -167,3 +198,29 @@ def init_session(engine):
 
 def get_model_classes():
     return _model_classes
+
+
+def search_PartAttrTypeMapping(attr_type, part):
+    """
+    Searches a part and its parent recursivly for an PartAttrTypeMapping
+    with the given attr_type.
+
+    :return: PartAttrTypeMapping object or None"""
+    mapping = db_session.query(PartAttrTypeMapping).\
+        filter(and_(PartAttrTypeMapping.attr_type==attr_type, PartAttrTypeMapping.part==part)).first()
+
+    if mapping:
+        return mapping
+    elif part.parent_part:
+        return search_PartAttrTypeMapping(attr_type, part.parent_part)
+    else:
+        return None
+
+
+def get_attr_types_without_part():
+    """
+    Returns a list AttrTypes which are not associated with a Part and therefore not
+    usable
+    """
+    # TODO
+    pass

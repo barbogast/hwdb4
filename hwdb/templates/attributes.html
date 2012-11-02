@@ -18,7 +18,11 @@
         <tr>
           <td>{{attr.name}}</td>
           <td><a href="/units?id={{attr.unit.id}}">{{attr.unit.name}}</a></td>
-          <td><a href="/parts?id={{attr.part.id}}">{{attr.part.name}}</a></td>
+          <td>
+            {% for part_map in attr.part_maps %}
+              <a href="/parts?id={{part_map.part.id}}">{{part_map.part.name}}</a>{{ ',' if not loop.last else '' }}
+            {% endfor %}
+          </td>
           <td>{{'<i class="icon-ok"></i>'|safe if attr.from_to else ''}}</td>
           <td>{{'<i class="icon-ok"></i>'|safe if attr.multi_value else ''}}</td>
           <td>{{attr.note if attr.note else ''}}</td>

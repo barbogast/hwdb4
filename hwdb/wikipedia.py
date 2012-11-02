@@ -187,7 +187,7 @@ def replace_html_chars(table_row_dicts):
 
 def _add_attr(part, attr_name, dict_key, d):
     attr_type = M.db_session.query(M.AttrType).filter_by(name=attr_name).one()
-    attr = M.Attr(attr_type=attr_type, part=part, value=d[dict_key])
+    attr = M.Attr.init(attr_type=attr_type, part=part, value=d[dict_key])
     M.db_session.add(attr)
 
 
