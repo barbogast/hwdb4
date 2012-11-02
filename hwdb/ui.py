@@ -54,5 +54,5 @@ def units():
 
 @bp.route("/combinations")
 def combinations():
-    root_parts = M.db_session.query(M.Part).filter(and_(M.Part.content_map!=None, M.Part.container_map==None))
+    root_parts = M.db_session.query(M.Part).filter(and_(M.Part.content_maps!=None, M.Part.container_maps==None))
     return render_template('combinations.html', root_parts=root_parts)

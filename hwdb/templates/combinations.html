@@ -8,12 +8,12 @@
       {{ root_part.parent_part.name }}:
       <a href="/parts?id={{root_part.id}}">{{ root_part.name }}</a>
       <ul>
-        {% for content_map in root_part.content_map %}
+        {% for content_map in root_part.content_maps %}
         <li>
           {{content_map.content_part.parent_part.name}}: <a href="/parts?id={{content_map.content_part.id}}">{{ content_map.content_part.name }}</a>
 
           <ul>
-            {% for content_map_inner in content_map.content_part.content_map %}
+            {% for content_map_inner in content_map.content_part.content_maps %}
             <li>
               {{content_map_inner.content_part.parent_part.name }}:
               <a href="/parts?id={{content_map_inner.content_part.id}}">{{ content_map_inner.content_part.name }}</a>
