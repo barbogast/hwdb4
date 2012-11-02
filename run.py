@@ -69,10 +69,11 @@ def reset_db(args):
     M.db_session.add_all(obj_dict.values())
     M.db_session.flush()
 
-    wikitext = wikipedia.fetch_from_wikipedia()
-    all_rows = wikipedia.get_all_rows(wikitext)
-    for d in all_rows:
-        wikipedia.insert_record(d)
+    if args.wikipedia:
+        wikitext = wikipedia.fetch_from_wikipedia()
+        all_rows = wikipedia.get_all_rows(wikitext)
+        for d in all_rows:
+            wikipedia.insert_record(d)
 
     M.db_session.commit()
     M.db_session.close()
@@ -109,6 +110,7 @@ COMMANDS = {
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('command', choices=COMMANDS.keys(), help='Run one of the commands')
 parser.add_argument('--force', action="store_true", help='Force yes on user input for the given command')
+parser.add_argument('--wikipedia', action="store_true", help='Parse Pentium 4 tables from Wikipedia')
 
 args = parser.parse_args()
 
