@@ -1,5 +1,10 @@
 *.pyc
-*.wpr # wingide
-*.wpu # wingide
 *.db
 *.bak
+
+# Trial
+_trial_temp
+
+# WingIDE
+*.wpr
+*.wpu
