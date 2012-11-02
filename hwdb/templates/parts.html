@@ -4,11 +4,26 @@
     <h1>Parts</h1>
     <ul>
     {% for root_part in root_parts %}
-      <li><a href="/parts?id={{root_part.id}}">{{ root_part.name }}</a>
+      <li>
+        <a href="/parts?id={{root_part.id}}">{{ root_part.name }}</a>
         <ul>
           {% for child_part in root_part.children %}
           <li>
             <a href="/parts?id={{child_part.id}}">{{ child_part.name }}</a>
+            <ul>
+              {% for child_child_part in child_part.children %}
+              <li>
+                <a href="/parts?id={{child_child_part.id}}">{{ child_child_part.name }}</a>
+                <ul>
+                  {% for child_child_child_part in child_child_part.children %}
+                  <li>
+                    <a href="/parts?id={{child_child_child_part.id}}">{{ child_child_child_part.name }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </li>
+              {% endfor %}
+            </ul>
           </li>
           {% endfor %}
         </ul>
