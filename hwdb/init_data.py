@@ -2,6 +2,7 @@ from hwdb import model as M
 
 
 def get_initial_objects():
+    u_nm = M.Unit(name='Nanometer')
     u_mm = M.Unit(name='Milimeter')
     u_mhz = M.Unit(name='Megahertz', note='We dont use the minimal unit Hertz because processors are in the mhz area')
     u_date = M.Unit(name='Date')
@@ -21,6 +22,7 @@ def get_initial_objects():
     # Parent parts
     p_socket = M.Part(name='CPU-Socket')
     p_cpu = M.Part(name='CPU')
+    p_memory_controller = M.Part(name='Memory controller', note='Seems to be integrated into a cpu')
     p_pentium = M.Part(name='Pentium', parent_part=p_cpu)
     p_pentium4 = M.Part(name='Pentium 4', parent_part=p_pentium)
     p_computer = M.Part(name='Computer', note='Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)')
@@ -33,6 +35,7 @@ def get_initial_objects():
     p_sdram = M.Part(name='SD-RAM', parent_part=p_ram)
     p_ddr = M.Part(name='DDR RAM', parent_part=p_sdram)
     p_flash = M.Part(name='Flash memory', parent_part=p_ram)
+    p_power_supply = M.Part(name='Power supply')
 
     # Standards
     s_cpu_standard = M.Part(name='CPU Instruction set', is_standard=True)
@@ -68,6 +71,7 @@ def get_initial_objects():
     at_release_price = M.AttrType.init(name='Release price', unit=u_dollar, parts=[p_cpu])
     at_part_number = M.AttrType.init(name='Part number', unit=u_text, multi_value=True, parts=[p_cpu])
     at_url = M.AttrType.init(name='URL', unit=u_url, parts=[p_cpu])
+    at_number_cores = M.AttrType.init(name='Number of cores', unit=u_count, parts=[p_cpu])
 
     # PC of BA
     at_modified = M.AttrType.init(name='Modified', unit=u_boolean, parts=[p_computer], note='Was this computer modified after initial delivery?')
@@ -79,6 +83,17 @@ def get_initial_objects():
     at_casing_size = M.AttrType.init(name='Size', unit=u_text, parts=[p_casing], note='Minitower, miditower, bigtower')
     at_vendor_hex = M.AttrType.init(name='Vendor hex', unit=u_hex, parts=[p_ram])
     at_version = M.AttrType.init(name='Version', unit=u_text, parts=[p_pentium4])
+
+    # PC alt
+    at_color = M.AttrType.init(name='Color', unit=u_text, parts=[p_casing])
+    at_width = M.AttrType.init(name='Width', unit=u_mm, parts=[p_casing])
+    at_length = M.AttrType.init(name='Length', unit=u_mm, parts=[p_casing])
+    at_height = M.AttrType.init(name='Height', unit=u_mm, parts=[p_casing])
+    at_power = M.AttrType.init(name='Power', unit=u_watt, parts=[p_power_supply], note='electric power (output? input?)')
+    at_memory_channels = M.AttrType.init(name='Memory channels', unit=u_count, parts=[p_memory_controller])
+    at_cmos_average_half_pitch = M.AttrType(name='Average half-pitch of a memory cell', unit=u_count, note='not yet connected ;-)')
+    at_max_power_consumtion = M.AttrType.init(name='Maximal power consumption', unit=u_watt, parts=[p_cpu])
+    # TODO: Bauform, GPU-Takt, Prozessorkern (Sandy bridge)
     return locals()
 
 
