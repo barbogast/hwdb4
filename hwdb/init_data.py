@@ -34,6 +34,18 @@ def get_initial_objects():
     p_ddr = M.Part(name='DDR RAM', parent_part=p_sdram)
     p_flash = M.Part(name='Flash memory', parent_part=p_ram)
 
+    # Standards
+    s_cpu_standard = M.Part(name='CPU Instruction set', is_standard=True)
+    s_cpu_sse4 = M.Part(name='SSE 4.x', parent_part=s_cpu_standard, is_standard=True)
+    s_cpu_32bit = M.Part(name='32bit', parent_part=s_cpu_standard, is_standard=True)
+    s_cpu_64bit = M.Part(name='64bit', parent_part=s_cpu_standard, is_standard=True)
+    s_cpu_xd_bit = M.Part(name='XD bit', parent_part=s_cpu_standard, is_standard=True)
+    s_cpu_smart_cache = M.Part(name='Smart Cache', parent_part=s_cpu_standard, is_standard=True)
+    s_ram_standards = M.Part(name='RAM Standards', is_standard=True)
+    s_ddr3 = M.Part(name='DDR3', parent_part=s_ram_standards, is_standard=True)
+    s_socket = M.Part(name='CPU Socket Standard', is_standard=True)
+    s_socket_1155 = M.Part(name='Socket 1155', parent_part=s_socket, is_standard=True)
+
 
     at_name = M.AttrType(name='Name', unit=u_text)
 
@@ -61,7 +73,6 @@ def get_initial_objects():
     at_modified = M.AttrType.init(name='Modified', unit=u_boolean, parts=[p_computer], note='Was this computer modified after initial delivery?')
     at_vendor = M.AttrType.init(name='Vendor', unit=u_text, parts=[p_computer, p_motherboard, p_casing, p_cpu])
     at_serial = M.AttrType.init(name='Serial number', unit=u_text, parts=[p_computer, p_motherboard])
-    at_cpuwidth = M.AttrType.init(name='Width', unit=u_text, parts=[p_cpu, p_sdram], note='32 bit oder 64 bit')
     at_l1cache = M.AttrType.init(name='L1 cache', unit=u_byte, parts=[p_cpu])
     at_hyperthreading = M.AttrType.init(name='Hyperthreading', unit=u_boolean, parts=[p_cpu])
     at_ram_size = M.AttrType.init(name='Size', unit=u_byte, parts=[p_ram])
@@ -87,8 +98,8 @@ def get_objects_computer_BA(o):
     p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'])
     a_hp_pentium4_vendor = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_vendor'], value='Intel Corp.')
     a_hp_pentium4_version = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_version'], value='15.2.9')
-    a_hp_pentium4_width = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_cpuwidth'], value='32') # TODO: this should be an extra Part (is_standard=True)
     a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_frequency'], value='2800')
+    o['s_cpu_32bit'].children.append(p_hp_pentium4)
 
     pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
     pm_minitower_hpmboard = M.PartMap(container_part=p_mini_tower, content_part=p_hpmboard)
