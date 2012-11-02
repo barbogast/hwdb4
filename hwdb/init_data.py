@@ -125,3 +125,45 @@ def get_objects_computer_BA(o):
     del(obj['o'])
 
     return obj
+
+
+def get_objects_computer_alt(o):
+    p_m1935 = M.Part(name='Acer Aspire M1935', parent_part=o['p_desktop'])
+    p_m1935_a_hp = M.Attr.init(part=p_m1935, value='Acer', attr_type=o['at_vendor'])
+
+    p_mini_tower = M.Part(name='Anonymous Tower', parent_part=o['p_casing'])
+    a_mini_tower_width = M.Attr.init(part=p_mini_tower, attr_type=o['at_width'], value='180')
+    a_mini_tower_length = M.Attr.init(part=p_mini_tower, attr_type=o['at_length'], value='379')
+    a_mini_tower_height = M.Attr.init(part=p_mini_tower, attr_type=o['at_height'], value='402')
+    a_mini_tower_color = M.Attr.init(part=p_mini_tower, attr_type=o['at_color'], value='black')
+
+    p_power_supply = M.Part(name='Anonymous Power Source', parent_part=o['p_power_supply'])
+    a_power_supply_at_power = M.Attr.init(part=p_power_supply, attr_type=o['at_power'], value='250')
+
+    p_cpu = M.Part(name='Intel Pentium Processor G645 (2,9 GHz)', parent_part=o['p_cpu'])
+    a_cpu_number_cores = M.Attr.init(part=p_cpu, attr_type=o['at_number_cores'], value='2')
+    a_cpu_number_cores = M.Attr.init(part=p_cpu, attr_type=o['at_frequency'], value='2900')
+    a_cpu_at_front_side_bus = M.Attr.init(part=p_cpu, attr_type=o['at_front_side_bus'], value='5000')
+    a_cpu_max_power = M.Attr.init(part=p_cpu, attr_type=o['at_max_power_consumtion'], value='65')
+
+    p_mem_contr = M.Part(name='Anonymous Memory Controller', parent_part=o['p_memory_controller'])
+    p_mem_contr_memory_channels = M.Attr.init(part=p_mem_contr, attr_type=o['at_memory_channels'], value='2')
+
+    p_motherboard = M.Part(name='Anonymous Motherboard', parent_part=o['p_motherboard'])
+    # todo: anschluesse, socket
+
+    pm_m1935_mini_tower = M.PartMap(container_part=p_m1935, content_part=p_mini_tower)
+    pm_mini_tower_power_supply = M.PartMap(container_part=p_mini_tower, content_part=p_power_supply)
+    pm_mini_tower_motherboard = M.PartMap(container_part=p_mini_tower, content_part=p_motherboard)
+    pm_motherboard_cpu = M.PartMap(container_part=p_motherboard, content_part=p_cpu)
+    pm_cpu_sse4 = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_sse4'])
+    pm_cpu_64bit = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_64bit'])
+    pm_cpu_xdbit = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_xd_bit'])
+    pm_cpu_smartcache = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_smart_cache'])
+    pm_mem_contr_cpu = M.PartMap(container_part=p_cpu, content_part=p_mem_contr)
+
+    obj = locals()
+    # Remove argument
+    del(obj['o'])
+
+    return obj
