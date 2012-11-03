@@ -41,6 +41,16 @@ class _DisplayNameMixin(object):
     def __unicode__(self):
         return self.name
 
+    @classmethod
+    def search(cls, name):
+        """
+        Searches a record by the given name. If multiple records with the
+        given name are found, an Exception is raised
+        """
+        # TOOD
+        raise NotImplemented()
+
+
 def _convert_camel_to_underscore(s):
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -94,6 +104,18 @@ class Part(_DisplayNameMixin, Base):
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
     is_standard = Column(Boolean)
+
+    @classmethod
+    def init(cls, name, parent_part=None, note=None, is_standard=False, attributes=None):
+        """
+        Create a Part and return it. If attributes are given, it is expected to be a
+        dict (key=AttrType-object, value=value). For each key/value pair an Attr will
+        be created with the given AttrType object and value and associated with
+        the new Part.
+        """
+        # TODO
+        # Note: use Attr.init to create the Attr
+        raise NotImplemented()
 
 
 class AttrType(_DisplayNameMixin, Base):
