@@ -117,6 +117,13 @@ class Part(_DisplayNameMixin, Base):
         # Note: use Attr.init to create the Attr
         raise NotImplemented()
 
+    def add_content_part(self, contained_part):
+        """
+        Adds the given Part to the list of Parts contained by this Part.
+        """
+        # TODO
+        raise NotImplemented()
+
 
 class AttrType(_DisplayNameMixin, Base):
     """
