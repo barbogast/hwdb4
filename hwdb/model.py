@@ -106,16 +106,17 @@ class Part(_DisplayNameMixin, Base):
     is_standard = Column(Boolean)
 
     @classmethod
-    def init(cls, name, parent_part=None, note=None, is_standard=False, attributes=None):
+    def init(cls, attributes={}, **kwargs):
         """
-        Create a Part and return it. If attributes are given, it is expected to be a
-        dict (key=AttrType-object, value=value). For each key/value pair an Attr will
-        be created with the given AttrType object and value and associated with
-        the new Part.
+        Create a Part and return it. Attributes is expected to be a
+        dict (key=AttrType-object, value=value). For each key/value pair
+        an Attr object will be created with the given AttrType object
+        and value and associated with the new Part.
         """
-        # TODO
-        # Note: use Attr.init to create the Attr
-        raise NotImplemented()
+        part = cls(**kwargs)
+        for attr_type, value in attributes.iteritems():
+            attr = Attr.init(part=part, value=value, attr_type=attr_type)
+        return part
 
     def add_content_part(self, contained_part):
         """
