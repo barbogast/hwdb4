@@ -20,6 +20,8 @@ Open questions:
    parents?
  * How should be stored, that Motherboard xyz has one cpu socket 1155 (which
    support Standard Socket 1155), 5 PCIe x16-Slots (which support PCIe x16), 5x Audio, ...?
+ * new column: Part.anonymous (type=boolean) to store if the name of a specific
+   Part is unknown
 """
 
 import re
