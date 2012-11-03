@@ -98,22 +98,26 @@ def get_initial_objects():
 
 
 def get_objects_computer_BA(o):
-    p_hpd530 = M.Part(name='HP d530 CMT(DF368A)', parent_part=o['p_desktop'])
-    a_hpd530_a_hp = M.Attr.init(part=p_hpd530, value='Hewlett-Packard', attr_type=o['at_vendor'])
-    a_hpd530_a_serial = M.Attr.init(part=p_hpd530, attr_type=o['at_serial'], value='CZC4301WB9')
+    p_hpd530 = M.Part.init(name='HP d530 CMT(DF368A)', parent_part=o['p_desktop'], attributes={
+        o['at_vendor']: 'Hewlett-Packard',
+        o['at_serial']: 'CZC4301WB9',
+    })
 
-    p_mini_tower = M.Part(name='Anonymous Mini Tower', parent_part=o['p_casing'])
-    a_mini_tower_vendor = M.Attr.init(part=p_mini_tower, attr_type=o['at_vendor'], value='Hewlett-Packard')
-    a_mini_tower_casing_size = M.Attr.init(part=p_mini_tower, attr_type=o['at_casing_size'], value='Minitower')
+    p_mini_tower = M.Part.init(name='Anonymous Mini Tower', parent_part=o['p_casing'], attributes={
+        o['at_vendor']: 'Hewlett-Packard',
+        o['at_casing_size']: 'Minitower',
+    })
 
-    p_hpmboard = M.Part(name='085Ch', parent_part=o['p_motherboard'])
-    a_hpmboard_a_hp = M.Attr.init(part=p_hpmboard, attr_type=o['at_vendor'], value='Hewlett-Packard')
-    a_hpmboard_a_serial = M.Attr.init(part=p_hpmboard, attr_type=o['at_serial'], value='CZC4301WB9')
+    p_hpmboard = M.Part.init(name='085Ch', parent_part=o['p_motherboard'], attributes={
+        o['at_vendor']: 'Hewlett-Packard',
+        o['at_serial']: 'CZC4301WB9',
+    })
 
-    p_hp_pentium4 = M.Part(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'])
-    a_hp_pentium4_vendor = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_vendor'], value='Intel Corp.')
-    a_hp_pentium4_version = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_version'], value='15.2.9')
-    a_hp_pentium4_frequency = M.Attr.init(part=p_hp_pentium4, attr_type=o['at_frequency'], value='2800')
+    p_hp_pentium4 = M.Part.init(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'], attributes={
+        o['at_vendor']: 'Intel Corp.',
+        o['at_version']: '15.2.9',
+        o['at_frequency']: '2800',
+    })
     o['s_cpu_32bit'].children.append(p_hp_pentium4)
 
     pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
@@ -128,26 +132,31 @@ def get_objects_computer_BA(o):
 
 
 def get_objects_computer_alt(o):
-    p_m1935 = M.Part(name='Acer Aspire M1935', parent_part=o['p_desktop'])
-    p_m1935_a_hp = M.Attr.init(part=p_m1935, value='Acer', attr_type=o['at_vendor'])
+    p_m1935 = M.Part.init(name='Acer Aspire M1935', parent_part=o['p_desktop'], attributes={
+        o['at_vendor']: 'Acer',
+    })
 
-    p_mini_tower = M.Part(name='Anonymous Tower', parent_part=o['p_casing'])
-    a_mini_tower_width = M.Attr.init(part=p_mini_tower, attr_type=o['at_width'], value='180')
-    a_mini_tower_length = M.Attr.init(part=p_mini_tower, attr_type=o['at_length'], value='379')
-    a_mini_tower_height = M.Attr.init(part=p_mini_tower, attr_type=o['at_height'], value='402')
-    a_mini_tower_color = M.Attr.init(part=p_mini_tower, attr_type=o['at_color'], value='black')
+    p_mini_tower = M.Part.init(name='Anonymous Tower', parent_part=o['p_casing'], attributes={
+        o['at_width']: '180',
+        o['at_length']: '379',
+        o['at_height']: '402',
+        o['at_color']: 'black',
+    })
 
-    p_power_supply = M.Part(name='Anonymous Power Source', parent_part=o['p_power_supply'])
-    a_power_supply_at_power = M.Attr.init(part=p_power_supply, attr_type=o['at_power'], value='250')
+    p_power_supply = M.Part.init(name='Anonymous Power Source', parent_part=o['p_power_supply'], attributes={
+        o['at_power']: '250',
+    })
 
-    p_cpu = M.Part(name='Intel Pentium Processor G645 (2,9 GHz)', parent_part=o['p_cpu'])
-    a_cpu_number_cores = M.Attr.init(part=p_cpu, attr_type=o['at_number_cores'], value='2')
-    a_cpu_number_cores = M.Attr.init(part=p_cpu, attr_type=o['at_frequency'], value='2900')
-    a_cpu_at_front_side_bus = M.Attr.init(part=p_cpu, attr_type=o['at_front_side_bus'], value='5000')
-    a_cpu_max_power = M.Attr.init(part=p_cpu, attr_type=o['at_max_power_consumtion'], value='65')
+    p_cpu = M.Part.init(name='Intel Pentium Processor G645 (2,9 GHz)', parent_part=o['p_cpu'], attributes={
+        o['at_number_cores']: '2',
+        o['at_frequency']: '2900',
+        o['at_front_side_bus']: '5000',
+        o['at_max_power_consumtion']: '65',
+    })
 
-    p_mem_contr = M.Part(name='Anonymous Memory Controller', parent_part=o['p_memory_controller'])
-    p_mem_contr_memory_channels = M.Attr.init(part=p_mem_contr, attr_type=o['at_memory_channels'], value='2')
+    p_mem_contr = M.Part.init(name='Anonymous Memory Controller', parent_part=o['p_memory_controller'], attributes={
+        o['at_memory_channels']: '2',
+    })
 
     p_motherboard = M.Part(name='Anonymous Motherboard', parent_part=o['p_motherboard'])
     # todo: anschluesse, socket
