@@ -79,6 +79,7 @@ class Unit(_DisplayNameMixin, Base):
     The unit which describes the values of Attributes. Examples: meter, volt
     """
     name = Column(String, nullable=False, unique=True)
+    format = Column(String, nullable=False, server_default='%(unit)s')
     note = Column(String, nullable=True, unique=False)
 
 

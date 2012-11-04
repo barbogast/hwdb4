@@ -7,7 +7,7 @@
     <dl>
     {% for attr in part.attrs %}
         <dt>{{attr.part_attr_type_mapping.attr_type.name}}<dt>
-        <dd>{{attr.value}}<dd>
+        <dd>{{attr.part_attr_type_mapping.attr_type.unit.format|safe % {'unit': attr.value}}}<dd>
     {% endfor %}
     </dl>
   </div>
