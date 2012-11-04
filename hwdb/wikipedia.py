@@ -1,8 +1,8 @@
+#-*-encoding=utf-8-*-
 """
 Author: Benjamin Arbogast
 """
 
-#-*-encoding=utf-8-*-
 
 import json
 import re
@@ -149,16 +149,24 @@ def fix_table_row_dict(table_row_dicts):
             spec_name, spec_url = parse_maybe_url(s)
             fixed_row['sspecs'].append(dict(name=spec_name, url=spec_url))
 
-        fixed_row['part_numbers'] = multi_split(pop_one_of(row, ['Part Number(s)']), ['\n', '<br>'])
         fixed_row['frequency'] = pop_one_of(row, ['Frequency', 'Clock Speed'])
+        if fixed_row['frequency'].endswith('&nbsp;GHz'):
+            fixed_row['frequency'] = str(int(float(fixed_row['frequency'].strip('&nbsp;GHz')) * 1000))
+
+        price = pop_one_of(row, ['Release Price (USD)', ], assert_when_missing=False)
+        if price is not None:
+            fixed_row['price'] = price
+
+        fixed_row['multiplier'] = pop_one_of(row, ['Multiplier', 'Clock Multiplier', '[[clock multiplier|Mult]]'])
+        fixed_row['multiplier'] = fixed_row['multiplier'].strip('×'.decode('utf-8'))
+
+        fixed_row['part_numbers'] = multi_split(pop_one_of(row, ['Part Number(s)']), ['\n', '<br>'])
         fixed_row['voltage'] = pop_one_of(row, ['Voltage', 'Voltage Range'])
-        fixed_row['fsb'] = pop_one_of(row, ['[[Front Side Bus]]', 'FSB Speed'])
+        fixed_row['fsb'] = pop_one_of(row, ['[[Front Side Bus]]', 'FSB Speed']).strip(' MT/s')
         fixed_row['release'] = pop_one_of(row, ['Release Date', ])
         fixed_row['l2cache'] = pop_one_of(row, ['L2 Cache', '[[CPU caches#Multi-level caches|L2-Cache]]'])
-        fixed_row['multiplier'] = pop_one_of(row, ['Multiplier', 'Clock Multiplier', '[[clock multiplier|Mult]]'])
         fixed_row['socket'] = pop_one_of(row, ['Socket', '[[CPU socket|Socket]]'])
-        fixed_row['tdp'] = pop_one_of(row, ['[[Thermal Design Power|TDP]]', '[[Thermal design power|TDP]]', 'TDP'])
-        fixed_row['price'] = pop_one_of(row, ['Release Price (USD)', ], assert_when_missing=False)
+        fixed_row['tdp'] = pop_one_of(row, ['[[Thermal Design Power|TDP]]', '[[Thermal design power|TDP]]', 'TDP']).strip(' W')
 
         fixed_data.append(fixed_row)
 
@@ -194,12 +202,12 @@ def _add_attr(part, attr_name, dict_key, d):
 def insert_record(d):
     parent_part = M.db_session.query(M.Part).filter_by(name='Pentium 4').one()
     part = M.Part(parent_part=parent_part, name=d['name'])
-    M.db_session.flush()
     _add_attr(part, 'Frequency', 'frequency', d)
     _add_attr(part, 'Front side bus', 'fsb', d)
     _add_attr(part, 'L2 cache', 'l2cache', d)
     _add_attr(part, 'Clock multiplier', 'multiplier', d)
-    _add_attr(part, 'Release price', 'price', d)
+    if 'price' in d:
+        _add_attr(part, 'Release price', 'price', d)
     _add_attr(part, 'Release date', 'release', d)
     # TODO: _add_attr(session, part, 'Socket', 'socket', d)
     _add_attr(part, 'Thermal design power', 'tdp', d)
