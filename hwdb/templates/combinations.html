@@ -19,12 +19,12 @@
               <ul>
                 {% for content_map_inner_inner in content_map_inner.content_part.content_maps %}
                 <li>
-                  {{content_map_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner.content_part.id}}">{{ content_map_inner_inner.content_part.name }}</a>
+                  {{content_map_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner.content_part.id}}">{{ content_map_inner_inner.content_part.name }}</a>
 
                     <ul>
                       {% for content_map_inner_inner_inner in content_map_inner_inner.content_part.content_maps %}
                       <li>
-                        {{content_map_inner_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner.content_part.id}}">{{ content_map_inner_inner_inner.content_part.name }}</a>
+                        {{content_map_inner_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner_inner.content_part.id}}">{{ content_map_inner_inner_inner.content_part.name }}</a>
                       </li>
                       {% endfor %}
                     </ul>
