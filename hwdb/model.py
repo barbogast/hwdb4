@@ -170,6 +170,17 @@ class PartAttrTypeMap(Base):
         return '%s - %s' % (self.part.name, self.attr_type.name)
 
 
+class System(Base):
+    pass
+
+
+class SystemMap(Base):
+    container_part_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    container_part = relationship(System, primaryjoin='System.id==SystemMap.container_part_id', backref='content_maps')
+    content_part_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    content_part = relationship(System, primaryjoin='System.id==SystemMap.content_part_id', backref='container_maps')
+
+
 class PartMap(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
@@ -181,6 +192,8 @@ class PartMap(Base):
     container_part = relationship(Part, primaryjoin='Part.id==PartMap.container_part_id', backref='content_maps')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     content_part = relationship(Part, primaryjoin='Part.id==PartMap.content_part_id', backref='container_maps')
+    system_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
+    system = relationship(System, backref='part_maps')
     occurrence = Column(Integer, nullable=False, server_default='1')
     position = Column(Integer)
 
