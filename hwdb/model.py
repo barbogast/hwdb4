@@ -22,6 +22,8 @@ Open questions:
    support Standard Socket 1155), 5 PCIe x16-Slots (which support PCIe x16), 5x Audio, ...?
  * new column: Part.anonymous (type=boolean) to store if the name of a specific
    Part is unknown
+ * Standards in seperate table? (no longer in Parts-Table).
+ * Change the table Unit to a Postgres Enum
 """
 
 import re
@@ -194,7 +196,7 @@ class Attr(Base):
     part_attr_type_mapping = relationship(PartAttrTypeMap, backref='attrs')
     part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     part = relationship(Part, backref='attrs')
-    value = Column(String, nullable=True)
+    value = Column(String, nullable=True) # TODO: nullable should be False
     value_from = Column(Float, nullable=True)
     value_to = Column(Float, nullable=True)
 
