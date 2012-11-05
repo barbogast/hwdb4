@@ -201,7 +201,6 @@ def get_objects_computer_alt(o):
     p_motherboard = M.Part.init(name='Anonymous Motherboard', parent_part=o['p_motherboard'], attributes={
         o['at_max_ram_capacity']: 16384
     })
-    p_cpusocket = M.Part(name='Anonymous Socket', parent_part=o['p_cpusocket'])
 
     p_ram = M.Part.init(name='Anonymous RAM', parent_part=o['p_ddr'], attributes={
         o['at_ram_size']: 2048
@@ -227,15 +226,16 @@ def get_objects_computer_alt(o):
     p_rj45 = M.Part(name='Anonymous RJ-45', parent_part=o['p_rj45'])
     o['s_gigabit_ethernet'].children.append(p_rj45)
 
-    p_audioport = M.Part(name='Anonymous Audio', parent_part=o['p_audioport'])
-    p_audiocontr = M.Part(name='Anonymous Audio controller', parent_part=o['p_audio_controller'])
-
     p_harddrive = M.Part.init(name='Anonymous harddrive', parent_part=o['p_harddrive'], attributes={
         o['at_harddrive_size']: 500
     })
     o['s_sata'].children.append(p_harddrive)
 
-    p_card_reader = M.Part(name='Anonymous card reader', parent_part=o['p_memorycard_reader'])
+    p_card_reader = o['p_memorycard_reader']  # anonymous
+    p_cpusocket = o['p_cpusocket'] # anonymous
+    p_audioport = o['p_audioport'] # anonymous
+    p_audiocontr = o['p_audio_controller'] # anonymous
+
     o['s_mem_card_sd'].children.append(p_card_reader)
     o['s_mem_card_mmc'].children.append(p_card_reader)
     o['s_mem_card_mmcplus'].children.append(p_card_reader)
