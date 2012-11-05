@@ -113,10 +113,10 @@ class Part(_DisplayNameMixin, Base):
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
             attr = db_session.query(Attr).\
-				filter(and_(Attr.attr_type==attr_type, value==value)).\
-				first()
+                filter(and_(Attr.attr_type==attr_type, value==value)).\
+                first()
             if not attr:
-				attr = Attr(value=value, attr_type=attr_type)
+                attr = Attr(value=value, attr_type=attr_type)
             attr_map = PartAttrMap(part=part, attr=attr)
             part.attr_maps.append(attr_map)
         return part
