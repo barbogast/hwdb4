@@ -175,7 +175,15 @@ class System(Base):
     """
     A System is used to group PartMaps to indicate the they occur together.
     """
-    pass
+    def add_part_mapping(self, container, content, quanity=1):
+        """
+        Adds a new PartPartMap to the system
+        """
+        assert isinstance(container, Part), "Container is not of type Part but %s" % (container,)
+        assert isinstance(content, Part), "Content is not of type Part but %s" % (content,)
+        assert not container is content, "Dont map the same Part to itself!"
+        m = PartPartMap(container_part=container, content_part=content)
+        self.part_maps.append(m)
 
 
 class PartPartMap(Base):
