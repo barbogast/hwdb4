@@ -183,6 +183,17 @@ def get_attr_types():
     ]
 
 
+def get_common_attributes():
+    # Note: Attributes whose values should be contained in multiple Parts
+    # have to be defined here so that the inserts can be commited and
+    # SQLAlchemy can find them.
+    return [
+    M.Attr(attr_type=M.AttrType.search('Vendor'), value='Hewlett-Packard'),
+    M.Attr(attr_type=M.AttrType.search('Vendor'), value='Intel'),
+    M.Attr(attr_type=M.AttrType.search('Serial number'), value='CZC4301WB9')
+    ]
+
+
 def get_objects_computer_BA():
     p_hpd530 = M.Part.init('HP d530 CMT(DF368A)', 'Desktop', {
         'Vendor': 'Hewlett-Packard',
@@ -200,7 +211,7 @@ def get_objects_computer_BA():
     })
 
     p_hp_pentium4 = M.Part.init('Intel Pentium 4 2.80GHz 15.2.9', 'Pentium 4', {
-        'Vendor': 'Intel Corp.',
+        'Vendor': 'Intel',
         'Version': '15.2.9',
         'Frequency': '2800',
     })
@@ -242,6 +253,7 @@ def get_objects_computer_alt():
         'Frequency': '2900',
         'Front side bus': '5000',
         'Maximal power consumption': '65',
+        'Vendor': 'Intel',
     })
 
     p_mem_contr = M.Part.init('Anonymous Memory Controller', 'Memory controller',

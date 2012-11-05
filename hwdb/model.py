@@ -112,7 +112,13 @@ class Part(_DisplayNameMixin, Base):
         part = cls(name=name, parent_part=parent_part)
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
-            attr = Attr.init(part=part, value=value, attr_type=attr_type)
+            attr = db_session.query(Attr).\
+				filter(and_(Attr.attr_type==attr_type, value==value)).\
+				first()
+            if not attr:
+				attr = Attr(value=value, attr_type=attr_type)
+            attr_map = PartAttrMap(part=part, attr=attr)
+            part.attr_maps.append(attr_map)
         return part
 
     @classmethod
@@ -221,29 +227,20 @@ class Attr(Base):
     AttrType and a Part and contains the actual value of the attribute.
     TODO: describe value_to, value_from
     """
-    __table_args__ = (UniqueConstraint('part_attr_type_mapping_id', 'part_id'),)
-    part_attr_type_mapping_id = Column(Integer, ForeignKey(PartAttrTypeMap.id), nullable=False)
-    part_attr_type_mapping = relationship(PartAttrTypeMap, backref='attrs')
-    part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    part = relationship(Part, backref='attrs')
+    __table_args__ = (UniqueConstraint('attr_type_id', 'value'),)
+    attr_type_id = Column(Integer, ForeignKey(AttrType.id), nullable=False)
+    attr_type = relationship(AttrType, backref='attrs')
     value = Column(String, nullable=True) # TODO: nullable should be False
     value_from = Column(Float, nullable=True)
     value_to = Column(Float, nullable=True)
 
-    @classmethod
-    def init(cls, attr_type, part, **kwargs):
-        """
-        Creates + returns an Attr object. The PartAttrTypeMap is looked up with
-        the given AttrType and Part in the parents of the Part.
-        """
-        mapping = search_PartAttrTypeMap(attr_type, part.parent_part)
-        if not mapping:
-            raise Exception(('No PartAttrTypeMap is found for attr_type '
-                             '"%s" and part "%s"' % (attr_type.__unicode__(),
-                                                     part.__unicode__())))
 
-        attr = cls(part_attr_type_mapping=mapping, part=part, **kwargs)
-        return attr
+class PartAttrMap(Base):
+    __table_args__ = (UniqueConstraint('part_id', 'attr_id'),)
+    part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    part = relationship(Part, backref='attr_maps')
+    attr_id = Column(Integer, ForeignKey(Attr.id), nullable=False)
+    attr = relationship(Attr, backref='part_maps')
 
 
 class MultiAttr(Base):

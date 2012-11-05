@@ -67,6 +67,9 @@ def reset_db(args):
     M.db_session.flush()
     M.db_session.add_all(init_data.get_attr_types())
     M.db_session.flush()
+    M.db_session.add_all(init_data.get_common_attributes())
+    M.db_session.flush()
+
     M.db_session.add_all(init_data.get_objects_computer_BA())
     M.db_session.add_all(init_data.get_objects_computer_alt())
     M.db_session.flush()
