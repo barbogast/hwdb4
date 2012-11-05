@@ -42,10 +42,10 @@ def parts():
         root_parts = M.db_session.query(M.Part).filter_by(parent_part=None)
         return render_template('parts.html', root_parts=root_parts)
 
-@bp.route('/attributes')
+@bp.route('/attr_types')
 def attributes():
     attributes = M.db_session.query(M.AttrType).order_by('name')
-    return render_template('attributes.html', attributes=attributes)
+    return render_template('attr_types.html', attributes=attributes)
 
 @bp.route('/units')
 def units():
