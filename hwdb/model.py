@@ -187,7 +187,7 @@ class SystemMap(Base):
     content_system = relationship(System, primaryjoin='System.id==SystemMap.content_part_id', backref='container_maps')
 
 
-class PartMap(Base):
+class PartPartMap(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
     other Parts. For examples see docstring of Part. The column `quantity` is
@@ -197,9 +197,9 @@ class PartMap(Base):
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartMap.container_part_id', backref='content_maps')
+    container_part = relationship(Part, primaryjoin='Part.id==PartPartMap.container_part_id', backref='content_maps')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    content_part = relationship(Part, primaryjoin='Part.id==PartMap.content_part_id', backref='container_maps')
+    content_part = relationship(Part, primaryjoin='Part.id==PartPartMap.content_part_id', backref='container_maps')
     system_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
     system = relationship(System, backref='part_maps')
     quantity = Column(Integer, nullable=False, server_default='1')

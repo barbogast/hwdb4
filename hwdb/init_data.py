@@ -122,9 +122,9 @@ def get_objects_computer_BA(o):
     })
     o['s_cpu_32bit'].children.append(p_hp_pentium4)
 
-    pm_hpd530_minitower = M.PartMap(container_part=p_hpd530, content_part=p_mini_tower)
-    pm_minitower_hpmboard = M.PartMap(container_part=p_mini_tower, content_part=p_hpmboard)
-    pm_hpmboard_hp_pentium4 = M.PartMap(container_part=p_hpmboard, content_part=p_hp_pentium4)
+    pm_hpd530_minitower = M.PartPartMap(container_part=p_hpd530, content_part=p_mini_tower)
+    pm_minitower_hpmboard = M.PartPartMap(container_part=p_mini_tower, content_part=p_hpmboard)
+    pm_hpmboard_hp_pentium4 = M.PartPartMap(container_part=p_hpmboard, content_part=p_hp_pentium4)
 
     obj = locals()
     # Remove argument
@@ -163,15 +163,15 @@ def get_objects_computer_alt(o):
     p_motherboard = M.Part(name='Anonymous Motherboard', parent_part=o['p_motherboard'])
     # todo: anschluesse, socket
 
-    pm_m1935_mini_tower = M.PartMap(container_part=p_m1935, content_part=p_mini_tower)
-    pm_mini_tower_power_supply = M.PartMap(container_part=p_mini_tower, content_part=p_power_supply)
-    pm_mini_tower_motherboard = M.PartMap(container_part=p_mini_tower, content_part=p_motherboard)
-    pm_motherboard_cpu = M.PartMap(container_part=p_motherboard, content_part=p_cpu)
-    pm_cpu_sse4 = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_sse4'])
-    pm_cpu_64bit = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_64bit'])
-    pm_cpu_xdbit = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_xd_bit'])
-    pm_cpu_smartcache = M.PartMap(container_part=p_cpu, content_part=o['s_cpu_smart_cache'])
-    pm_mem_contr_cpu = M.PartMap(container_part=p_cpu, content_part=p_mem_contr)
+    pm_m1935_mini_tower = M.PartPartMap(container_part=p_m1935, content_part=p_mini_tower)
+    pm_mini_tower_power_supply = M.PartPartMap(container_part=p_mini_tower, content_part=p_power_supply)
+    pm_mini_tower_motherboard = M.PartPartMap(container_part=p_mini_tower, content_part=p_motherboard)
+    pm_motherboard_cpu = M.PartPartMap(container_part=p_motherboard, content_part=p_cpu)
+    pm_cpu_sse4 = M.PartPartMap(container_part=p_cpu, content_part=o['s_cpu_sse4'])
+    pm_cpu_64bit = M.PartPartMap(container_part=p_cpu, content_part=o['s_cpu_64bit'])
+    pm_cpu_xdbit = M.PartPartMap(container_part=p_cpu, content_part=o['s_cpu_xd_bit'])
+    pm_cpu_smartcache = M.PartPartMap(container_part=p_cpu, content_part=o['s_cpu_smart_cache'])
+    pm_mem_contr_cpu = M.PartPartMap(container_part=p_cpu, content_part=p_mem_contr)
 
     obj = locals()
     # Remove argument
