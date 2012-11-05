@@ -174,17 +174,8 @@ class PartAttrTypeMap(Base):
 class System(Base):
     """
     A System is used to group PartMaps to indicate the they occur together.
-    A System has a n:m relation to other Systems using the class SystemMap. This
-    way a System can contain connected Parts and other Systems.
     """
     pass
-
-
-class SystemMap(Base):
-    container_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    container_system = relationship(System, primaryjoin='System.id==SystemMap.container_part_id', backref='content_maps')
-    content_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    content_system = relationship(System, primaryjoin='System.id==SystemMap.content_part_id', backref='container_maps')
 
 
 class PartPartMap(Base):
@@ -203,6 +194,17 @@ class PartPartMap(Base):
     system_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
     system = relationship(System, backref='part_maps')
     quantity = Column(Integer, nullable=False, server_default='1')
+
+
+class PartSystemMap(Base):
+    """
+    A n:m connection from Part to System. Used to indicate that a Part contains
+    a System (containing Parts in turn).
+    """
+    part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    part = relationship(Part, backref='system_maps')
+    system_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    system = relationship(System, backref='part_system_maps')
 
 
 class Attr(Base):
