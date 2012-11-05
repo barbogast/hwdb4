@@ -208,6 +208,7 @@ class PartSystemMap(Base):
     A n:m connection from Part to System. Used to indicate that a Part contains
     a System (containing Parts in turn).
     """
+    __table_args__ = (UniqueConstraint('part_id', 'system_id'),)
     part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     part = relationship(Part, backref='system_maps')
     system_id = Column(Integer, ForeignKey(System.id), nullable=False)
