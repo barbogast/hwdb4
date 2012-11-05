@@ -8,6 +8,7 @@ def get_initial_objects():
     u_date = M.Unit(name='Date')
     u_year = M.Unit(name='Year')
     u_count = M.Unit(name='Count')
+    u_order = M.Unit(name='Order', note='Information about the order/sequence of a Part')
     u_byte = M.Unit(name='Byte', format='%(unit)s Byte')
     u_transfer = M.Unit(name='Megatransfer/Second', format='%(unit)s MT/s', note='used with Front side bus')
     u_factor = M.Unit(name='Factor', format='%(unit)sx', note='ie cpu clock multiplier')
@@ -51,6 +52,7 @@ def get_initial_objects():
 
 
     at_name = M.AttrType(name='Name', unit=u_text)
+    at_position = M.AttrType(name='Position', unit=u_order, note='The position of the associated Part in relation to other Parts')
 
     # Socket
     #TODO: at_socket_package = M.AttrType(name='Package', unit=part=p_socket)

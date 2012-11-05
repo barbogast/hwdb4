@@ -94,7 +94,7 @@ class Part(_DisplayNameMixin, Base):
     the parent 'CPU'.
     A part can contain multiple other parts. For example a 'Laptop Sony XX'
     contains the 'Mainboard YY' and the 'Display ZZ'. The 'Mainboard YY'
-    contains the 'CPU-Socket QQ'.
+    contains the 'CPU-Socket QQ'. The relation is done using the class PartMap.
     As a standard it represents a standard like 'ATX' or 'PCI Express 3.0'. The
     parent relation is used to group standards. For example the standard 'ATX'
     could have the parent 'Casing standard'. To indicate that a Part supports a
@@ -185,8 +185,9 @@ class SystemMap(Base):
 class PartMap(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
-    other Parts. For examples see docstring of Part.
-    TODO: Position and occurrence rule each other out.
+    other Parts. For examples see docstring of Part. The column `quantity` is
+    used if a Part is contained multiple times. To order the contained Parts
+    each one should be associated with the attribute `Position`.
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
@@ -195,8 +196,7 @@ class PartMap(Base):
     content_part = relationship(Part, primaryjoin='Part.id==PartMap.content_part_id', backref='container_maps')
     system_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
     system = relationship(System, backref='part_maps')
-    occurrence = Column(Integer, nullable=False, server_default='1')
-    position = Column(Integer)
+    quantity = Column(Integer, nullable=False, server_default='1')
 
 
 class Attr(Base):
