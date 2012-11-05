@@ -9,31 +9,9 @@ Open questions:
     - store the values in a postgres array. array length 1 = single value, array length 2 = min/max, array length > 2 = multi value
     * should Attr.value be an (Postgres-) Array so the columns Attr.value_from,
       Attr.value_to and the table MultiAttr could be removed?
- * Vendors: A vendor of a Part could be represented as attribute or as parent_part.
-   Which one is better? Vendors as attribute is bad because there is no single entry which
-   represents the vendor but multiple attributes containing the name of the vendor.
-   Vendors as parents are bad because the parent-child-relationship of Parts represents
-   the category by hardware type, not by vendor. Maybe an extra table? Or with the N:M-Mapping of Parts?
  * Does Parts inherit the connections to Attributes and Attribute Types from its
    parents?
- * Standards in seperate table? (no longer in Parts-Table). ==> they should be
-   a column of PartPartMap and SystemPartMap
  * Change the table Unit to a Postgres Enum
- * At the moment it is not possible to distinguish between a Part providing a
-   Standard and a Part requiring a Standard. Note: That difference is not always
-   sensible, ie the device and the motherboard provide _and_ need USB x.0 at the
-   same time.
- * Add attributes to Standards!
-
-Answered:
- * Enums: Should AttrTypes be able to store allowed values?
-   For example: casing_size=>(mini_tower, Midi_tower, big_tower) ==> no, add a
-   mapping table between part and attribute
- * How should be stored, that Motherboard xyz has one cpu socket 1155 (which
-   support Standard Socket 1155), 5 PCIe x16-Slots (which support PCIe x16), 5x Audio, ...?
-   ==> add sockets as seperate parts
- * new column: Part.anonymous (type=boolean) to store if the name of a specific
-   Part is unknown ==> no, use the respective parent Part instead
 """
 
 import re
