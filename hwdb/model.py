@@ -117,6 +117,7 @@ class Part(_DisplayNameMixin, Base):
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
     is_standard = Column(Boolean)
+    is_connector = Column(Boolean)
 
     @classmethod
     def init(cls, attributes={}, **kwargs):

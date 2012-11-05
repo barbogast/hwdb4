@@ -22,7 +22,7 @@ def get_initial_objects():
     u_boolean = M.Unit(name='Boolean')
     u_hex = M.Unit(name='Hex')
 
-    # Parent parts
+    # Sockets & Ports
     p_socket = M.Part(name='Socket', note='Generic parent for all kinds of sockets')
     p_cpusocket = M.Part(name='CPU-Socket', parent_part=p_socket)
     p_ram_socket = M.Part(name='RAM Socket', parent_part=p_socket)
@@ -32,10 +32,13 @@ def get_initial_objects():
     p_usb2_port = M.Part(name='USB 2.0 Port', parent_part=p_port)
     p_usb3_port = M.Part(name='USB 3.0 Port', parent_part=p_port)
     p_rj45 = M.Part(name='RJ-45', parent_part=p_port)
+    p_sata = M.Part(name='SATA', parent_part=p_port)
     p_audioport = M.Part(name='Audio port', parent_part=p_port)
-    p_cpu = M.Part(name='CPU')
+
+    # Components
     p_memory_controller = M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)')
     p_audio_controller = M.Part(name='Audio controller')
+    p_cpu = M.Part(name='CPU')
     p_pentium = M.Part(name='Pentium', parent_part=p_cpu)
     p_pentium4 = M.Part(name='Pentium 4', parent_part=p_pentium)
     p_computer = M.Part(name='Computer', note='Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)')
@@ -183,6 +186,13 @@ def get_objects_computer_alt(o):
         o['at_color']: 'black',
     })
 
+    p_mem_card_sd = M.Part(name='SD card port', parent_part=o['p_port'])
+    p_mem_card_mmc = M.Part(name='MMC card port', parent_part=o['p_port'])
+    p_mem_card_mmcplus = M.Part(name='MMCplus card port', parent_part=o['p_port'])
+    p_mem_card_xd = M.Part(name='xD card port', parent_part=o['p_port'])
+    p_mem_card_ms = M.Part(name='MS card port', parent_part=o['p_port'])
+    p_mem_card_mspro = M.Part(name='MS PRO card port', parent_part=o['p_port'])
+
     p_power_supply = M.Part.init(name='Anonymous Power Source', parent_part=o['p_power_supply'], attributes={
         o['at_power']: '250',
     })
@@ -207,46 +217,61 @@ def get_objects_computer_alt(o):
     })
     o['s_ddr3'].children.append(o['s_ddr3_1333'])
 
-    p_ramsocket = M.Part(name='RAM Socket', parent_part=o['p_ram_socket'])
+    p_ramsocket = M.Part(name='RAM Socket', parent_part=o['p_ram_socket'], is_connector=True)
     o['s_ddr3'].children.append(p_ramsocket)
 
     p_chipset = M.Part.init(name='Intel B75 Express', parent_part=o['p_chipset'], attributes={
         o['at_vendor']: 'Intel',
     })
 
-    p_pci = M.Part(name='Anonymous PCIe x16 Socket', parent_part=o['p_pcie_x16_socket'])
+    p_pci = M.Part(name='Anonymous PCIe x16 Port', parent_part=o['p_pcie_x16_socket'], is_connector=True)
     o['s_pcie_x16'].children.append(p_pci)
 
-    p_usb2_port = M.Part(name='Anonymous USB 2.0 Port', parent_part=o['p_usb2_port'])
+    p_usb2_port = M.Part(name='Anonymous USB 2.0 Port', parent_part=o['p_usb2_port'], is_connector=True)
     o['s_usb2'].children.append(p_usb2_port)
 
-    p_usb3_port = M.Part(name='Anonymous USB 3.0 Port', parent_part=o['p_usb3_port'])
+    # HELP: Ports may support multiple standards
+    p_usb3_port = M.Part(name='Anonymous USB 3.0 Port', parent_part=o['p_usb3_port'], is_connector=True)
     o['s_usb3'].children.append(p_usb3_port)
+    o['s_usb2'].children.append(p_usb2_port)
 
-    p_rj45 = M.Part(name='Anonymous RJ-45', parent_part=o['p_rj45'])
+    p_rj45 = M.Part(name='Anonymous RJ-45', parent_part=o['p_rj45'], is_connector=True)
     o['s_gigabit_ethernet'].children.append(p_rj45)
+    o['s_fast_ethernet'].children.append(p_rj45)
+    o['s_ethernet'].children.append(p_rj45)
 
     p_harddrive = M.Part.init(name='Anonymous harddrive', parent_part=o['p_harddrive'], attributes={
         o['at_harddrive_size']: 500
     })
     o['s_sata'].children.append(p_harddrive)
 
-    p_card_reader = o['p_memorycard_reader']  # anonymous
+    # HELP: A memory card reader can be seperated into a controller being on the
+    # motherboard and the card ports being in the casing
+    p_card_reader_controller = M.Part(name='Anonymous card reader controller', parent_part=o['p_memorycard_reader'])
+    o['s_mem_card_sd'].children.append(p_card_reader_controller)
+    o['s_mem_card_mmc'].children.append(p_card_reader_controller)
+    o['s_mem_card_mmcplus'].children.append(p_card_reader_controller)
+    o['s_mem_card_xd'].children.append(p_card_reader_controller)
+    o['s_mem_card_ms'].children.append(p_card_reader_controller)
+    o['s_mem_card_mspro'].children.append(p_card_reader_controller)
+
     p_cpusocket = o['p_cpusocket'] # anonymous
     p_audioport = o['p_audioport'] # anonymous
     p_audiocontr = o['p_audio_controller'] # anonymous
-
-    o['s_mem_card_sd'].children.append(p_card_reader)
-    o['s_mem_card_mmc'].children.append(p_card_reader)
-    o['s_mem_card_mmcplus'].children.append(p_card_reader)
-    o['s_mem_card_xd'].children.append(p_card_reader)
-    o['s_mem_card_ms'].children.append(p_card_reader)
-    o['s_mem_card_mspro'].children.append(p_card_reader)
+    p_sata = o['p_sata'] # anonymous
 
     system = M.System()
     system.add_part_mapping(p_m1935, p_mini_tower)
+
     system.add_part_mapping(p_mini_tower, p_power_supply)
     system.add_part_mapping(p_mini_tower, p_motherboard)
+    system.add_part_mapping(p_mini_tower, p_mem_card_sd)
+    system.add_part_mapping(p_mini_tower, p_mem_card_mmc)
+    system.add_part_mapping(p_mini_tower, p_mem_card_mmcplus)
+    system.add_part_mapping(p_mini_tower, p_mem_card_xd)
+    system.add_part_mapping(p_mini_tower, p_mem_card_ms)
+    system.add_part_mapping(p_mini_tower, p_mem_card_mspro)
+
     system.add_part_mapping(p_motherboard, p_cpusocket)
     system.add_part_mapping(p_motherboard, p_ramsocket, 4)
     system.add_part_mapping(p_motherboard, p_chipset)
@@ -256,8 +281,10 @@ def get_objects_computer_alt(o):
     system.add_part_mapping(p_motherboard, p_audioport, 2)
     system.add_part_mapping(p_motherboard, p_rj45)
     system.add_part_mapping(p_motherboard, p_audiocontr)
-    system.add_part_mapping(p_motherboard, p_card_reader)
+    system.add_part_mapping(p_motherboard, p_card_reader_controller)
+    system.add_part_mapping(p_motherboard, p_sata)
     system.add_part_mapping(p_ramsocket, p_ram, 2)
+    system.add_part_mapping(p_sata, p_harddrive)
     system.add_part_mapping(p_cpusocket, p_cpu)
     system.add_part_mapping(p_cpu, p_mem_contr)
     system.add_part_mapping(p_cpu, o['s_cpu_sse4'])
@@ -270,3 +297,5 @@ def get_objects_computer_alt(o):
     del(obj['o'])
 
     return obj
+
+
