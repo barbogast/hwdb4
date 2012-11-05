@@ -59,8 +59,7 @@ class _DisplayNameMixin(object):
         Searches a record by the given name. If multiple records with the
         given name are found, an Exception is raised
         """
-        # TOOD
-        raise NotImplemented()
+        return db_session.query(cls).filter_by(name=name).one()
 
 
 def _convert_camel_to_underscore(s):
@@ -120,24 +119,28 @@ class Part(_DisplayNameMixin, Base):
     is_connector = Column(Boolean)
 
     @classmethod
-    def init(cls, attributes={}, **kwargs):
+    def init(cls, name, parent_part_name, attributes={}):
         """
-        Create a Part and return it. Attributes is expected to be a
-        dict (key=AttrType-object, value=value). For each key/value pair
-        an Attr object will be created with the given AttrType object
-        and value and associated with the new Part.
+        Create a Part and return it.
+        :param attributes: dict (key=AttrType-object, value=value). For each
+          key/value pair an Attr object will be created and associated with the
+          new Part. The key must be a String with which an AttrType object will
+          be looked up. The value must be the value of the resulting Attr.
+        :param name: string
+        :param parent_part: A Part with this name will be searched and set as
+          parent_part
         """
-        part = cls(**kwargs)
-        for attr_type, value in attributes.iteritems():
+        parent_part = Part.search(parent_part_name)
+        part = cls(name=name, parent_part=parent_part)
+        for attr_type_name, value in attributes.iteritems():
+            attr_type = AttrType.search(attr_type_name)
             attr = Attr.init(part=part, value=value, attr_type=attr_type)
         return part
 
-    def add_content_part(self, contained_part):
-        """
-        Adds the given Part to the list of Parts contained by this Part.
-        """
-        # TODO
-        raise NotImplemented()
+    @classmethod
+    def append(cls, container_part_name, contained_part):
+        cls.search(container_part_name).children.append(contained_part)
+
 
 
 class AttrType(_DisplayNameMixin, Base):

@@ -23,17 +23,17 @@ def get_initial_objects():
     u_hex = M.Unit(name='Hex')
 
     # Sockets & Ports
-    p_socket = M.Part(name='Socket', note='Generic parent for all kinds of sockets')
-    p_cpusocket = M.Part(name='CPU-Socket', parent_part=p_socket)
-    p_ram_socket = M.Part(name='RAM Socket', parent_part=p_socket)
-    p_pcie_socket = M.Part(name='PCIe Socket', parent_part=p_socket)
-    p_pcie_x16_socket = M.Part(name='PCIe x16 Socket', parent_part=p_pcie_socket)
-    p_port = M.Part(name='Port', note='Generic parent for all kinds of ports')
-    p_usb2_port = M.Part(name='USB 2.0 Port', parent_part=p_port)
-    p_usb3_port = M.Part(name='USB 3.0 Port', parent_part=p_port)
-    p_rj45 = M.Part(name='RJ-45', parent_part=p_port)
-    p_sata = M.Part(name='SATA', parent_part=p_port)
-    p_audioport = M.Part(name='Audio port', parent_part=p_port)
+    p_socket = M.Part(name='Socket', note='Generic parent for all kinds of sockets', is_connector=True)
+    p_cpusocket = M.Part(name='CPU-Socket', parent_part=p_socket, is_connector=True)
+    p_ram_socket = M.Part(name='RAM Socket', parent_part=p_socket, is_connector=True)
+    p_pcie_socket = M.Part(name='PCIe Socket', parent_part=p_socket, is_connector=True)
+    p_pcie_x16_socket = M.Part(name='PCIe x16 Socket', parent_part=p_pcie_socket, is_connector=True)
+    p_port = M.Part(name='Port', note='Generic parent for all kinds of ports', is_connector=True)
+    p_usb2_port = M.Part(name='USB 2.0 Port', parent_part=p_port, is_connector=True)
+    p_usb3_port = M.Part(name='USB 3.0 Port', parent_part=p_port, is_connector=True)
+    p_rj45 = M.Part(name='RJ-45', parent_part=p_port, is_connector=True)
+    p_sata = M.Part(name='SATA', parent_part=p_port, is_connector=True)
+    p_audioport = M.Part(name='Audio port', parent_part=p_port, is_connector=True)
 
     # Components
     p_memory_controller = M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)')
@@ -55,6 +55,7 @@ def get_initial_objects():
     p_chipset = M.Part(name='Chipset')
     p_harddrive = M.Part(name='Harddrive')
     p_memorycard_reader = M.Part(name='Memory card reader')
+    p_memorycard_controller = M.Part(name='Memory card controller')
 
     # Standards
     s_cpu_standard = M.Part(name='CPU Instruction set', is_standard=True)
@@ -68,14 +69,14 @@ def get_initial_objects():
     s_ddr3_1333 = M.Part(name='DDR3-1333', parent_part=s_ddr3, is_standard=True)
     s_cpusocket = M.Part(name='CPU Socket Standard', is_standard=True)
     s_socket_1155 = M.Part(name='Socket 1155', parent_part=s_cpusocket, is_standard=True)
-    s_pcie_x16 = M.Part(name='PCIe x16 Socket', is_standard=True)
+    s_pcie_x16 = M.Part(name='PCIe x16 Socket (Standard)', is_standard=True)
     s_usb = M.Part(name='USB', is_standard=True)
     s_usb2 = M.Part(name='USB 2.0', parent_part=s_usb, is_standard=True)
     s_usb3 = M.Part(name='USB 3.0', parent_part=s_usb, is_standard=True)
     s_ethernet = M.Part(name='Ethernet (10Mbits)', is_standard=True)
     s_fast_ethernet = M.Part(name='Fast Ethernet (100Mbits)', is_standard=True)
     s_gigabit_ethernet = M.Part(name='Gigabit Ethernet (1000Mbits)', is_standard=True)
-    s_sata = M.Part(name='SATA', is_standard=True)
+    s_sata = M.Part(name='SATA (Standard)', is_standard=True)
     s_sata10 = M.Part(name='SATA 1.0', parent_part=s_sata, is_standard=True)
     s_sata20 = M.Part(name='SATA 2.0', parent_part=s_sata, is_standard=True)
     s_sata30 = M.Part(name='SATA 3.0', parent_part=s_sata, is_standard=True)
@@ -119,8 +120,8 @@ def get_initial_objects():
     at_serial = M.AttrType.init(name='Serial number', unit=u_text, parts=[p_computer, p_motherboard])
     at_l1cache = M.AttrType.init(name='L1 cache', unit=u_byte, parts=[p_cpu])
     at_hyperthreading = M.AttrType.init(name='Hyperthreading', unit=u_boolean, parts=[p_cpu])
-    at_ram_size = M.AttrType.init(name='Size', unit=u_byte, parts=[p_ram])
-    at_casing_size = M.AttrType.init(name='Size', unit=u_text, parts=[p_casing], note='Minitower, miditower, bigtower')
+    at_ram_size = M.AttrType.init(name='RAM Size', unit=u_byte, parts=[p_ram])
+    at_casing_size = M.AttrType.init(name='Casing Size', unit=u_text, parts=[p_casing], note='Minitower, miditower, bigtower')
     at_vendor_hex = M.AttrType.init(name='Vendor hex', unit=u_hex, parts=[p_ram])
     at_version = M.AttrType.init(name='Version', unit=u_text, parts=[p_pentium4])
 
@@ -139,28 +140,28 @@ def get_initial_objects():
     return locals()
 
 
-def get_objects_computer_BA(o):
-    p_hpd530 = M.Part.init(name='HP d530 CMT(DF368A)', parent_part=o['p_desktop'], attributes={
-        o['at_vendor']: 'Hewlett-Packard',
-        o['at_serial']: 'CZC4301WB9',
+def get_objects_computer_BA():
+    p_hpd530 = M.Part.init('HP d530 CMT(DF368A)', 'Desktop', {
+        'Vendor': 'Hewlett-Packard',
+        'Serial number': 'CZC4301WB9',
     })
 
-    p_mini_tower = M.Part.init(name='Anonymous Mini Tower', parent_part=o['p_casing'], attributes={
-        o['at_vendor']: 'Hewlett-Packard',
-        o['at_casing_size']: 'Minitower',
+    p_mini_tower = M.Part.init('Anonymous Mini Tower', 'Casing', {
+        'Vendor': 'Hewlett-Packard',
+        'Casing Size': 'Minitower',
     })
 
-    p_hpmboard = M.Part.init(name='085Ch', parent_part=o['p_motherboard'], attributes={
-        o['at_vendor']: 'Hewlett-Packard',
-        o['at_serial']: 'CZC4301WB9',
+    p_hpmboard = M.Part.init('085Ch', 'Motherboard', {
+        'Vendor': 'Hewlett-Packard',
+        'Serial number': 'CZC4301WB9',
     })
 
-    p_hp_pentium4 = M.Part.init(name='Intel Pentium 4 2.80GHz 15.2.9', parent_part=o['p_pentium4'], attributes={
-        o['at_vendor']: 'Intel Corp.',
-        o['at_version']: '15.2.9',
-        o['at_frequency']: '2800',
+    p_hp_pentium4 = M.Part.init('Intel Pentium 4 2.80GHz 15.2.9', 'Pentium 4', {
+        'Vendor': 'Intel Corp.',
+        'Version': '15.2.9',
+        'Frequency': '2800',
     })
-    o['s_cpu_32bit'].children.append(p_hp_pentium4)
+    M.Part.search('32bit').children.append(p_hp_pentium4)
 
     system = M.System()
     system.add_part_mapping(p_hpd530, p_mini_tower)
@@ -168,97 +169,101 @@ def get_objects_computer_BA(o):
     system.add_part_mapping(p_hpmboard, p_hp_pentium4)
 
     obj = locals()
-    # Remove argument
-    del(obj['o'])
-
     return obj
 
 
-def get_objects_computer_alt(o):
-    p_m1935 = M.Part.init(name='Acer Aspire M1935', parent_part=o['p_desktop'], attributes={
-        o['at_vendor']: 'Acer',
+def get_objects_computer_alt():
+    p_m1935 = M.Part.init('Acer Aspire M1935', 'Desktop', {
+        'Vendor': 'Acer',
     })
 
-    p_mini_tower = M.Part.init(name='Anonymous Tower', parent_part=o['p_casing'], attributes={
-        o['at_width']: '180',
-        o['at_length']: '379',
-        o['at_height']: '402',
-        o['at_color']: 'black',
+    p_mini_tower = M.Part.init('Anonymous Tower', 'Casing', {
+        'Width': '180',
+        'Length': '379',
+        'Height': '402',
+        'Color': 'black',
     })
 
-    p_mem_card_sd = M.Part(name='SD card port', parent_part=o['p_port'])
-    p_mem_card_mmc = M.Part(name='MMC card port', parent_part=o['p_port'])
-    p_mem_card_mmcplus = M.Part(name='MMCplus card port', parent_part=o['p_port'])
-    p_mem_card_xd = M.Part(name='xD card port', parent_part=o['p_port'])
-    p_mem_card_ms = M.Part(name='MS card port', parent_part=o['p_port'])
-    p_mem_card_mspro = M.Part(name='MS PRO card port', parent_part=o['p_port'])
+    port = M.Part.search('Port')
+    p_mem_card_sd = M.Part(name='SD card port', parent_part=port)
+    p_mem_card_mmc = M.Part(name='MMC card port', parent_part=port)
+    p_mem_card_mmcplus = M.Part(name='MMCplus card port', parent_part=port)
+    p_mem_card_xd = M.Part(name='xD card port', parent_part=port)
+    p_mem_card_ms = M.Part(name='MS card port', parent_part=port)
+    p_mem_card_mspro = M.Part(name='MS PRO card port', parent_part=port)
 
-    p_power_supply = M.Part.init(name='Anonymous Power Source', parent_part=o['p_power_supply'], attributes={
-        o['at_power']: '250',
+    p_power_supply = M.Part.init('Anonymous Power Source', 'Power supply', {
+        'Power': '250',
     })
 
-    p_cpu = M.Part.init(name='Intel Pentium Processor G645 (2,9 GHz)', parent_part=o['p_cpu'], attributes={
-        o['at_number_cores']: '2',
-        o['at_frequency']: '2900',
-        o['at_front_side_bus']: '5000',
-        o['at_max_power_consumtion']: '65',
+    p_cpu = M.Part.init('Intel Pentium Processor G645 (2,9 GHz)', 'CPU', {
+        'Number of cores': '2',
+        'Frequency': '2900',
+        'Front side bus': '5000',
+        'Maximal power consumption': '65',
     })
 
-    p_mem_contr = M.Part.init(name='Anonymous Memory Controller', parent_part=o['p_memory_controller'], attributes={
-        o['at_memory_channels']: '2',
+    p_mem_contr = M.Part.init('Anonymous Memory Controller', 'Memory controller',
+                              {'Memory channels': '2'})
+
+    p_motherboard = M.Part.init('Anonymous Motherboard', 'Motherboard', {
+        'Maximal RAM capacity': 16384
     })
 
-    p_motherboard = M.Part.init(name='Anonymous Motherboard', parent_part=o['p_motherboard'], attributes={
-        o['at_max_ram_capacity']: 16384
-    })
+    p_ram = M.Part.init('Anonymous RAM', 'DDR RAM', {'RAM Size': 2048})
+    M.Part.append('DDR3-1333', p_ram)
 
-    p_ram = M.Part.init(name='Anonymous RAM', parent_part=o['p_ddr'], attributes={
-        o['at_ram_size']: 2048
-    })
-    o['s_ddr3'].children.append(o['s_ddr3_1333'])
+    p_ramsocket = M.Part(name='DDR3 RAM Socket',
+                         parent_part=M.Part.search('RAM Socket'),
+                         is_connector=True)
+    M.Part.append('DDR3', p_ramsocket)
 
-    p_ramsocket = M.Part(name='RAM Socket', parent_part=o['p_ram_socket'], is_connector=True)
-    o['s_ddr3'].children.append(p_ramsocket)
+    p_chipset = M.Part.init('Intel B75 Express', 'Chipset', {'Vendor': 'Intel'})
 
-    p_chipset = M.Part.init(name='Intel B75 Express', parent_part=o['p_chipset'], attributes={
-        o['at_vendor']: 'Intel',
-    })
+    p_pci = M.Part(name='Anonymous PCIe x16 Socket',
+                   parent_part=M.Part.search('PCIe x16 Socket'),
+                   is_connector=True)
+    M.Part.append('PCIe x16 Socket (Standard)', p_pci)
 
-    p_pci = M.Part(name='Anonymous PCIe x16 Port', parent_part=o['p_pcie_x16_socket'], is_connector=True)
-    o['s_pcie_x16'].children.append(p_pci)
-
-    p_usb2_port = M.Part(name='Anonymous USB 2.0 Port', parent_part=o['p_usb2_port'], is_connector=True)
-    o['s_usb2'].children.append(p_usb2_port)
+    p_usb2_port = M.Part(name='Anonymous USB 2.0 Port',
+                         parent_part=M.Part.search('USB 2.0 Port'),
+                         is_connector=True)
+    M.Part.append('USB 2.0', p_usb2_port)
 
     # HELP: Ports may support multiple standards
-    p_usb3_port = M.Part(name='Anonymous USB 3.0 Port', parent_part=o['p_usb3_port'], is_connector=True)
-    o['s_usb3'].children.append(p_usb3_port)
-    o['s_usb2'].children.append(p_usb2_port)
+    p_usb3_port = M.Part(name='Anonymous USB 3.0 Port',
+                         parent_part=M.Part.search('USB 3.0 Port'),
+                         is_connector=True)
+    M.Part.append('USB 2.0', p_usb3_port)
+    M.Part.append('USB 3.0', p_usb3_port)
 
-    p_rj45 = M.Part(name='Anonymous RJ-45', parent_part=o['p_rj45'], is_connector=True)
-    o['s_gigabit_ethernet'].children.append(p_rj45)
-    o['s_fast_ethernet'].children.append(p_rj45)
-    o['s_ethernet'].children.append(p_rj45)
+    p_rj45 = M.Part(name='Anonymous RJ-45',
+                    parent_part=M.Part.search('RJ-45'),
+                    is_connector=True)
+    M.Part.append('Ethernet (10Mbits)', p_rj45)
+    M.Part.append('Fast Ethernet (100Mbits)', p_rj45)
+    M.Part.append('Gigabit Ethernet (1000Mbits)', p_rj45)
 
-    p_harddrive = M.Part.init(name='Anonymous harddrive', parent_part=o['p_harddrive'], attributes={
-        o['at_harddrive_size']: 500
+    p_harddrive = M.Part.init('Anonymous harddrive', 'Harddrive', {
+        'Harddrive size': 500
     })
-    o['s_sata'].children.append(p_harddrive)
+    M.Part.append('SATA (Standard)', p_harddrive)
 
     # HELP: A memory card reader can be seperated into a controller being on the
     # motherboard and the card ports being in the casing
-    p_card_reader_controller = M.Part(name='Anonymous card reader controller', parent_part=o['p_memorycard_reader'])
-    o['s_mem_card_sd'].children.append(p_card_reader_controller)
-    o['s_mem_card_mmc'].children.append(p_card_reader_controller)
-    o['s_mem_card_mmcplus'].children.append(p_card_reader_controller)
-    o['s_mem_card_xd'].children.append(p_card_reader_controller)
-    o['s_mem_card_ms'].children.append(p_card_reader_controller)
-    o['s_mem_card_mspro'].children.append(p_card_reader_controller)
+    p_card_reader_controller = M.Part(name='Anonymous card reader controller',
+                                      parent_part=M.Part.search('Memory card controller'))
+    M.Part.append('SD card', p_card_reader_controller)
+    M.Part.append('MMC card', p_card_reader_controller)
+    M.Part.append('MMCplus card', p_card_reader_controller)
+    M.Part.append('xD card', p_card_reader_controller)
+    M.Part.append('MS card', p_card_reader_controller)
+    M.Part.append('MS PRO card', p_card_reader_controller)
 
-    p_cpusocket = o['p_cpusocket'] # anonymous
-    p_audioport = o['p_audioport'] # anonymous
-    p_audiocontr = o['p_audio_controller'] # anonymous
-    p_sata = o['p_sata'] # anonymous
+    p_cpusocket = M.Part.search('CPU-Socket') # anonymous
+    p_audioport = M.Part.search('Audio port') # anonymous
+    p_audiocontr = M.Part.search('Audio controller') # anonymous
+    p_sata = M.Part.search('SATA') # anonymous
 
     system = M.System()
     system.add_part_mapping(p_m1935, p_mini_tower)
@@ -287,15 +292,12 @@ def get_objects_computer_alt(o):
     system.add_part_mapping(p_sata, p_harddrive)
     system.add_part_mapping(p_cpusocket, p_cpu)
     system.add_part_mapping(p_cpu, p_mem_contr)
-    system.add_part_mapping(p_cpu, o['s_cpu_sse4'])
-    system.add_part_mapping(p_cpu, o['s_cpu_64bit'])
-    system.add_part_mapping(p_cpu, o['s_cpu_xd_bit'])
-    system.add_part_mapping(p_cpu, o['s_cpu_smart_cache'])
+    system.add_part_mapping(p_cpu, M.Part.search('SSE 4.x'))
+    system.add_part_mapping(p_cpu, M.Part.search('64bit'))
+    system.add_part_mapping(p_cpu, M.Part.search('XD bit'))
+    system.add_part_mapping(p_cpu, M.Part.search('Smart Cache'))
 
     obj = locals()
-    # Remove argument
-    del(obj['o'])
-
     return obj
 
 

@@ -65,9 +65,9 @@ def reset_db(args):
     M.db_session.add_all(obj_dict.values())
     M.db_session.flush()
 
-    obj_dict2 = init_data.get_objects_computer_BA(obj_dict)
+    obj_dict2 = init_data.get_objects_computer_BA()
     M.db_session.add_all(obj_dict2.values())
-    obj_dict3 = init_data.get_objects_computer_alt(obj_dict)
+    obj_dict3 = init_data.get_objects_computer_alt()
     M.db_session.add_all(obj_dict3.values())
     M.db_session.flush()
 
