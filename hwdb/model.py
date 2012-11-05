@@ -139,7 +139,8 @@ class Part(_DisplayNameMixin, Base):
 
     @classmethod
     def append(cls, container_part_name, contained_part):
-        cls.search(container_part_name).children.append(contained_part)
+        # this doenst work (SQLAlchemy bug?) cls.search(container_part_name).children.append(contained_part)
+        contained_part.parent_part = cls.search(container_part_name)
 
 
 
@@ -158,15 +159,21 @@ class AttrType(_DisplayNameMixin, Base):
     unit = relationship(Unit, backref='attr_types')
 
     @classmethod
-    def init(cls, parts, **kwargs):
+    def init(cls, name, unit_name, part_names=[], from_to=False, note=None, multi_value=False):
         """
         Creates + returns an AttrType object with a PartAttrTypeMap for every
-        given Part.
+        Part which will be looked up by the given part name.
         """
-        attr_type = cls(**kwargs)
-        maps = [PartAttrTypeMap(part=part, attr_type=attr_type) for part in parts]
+        attr_type = cls(name=name,
+                        unit=Unit.search(unit_name),
+                        from_to=from_to,
+                        note=note,
+                        multi_value=multi_value)
+        for part_name in part_names:
+            part = Part.search(part_name)
+            part_map = PartAttrTypeMap(part=part, attr_type=attr_type)
+            attr_type.part_maps.append(part_map)
 
-        attr_type.part_maps = maps
         return attr_type
 
 

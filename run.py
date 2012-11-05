@@ -61,14 +61,14 @@ def reset_db(args):
     M.create_all(engine)
     M.init_scoped_session(engine)
 
-    obj_dict = init_data.get_initial_objects()
-    M.db_session.add_all(obj_dict.values())
+    M.db_session.add_all(init_data.get_units())
+    M.db_session.add_all(init_data.get_parts())
+    M.db_session.add_all(init_data.get_standards())
     M.db_session.flush()
-
-    obj_dict2 = init_data.get_objects_computer_BA()
-    M.db_session.add_all(obj_dict2.values())
-    obj_dict3 = init_data.get_objects_computer_alt()
-    M.db_session.add_all(obj_dict3.values())
+    M.db_session.add_all(init_data.get_attr_types())
+    M.db_session.flush()
+    M.db_session.add_all(init_data.get_objects_computer_BA())
+    M.db_session.add_all(init_data.get_objects_computer_alt())
     M.db_session.flush()
 
     if args.wikipedia:
