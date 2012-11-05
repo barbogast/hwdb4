@@ -172,14 +172,19 @@ class PartAttrTypeMap(Base):
 
 
 class System(Base):
+    """
+    A System is used to group PartMaps to indicate the they occur together.
+    A System has a n:m relation to other Systems using the class SystemMap. This
+    way a System can contain connected Parts and other Systems.
+    """
     pass
 
 
 class SystemMap(Base):
-    container_part_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    container_part = relationship(System, primaryjoin='System.id==SystemMap.container_part_id', backref='content_maps')
-    content_part_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    content_part = relationship(System, primaryjoin='System.id==SystemMap.content_part_id', backref='container_maps')
+    container_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    container_system = relationship(System, primaryjoin='System.id==SystemMap.container_part_id', backref='content_maps')
+    content_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    content_system = relationship(System, primaryjoin='System.id==SystemMap.content_part_id', backref='container_maps')
 
 
 class PartMap(Base):
@@ -188,6 +193,7 @@ class PartMap(Base):
     other Parts. For examples see docstring of Part. The column `quantity` is
     used if a Part is contained multiple times. To order the contained Parts
     each one should be associated with the attribute `Position`.
+    Each PartMap is associated with a System.
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
