@@ -124,10 +124,11 @@ class Part(_TableWithNameColMixin, Base):
         return part
 
     @classmethod
-    def append(cls, container_part_name, contained_part):
-        # this doenst work (SQLAlchemy bug?) cls.search(container_part_name).children.append(contained_part)
-        contained_part.parent_part = cls.search(container_part_name)
-
+    def append(cls, container_part_name, contained_parts):
+        container = cls.search(container_part_name)
+        for contained_part in contained_parts:
+            mapping = PartPartMap(content_part=contained_part, container_part=container)
+            contained_part.container_maps.append(mapping)
 
 
 class AttrType(_TableWithNameColMixin, Base):
@@ -151,17 +152,22 @@ class AttrType(_TableWithNameColMixin, Base):
         given part name. The corresponding Part object and the Unit object will
         be looked up by the given names.
         """
-        attr_type = cls(name=name,
-                        unit=Unit.search(unit_name),
-                        from_to=from_to,
-                        note=note,
-                        multi_value=multi_value)
+        unit = Unit.search(unit_name)
+        attr_type = db_session.query(cls).filter(and_(cls.name==name,cls.unit==unit)).first()
+        if not attr_type:
+            attr_type = cls(name=name,
+                            unit=unit,
+                            from_to=from_to,
+                            note=note,
+                            multi_value=multi_value)
+        return attr_type
+
+    def append(self, part_names):
         for part_name in part_names:
             part = Part.search(part_name)
-            part_map = PartAttrTypeMap(part=part, attr_type=attr_type)
-            attr_type.part_maps.append(part_map)
-
-        return attr_type
+            part_map = PartAttrTypeMap(part=part, attr_type=self)
+            self.part_maps.append(part_map)
+        return self
 
 
 class PartAttrTypeMap(Base):
@@ -195,6 +201,7 @@ class System(Base):
         assert not container is content, "Dont map the same Part to itself!"
         m = PartPartMap(container_part=container, content_part=content, quantity=quantity)
         self.part_maps.append(m)
+        return self
 
 
 class PartPartMap(Base):
@@ -218,13 +225,17 @@ class PartPartMap(Base):
 class PartSystemMap(Base):
     """
     A n:m connection from Part to System. Used to indicate that a Part contains
-    a System (containing Parts in turn).
+    a System 'contained_system' (containing Parts in turn). The connection
+    in turn belongs to a parent system 'system'
     """
     __table_args__ = (UniqueConstraint('part_id', 'system_id'),)
     part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     part = relationship(Part, backref='system_maps')
     system_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    system = relationship(System, backref='part_system_maps')
+    system = relationship(System, primaryjoin='System.id==PartSystemMap.system_id', backref='part_system_maps')
+    contained_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
+    contained_system = relationship(System, primaryjoin='System.id==PartSystemMap.contained_system_id', backref='part_contained_system_maps')
+    quantity = Column(Integer, nullable=False, server_default='1')
 
 
 class Attr(Base):

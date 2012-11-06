@@ -41,6 +41,8 @@ def get_connectors():
         M.Part(name='SATA'),
         M.Part(name='Audio port')
     ]),
+    M.Part(name='PCIe'), # number of lanes as attribute
+
     ]
 
     def _connectify(objs):
@@ -52,7 +54,7 @@ def get_connectors():
     return objs
 
 def get_parts():
-    parts = [
+    objs = [
     M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)'),
     M.Part(name='Audio controller'),
     M.Part(name='CPU', children=[
@@ -67,19 +69,34 @@ def get_parts():
     ]),
     M.Part(name='Casing', note='Computer casing'),
     M.Part(name='Motherboard'),
-    M.Part(name='RAM', children=[
-        M.Part(name='Flash memory'),
-        M.Part(name='SD-RAM', children=[
-            M.Part(name='DDR RAM'),
-        ])
-    ]),
+    M.Part(name='Flash memory'),
+    M.Part(name='DIMM'),
     M.Part(name='Power supply'),
     M.Part(name='Chipset'),
     M.Part(name='Harddrive'),
     M.Part(name='Memory card reader'),
     M.Part(name='Memory card controller'),
     ]
-    return parts
+
+    M.db_session.add_all(objs)
+    M.db_session.flush()
+
+    pin_count = M.AttrType.init('Pin count', 'Count').append(['DIMM'])
+    M.db_session.add(M.Attr(attr_type=pin_count, value='240'))
+    M.db_session.flush()
+
+
+    # http://en.wikipedia.org/wiki/DIMM
+    dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168})
+    dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184})
+    dimm240_ddr2 = M.Part.init('240-pin DIMM (DDR2 SDRAM)', 'DIMM', {'Pin count': 240})
+    dimm240_ddr3 = M.Part.init('240-pin DIMM (DDR3 SDRAM)', 'DIMM', {'Pin count': 240})
+
+    M.Part.append('SDRAM', [dimm168])
+    M.Part.append('DDR SDRAM', [dimm184])
+    M.Part.append('DDR2 SDRAM', [dimm240_ddr2])
+    M.Part.append('DDR3 SDRAM', [dimm240_ddr3])
+    return objs
 
 
 def get_standards():
@@ -94,17 +111,111 @@ def get_standards():
     ]),
 
     M.Part(name='RAM Standards', children=[
-        M.Part(name='DDR3', children=[
-            M.Part(name='DDR3-1333'),
-        ])
+        M.Part(name='SDRAM', children=[
+            # http://de.wikipedia.org/wiki/Synchronous_Dynamic_Random_Access_Memory#Verschiedene_Typen
+            M.Part(name='PC-66'),
+            M.Part(name='PC-100'),
+            M.Part(name='PC-133'),
+        ]),
+
+        M.Part(name='DDR SDRAM', children=[
+            # http://en.wikipedia.org/wiki/DDR_SDRAM#Chips_and_modules
+            M.Part(name='DDR-200'),
+            M.Part(name='DDR-266'),
+            M.Part(name='DDR-333'),
+            M.Part(name='DDR-400', children=[
+                M.Part(name='DDR-400A'),
+                M.Part(name='DDR-400B'),
+                M.Part(name='DDR-400C'),
+            ]),
+        ]),
+
+        M.Part(name='DDR2 SDRAM', children=[
+            # http://en.wikipedia.org/wiki/DDR2_SDRAM#Chips_and_modules
+            M.Part(name='DDR2-400', children=[
+                M.Part(name='DDR2-400B'),
+                M.Part(name='DDR2-400C'),
+            ]),
+            M.Part(name='DDR2-533', children=[
+                M.Part(name='DDR2-533B'),
+                M.Part(name='DDR2-533C'),
+            ]),
+            M.Part(name='DDR2-667', children=[
+                M.Part(name='DDR2-667C'),
+                M.Part(name='DDR2-667D'),
+            ]),
+            M.Part(name='DDR2-800', children=[
+                M.Part(name='DDR2-800C'),
+                M.Part(name='DDR2-800D'),
+                M.Part(name='DDR2-800E'),
+            ]),
+            M.Part(name='DDR2-1066', children=[
+                M.Part(name='DDR2-1066E'),
+                M.Part(name='DDR2-1066F'),
+            ]),
+        ]),
+
+        M.Part(name='DDR3 SDRAM', children=[
+            # http://en.wikipedia.org/wiki/DDR3_SDRAM#JEDEC_standard_modules
+            M.Part(name='DDR3-800', children=[
+                M.Part(name='DDR3-800D'),
+                M.Part(name='DDR3-800E'),
+            ]),
+            M.Part(name='DDR3-1066', children=[
+                M.Part(name='DDR3-1066E'),
+                M.Part(name='DDR3-1066F'),
+                M.Part(name='DDR3-1066G'),
+            ]),
+            M.Part(name='DDR3-1333', children=[
+                M.Part(name='DDR3-1333F'),
+                M.Part(name='DDR3-1333G'),
+                M.Part(name='DDR3-1333H'),
+                M.Part(name='DDR3-1333J'),
+            ]),
+            M.Part(name='DDR3-1600', children=[
+                M.Part(name='DDR3-1600G'),
+                M.Part(name='DDR3-1600H'),
+                M.Part(name='DDR3-1600J'),
+                M.Part(name='DDR3-1600K'),
+            ]),
+            M.Part(name='DDR3-1866', children=[
+                M.Part(name='DDR3-1866J'),
+                M.Part(name='DDR3-1866K'),
+                M.Part(name='DDR3-1866L'),
+                M.Part(name='DDR3-1866M'),
+            ]),
+            M.Part(name='DDR3-2133', children=[
+                M.Part(name='DDR3-2133K'),
+                M.Part(name='DDR3-2133L'),
+                M.Part(name='DDR3-2133M'),
+                M.Part(name='DDR3-2133N'),
+            ]),
+        ]),
     ]),
 
     M.Part(name='CPU Socket Standard', children=[
         M.Part(name='Socket 1155')
     ]),
-
-    M.Part(name='PCIe x16 Socket (Standard)'),
+    M.Part(name='AGP (Standard)'),
+    M.Part(name='PCI (Standard)', children=[
+        # http://en.wikipedia.org/wiki/Conventional_PCI#History
+        M.Part(name='PCI 1.0'), # year=1992
+        M.Part(name='PCI 2.0'), # year=1993
+        M.Part(name='PCI 2.1'), # year=1995
+        M.Part(name='PCI 2.2'), # year=1998
+        M.Part(name='PCI 2.3'), # year=2002
+        M.Part(name='PCI 3.0'), # year=2002
+    ]),
+    M.Part(name='PCI Express', children=[
+        # http://en.wikipedia.org/wiki/PCI_Express#History_and_revisions
+        M.Part(name='PCIe 1.0a'),
+        M.Part(name='PCIe 1.1'),
+        M.Part(name='PCIe 2.0'),
+        M.Part(name='PCIe 2.1'),
+        M.Part(name='PCIe 3.0'),
+    ]),
     M.Part(name='USB', children=[
+        M.Part(name='USB 1'),
         M.Part(name='USB 2.0'),
         M.Part(name='USB 3.0'),
     ]),
@@ -148,7 +259,7 @@ def get_attr_types():
     #TODO: at_socket_package = M.AttrType(name='Package', part=p_cpusocket)
     M.AttrType.init('Year of introduction', 'Year'),
 
-    M.AttrType.init('Pin count', 'Count', ['CPU-Socket']),
+    M.AttrType.init('Pin count', 'Count').append(['CPU-Socket']),
     M.AttrType.init('Pin pitch', 'Millimeter', ['CPU-Socket']),
     M.AttrType.init('Bus speed', 'Megahertz', ['CPU-Socket'], from_to=True),
 
@@ -223,7 +334,7 @@ def get_objects_computer_BA():
         'Version': '15.2.9',
         'Frequency': '2800',
     })
-    M.Part.append('32bit', p_hp_pentium4)
+    M.Part.append('32bit', [p_hp_pentium4])
 
     system = M.System()
     system.add_part_mapping(p_hpd530, p_mini_tower)
@@ -271,55 +382,49 @@ def get_objects_computer_alt():
         'Maximal RAM capacity': 16384
     })
 
-    p_ram = M.Part.init('Anonymous RAM', 'DDR RAM', {'RAM Size': 2048})
-    M.Part.append('DDR3-1333', p_ram)
+    p_ram = M.Part.init('Anonymous RAM', 'DDR SDRAM', {'RAM Size': 2048})
+    M.Part.append('DDR3-1333', [p_ram])
 
-    p_ramsocket = M.Part(name='DDR3 RAM Socket',
-                         parent_part=M.Part.search('RAM Socket'),
-                         is_connector=True)
-    M.Part.append('DDR3', p_ramsocket)
+    p_ramsocket = M.Part.search('240-pin DIMM (DDR3 SDRAM)')
 
     p_chipset = M.Part.init('Intel B75 Express', 'Chipset', {'Vendor': 'Intel'})
 
-    p_pci = M.Part(name='Anonymous PCIe x16 Socket',
-                   parent_part=M.Part.search('PCIe x16 Socket'),
-                   is_connector=True)
-    M.Part.append('PCIe x16 Socket (Standard)', p_pci)
+    p_pci = M.Part.search('PCIe x16 Socket')
 
     p_usb2_port = M.Part(name='Anonymous USB 2.0 Port',
                          parent_part=M.Part.search('USB 2.0 Port'),
                          is_connector=True)
-    M.Part.append('USB 2.0', p_usb2_port)
+    M.Part.append('USB 2.0', [p_usb2_port])
 
     # HELP: Ports may support multiple standards
     p_usb3_port = M.Part(name='Anonymous USB 3.0 Port',
                          parent_part=M.Part.search('USB 3.0 Port'),
                          is_connector=True)
-    M.Part.append('USB 2.0', p_usb3_port)
-    M.Part.append('USB 3.0', p_usb3_port)
+    M.Part.append('USB 2.0', [p_usb3_port])
+    M.Part.append('USB 3.0', [p_usb3_port])
 
     p_rj45 = M.Part(name='Anonymous RJ-45',
                     parent_part=M.Part.search('RJ-45'),
                     is_connector=True)
-    M.Part.append('Ethernet (10Mbits)', p_rj45)
-    M.Part.append('Fast Ethernet (100Mbits)', p_rj45)
-    M.Part.append('Gigabit Ethernet (1000Mbits)', p_rj45)
+    M.Part.append('Ethernet (10Mbits)', [p_rj45])
+    M.Part.append('Fast Ethernet (100Mbits)', [p_rj45])
+    M.Part.append('Gigabit Ethernet (1000Mbits)', [p_rj45])
 
     p_harddrive = M.Part.init('Anonymous harddrive', 'Harddrive', {
         'Harddrive size': 500
     })
-    M.Part.append('SATA (Standard)', p_harddrive)
+    M.Part.append('SATA (Standard)', [p_harddrive])
 
     # HELP: A memory card reader can be seperated into a controller being on the
     # motherboard and the card ports being in the casing
     p_card_reader_controller = M.Part(name='Anonymous card reader controller',
                                       parent_part=M.Part.search('Memory card controller'))
-    M.Part.append('SD card', p_card_reader_controller)
-    M.Part.append('MMC card', p_card_reader_controller)
-    M.Part.append('MMCplus card', p_card_reader_controller)
-    M.Part.append('xD card', p_card_reader_controller)
-    M.Part.append('MS card', p_card_reader_controller)
-    M.Part.append('MS PRO card', p_card_reader_controller)
+    M.Part.append('SD card', [p_card_reader_controller])
+    M.Part.append('MMC card', [p_card_reader_controller])
+    M.Part.append('MMCplus card', [p_card_reader_controller])
+    M.Part.append('xD card', [p_card_reader_controller])
+    M.Part.append('MS card', [p_card_reader_controller])
+    M.Part.append('MS PRO card', [p_card_reader_controller])
 
     p_cpusocket = M.Part.search('CPU-Socket') # anonymous
     p_audioport = M.Part.search('Audio port') # anonymous

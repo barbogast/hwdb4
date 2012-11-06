@@ -62,9 +62,10 @@ def reset_db(args):
     M.init_scoped_session(engine)
 
     M.db_session.add_all(init_data.get_units())
+    M.db_session.add_all(init_data.get_standards())
+    M.db_session.flush()
     M.db_session.add_all(init_data.get_connectors())
     M.db_session.add_all(init_data.get_parts())
-    M.db_session.add_all(init_data.get_standards())
     M.db_session.flush()
     M.db_session.add_all(init_data.get_attr_types())
     M.db_session.flush()
