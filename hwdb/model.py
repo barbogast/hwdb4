@@ -100,11 +100,13 @@ class Part(_DisplayNameMixin, Base):
     def init(cls, name, parent_part_name, attributes={}):
         """
         Create a Part and return it.
-        :param attributes: dict (key=AttrType-object, value=value). For each
-          key/value pair an Attr object will be created and associated with the
-          new Part. The key must be a String with which an AttrType object will
-          be looked up. The value must be the value of the resulting Attr.
-        :param name: string
+        :param attributes: dict (key=AttrType-name, value=value). For each
+          key/value pair:
+            - an AttrType object will be looked up by the given name
+            - an Attr will be looked up with the AttrType and the given value
+            - if no Attr was found, it will be created
+            - a PartAttrMap will be created with the new Part and Attr
+            - the PartAttrMap will be created to the new Part
         :param parent_part: A Part with this name will be searched and set as
           parent_part
         """
@@ -146,7 +148,8 @@ class AttrType(_DisplayNameMixin, Base):
     def init(cls, name, unit_name, part_names=[], from_to=False, note=None, multi_value=False):
         """
         Creates + returns an AttrType object with a PartAttrTypeMap for every
-        Part which will be looked up by the given part name.
+        given part name. The corresponding Part object and the Unit object will
+        be looked up by the given names.
         """
         attr_type = cls(name=name,
                         unit=Unit.search(unit_name),
