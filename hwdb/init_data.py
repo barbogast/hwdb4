@@ -25,25 +25,34 @@ def get_units():
     ]
 
 
-def get_parts():
-    parts = [
-    # Sockets & Ports
-    M.Part(name='Socket', note='Generic parent for all kinds of sockets', is_connector=True, children=[
-        M.Part(name='CPU-Socket', is_connector=True),
-        M.Part(name='RAM Socket', is_connector=True),
-        M.Part(name='PCIe Socket', is_connector=True, children=[
-            M.Part(name='PCIe x16 Socket', is_connector=True),
+def get_connectors():
+    objs = [
+    M.Part(name='Socket', note='Generic parent for all kinds of sockets', children=[
+        M.Part(name='CPU-Socket'),
+        M.Part(name='RAM Socket'),
+        M.Part(name='PCIe Socket', children=[
+            M.Part(name='PCIe x16 Socket'),
         ])
     ]),
-    M.Part(name='Port', note='Generic parent for all kinds of ports', is_connector=True, children=[
-        M.Part(name='USB 2.0 Port', is_connector=True),
-        M.Part(name='USB 3.0 Port', is_connector=True),
-        M.Part(name='RJ-45', is_connector=True),
-        M.Part(name='SATA', is_connector=True),
-        M.Part(name='Audio port', is_connector=True)
+    M.Part(name='Port', note='Generic parent for all kinds of ports', children=[
+        M.Part(name='USB 2.0 Port'),
+        M.Part(name='USB 3.0 Port'),
+        M.Part(name='RJ-45'),
+        M.Part(name='SATA'),
+        M.Part(name='Audio port')
     ]),
+    ]
 
-    # Components
+    def _connectify(objs):
+        for c in objs:
+            c.is_connector = True
+            _connectify(c.children)
+
+    _connectify(objs)
+    return objs
+
+def get_parts():
+    parts = [
     M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)'),
     M.Part(name='Audio controller'),
     M.Part(name='CPU', children=[
@@ -121,13 +130,12 @@ def get_standards():
     ])
     ]
 
-    def _childrenify(o):
-        o.is_standard = True
-        for c in o.children:
-            _childrenify(c)
+    def _standardify(objs):
+        for o in objs:
+            o.is_standard = True
+            _standardify(o.children)
 
-    for o in objs:
-        _childrenify(o)
+    _standardify(objs)
     return objs
 
 
