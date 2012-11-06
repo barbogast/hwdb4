@@ -25,13 +25,7 @@ debug = False
 
 
 def init_admin(app):
-    # Custom AdminIndexView to change the rendered template
-    class MyIndexView(AdminIndexView):
-        @expose()
-        def index(self):
-            return self.render('admin_index.html')
-
-    admin = Admin(app, index_view=MyIndexView())
+    admin = Admin(app, AdminIndexView(template='admin_index.html'))
     for name, klass in sorted(M.get_model_classes().items()):
         admin.add_view(ModelView(klass, M.db_session))
 
