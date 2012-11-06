@@ -64,7 +64,7 @@ def attributes():
                               func.count('*').label('cnt')).\
                     join(M.PartAttrMap).\
                     join(M.Part).\
-                    group_by(M.Attr.value).\
+                    group_by(M.Attr.value, M.Attr.attr_type_id).\
                     subquery()
 
     attributes = M.db_session.query(M.Attr).\
