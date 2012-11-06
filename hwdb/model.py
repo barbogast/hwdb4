@@ -185,26 +185,7 @@ class PartAttrTypeMap(Base):
         return '%s - %s' % (self.part.name, self.attr_type.name)
 
 
-class System(Base):
-    """
-    A System is used to group PartMaps to indicate the they occur together.
-    """
-    def __unicode__(self):
-        return str(self.id)
-
-    def add_part_mapping(self, container, content, quantity=1):
-        """
-        Adds a new PartPartMap to the system
-        """
-        assert isinstance(container, Part), "Container is not of type Part but %s" % (container,)
-        assert isinstance(content, Part), "Content is not of type Part but %s" % (content,)
-        assert not container is content, "Dont map the same Part to itself!"
-        m = PartPartMap(container_part=container, content_part=content, quantity=quantity)
-        self.part_maps.append(m)
-        return self
-
-
-class PartPartMap(Base):
+class PartConnection(Base):
     """
     A m:n connection from Part to itself. Used to describe that a Part contains
     other Parts. For examples see docstring of Part. The column `quantity` is
@@ -215,26 +196,10 @@ class PartPartMap(Base):
     __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     container_part = relationship(Part, primaryjoin='Part.id==PartPartMap.container_part_id', backref='content_maps')
-    content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    content_part = relationship(Part, primaryjoin='Part.id==PartPartMap.content_part_id', backref='container_maps')
-    system_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
-    system = relationship(System, backref='part_maps')
-    quantity = Column(Integer, nullable=False, server_default='1')
-
-
-class PartSystemMap(Base):
-    """
-    A n:m connection from Part to System. Used to indicate that a Part contains
-    a System 'contained_system' (containing Parts in turn). The connection
-    in turn belongs to a parent system 'system'
-    """
-    __table_args__ = (UniqueConstraint('part_id', 'system_id'),)
-    part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    part = relationship(Part, backref='system_maps')
-    system_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    system = relationship(System, primaryjoin='System.id==PartSystemMap.system_id', backref='part_system_maps')
-    contained_system_id = Column(Integer, ForeignKey(System.id), nullable=False)
-    contained_system = relationship(System, primaryjoin='System.id==PartSystemMap.contained_system_id', backref='part_contained_system_maps')
+    contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    contained_part = relationship(Part, primaryjoin='Part.id==PartPartMap.content_part_id', backref='container_maps')
+    parent_part_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
+    parent_part = relationship(System, backref='part_maps')
     quantity = Column(Integer, nullable=False, server_default='1')
 
 
