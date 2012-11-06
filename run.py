@@ -10,7 +10,7 @@ import subprocess
 from flask import Flask, send_file
 from sqlalchemy.orm import scoped_session
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.admin import Admin, expose, AdminIndexView
+from flask.ext.admin import Admin, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
 from flask_debugtoolbar import DebugToolbarExtension
 import sadisplay
@@ -27,7 +27,7 @@ debug = False
 
 
 def init_admin(app):
-    admin = Admin(app, AdminIndexView(template='admin_index.html'))
+    admin = Admin(app, index_view=AdminIndexView(template='admin_index.html'))
     for name, klass in sorted(M.get_model_classes().items()):
         admin.add_view(ModelView(klass, M.db_session))
 
