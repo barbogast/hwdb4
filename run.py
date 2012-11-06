@@ -9,8 +9,10 @@ import subprocess
 
 from flask import Flask, send_file
 from sqlalchemy.orm import scoped_session
+from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin, expose, AdminIndexView
 from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask_debugtoolbar import DebugToolbarExtension
 import sadisplay
 
 import hwdb.model as M
@@ -31,13 +33,17 @@ def init_admin(app):
 
 
 def run_ui(args):
-    engine = M.get_engine(dbpath, debug)
-    M.init_scoped_session(engine)
     app = Flask(__name__, static_folder='hwdb/static', template_folder='hwdb/templates')
+    app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
+    app.config['SQLALCHEMY_ECHO'] = False
     app.debug = True
     app.secret_key = 'Todo'
     app.register_blueprint(ui.bp)
+
+    db = SQLAlchemy(app)
+    M.db_session = db.session
     init_admin(app)
+    toolbar = DebugToolbarExtension(app)
     app.run()
 
 

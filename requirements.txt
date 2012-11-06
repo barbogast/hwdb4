@@ -1,10 +1,15 @@
 Flask
 Flask-Admin>=1.0.3
+Flask-SQLAlchemy
 SQLAlchemy
 requests
 Flask-HTMLBuilder
 sadisplay
 nose
+
+# Debugtoolbar
+Flask-DebugToolbar
+Pygments
 
 # For Python 2.6:
 argparse
