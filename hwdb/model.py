@@ -113,7 +113,7 @@ class Part(_DisplayNameMixin, Base):
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
             attr = db_session.query(Attr).\
-                filter(and_(Attr.attr_type==attr_type, value==value)).\
+                filter(and_(Attr.attr_type==attr_type, Attr.value==value)).\
                 first()
             if not attr:
                 attr = Attr(value=value, attr_type=attr_type)
