@@ -7,7 +7,15 @@
     <dl>
     {% for attr_map in part.attr_maps %}
         <dt>{{attr_map.attr.attr_type.name}}<dt>
-        <dd>{{attr_map.attr.attr_type.unit.format|safe % {'unit': attr_map.attr.value}}}<dd>
+        <dd>
+          {% if attr_map.attr.part_maps|length > 1 %}
+            <a href="/attributes">
+          {% endif %}
+          {{attr_map.attr.attr_type.unit.format|safe % {'unit': attr_map.attr.value}}}<dd>
+          {% if attr_map.attr.part_maps|length > 1 %}
+            </a>
+          {% endif %}
+
     {% endfor %}
     </dl>
   </div>
