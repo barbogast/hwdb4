@@ -283,7 +283,7 @@ def get_model_classes():
     return _model_classes
 
 
-def search_PartAttrTypeMap(attr_type, part):
+def search_PartAttrTypeMap(part, attr_type):
     """
     Searches a part and its parent recursivly for an PartAttrTypeMap
     with the given attr_type.
@@ -295,7 +295,7 @@ def search_PartAttrTypeMap(attr_type, part):
     if mapping:
         return mapping
     elif part.parent_part:
-        return search_PartAttrTypeMap(attr_type, part.parent_part)
+        return search_PartAttrTypeMap(part.parent_part, attr_type)
     else:
         return None
 
