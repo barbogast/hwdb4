@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Attributes</h1>
+    <ul>
+    {% for attribute in attributes %}
+        <li>
+            {{attribute.attr_type.name}}: <strong>{{attribute.value}}</strong>
+            <ul>
+            {% for part_attr_map in attribute.part_maps %}
+                <li>
+                    <a href="/parts?id={{part_attr_map.part.id}}">
+                        {{part_attr_map.part.name}}
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
