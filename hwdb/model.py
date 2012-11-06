@@ -26,7 +26,7 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 db_session = None
 
 
-class _DisplayNameMixin(object):
+class _TableWithNameColMixin(object):
     """ Adds a default representation for SQLAlchemy objects """
     def __unicode__(self):
         return self.name
@@ -61,7 +61,7 @@ _model_classes = {}
 Base = declarative_base(cls=_MyBase, class_registry=_model_classes)
 
 
-class Unit(_DisplayNameMixin, Base):
+class Unit(_TableWithNameColMixin, Base):
     """
     The unit which describes the values of Attributes. Examples: meter, volt
     """
@@ -70,7 +70,7 @@ class Unit(_DisplayNameMixin, Base):
     note = Column(String, nullable=True, unique=False)
 
 
-class Part(_DisplayNameMixin, Base):
+class Part(_TableWithNameColMixin, Base):
     """
     A Part represents a hardware part or an IT standard.
     As a hardware part it can be an abstract part like 'cpu' or a specific part
@@ -130,7 +130,7 @@ class Part(_DisplayNameMixin, Base):
 
 
 
-class AttrType(_DisplayNameMixin, Base):
+class AttrType(_TableWithNameColMixin, Base):
     """
     An AttrType describes an type of attribute. It will be associated with an
     Attr which is in turn associated with a part and has the actual value.
