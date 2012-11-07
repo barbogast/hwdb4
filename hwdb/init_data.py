@@ -3,6 +3,7 @@ from hwdb import model as M
 
 def get_units():
     return [
+    M.Unit(name='Nanosecond', format='%(unit)s ns'),
     M.Unit(name='Nanometer', format='%(unit)s nm'),
     M.Unit(name='Millimeter', format='%(unit)s mm'),
     M.Unit(name='Megahertz', format='%(unit)s MHz', note='We dont use the minimal unit Hertz because processors are in the MHz area'),
@@ -13,7 +14,8 @@ def get_units():
     M.Unit(name='Byte', format='%(unit)s Byte'),
     M.Unit(name='Megabyte', format='%(unit)s Megabyte'),
     M.Unit(name='Gigabyte', format='%(unit)s Gigabyte'),
-    M.Unit(name='Megatransfer/Second', format='%(unit)s MT/s', note='used with Front side bus'),
+    M.Unit(name='Megatransfer/Second', format='%(unit)s MT/s'),
+    M.Unit(name='Megabyte/Second', format='%(unit)s MB/s'),
     M.Unit(name='Factor', format='%(unit)sx', note='ie cpu clock multiplier'),
     M.Unit(name='Volt', format='%(unit)s V'),
     M.Unit(name='Watt', format='%(unit)s W'),
@@ -22,6 +24,7 @@ def get_units():
     M.Unit(name='Text'),
     M.Unit(name='Boolean'),
     M.Unit(name='Hex'),
+    M.Unit(name='Number of clock cycles', note='Should this be merged with "Count"? Used for RAM timings'),
     ]
 
 
@@ -261,6 +264,7 @@ def get_standards():
 
 
 def get_attr_types():
+    ddr = ('DDR SDRAM (Standard)', 'DDR2 SDRAM (Standard)', 'DDR3 SDRAM (Standard)', )
     return [
     M.AttrType.init('Name', 'Text'),
     M.AttrType.init('Position', 'Order', note='The position of the associated Part in relation to other Parts'),
@@ -273,10 +277,12 @@ def get_attr_types():
     M.AttrType.init('Pin pitch', 'Millimeter').add_to_parts('CPU-Socket'),
     M.AttrType.init('Bus speed', 'Megahertz', from_to=True).add_to_parts('CPU-Socket'),
 
-    # CPU
     M.AttrType.init('Frequency', 'Megahertz').add_to_parts('CPU'),
+    M.AttrType.init('Memory clock', 'Megahertz').add_to_parts(*ddr),
+    M.AttrType.init('I/O bus clock', 'Megahertz').add_to_parts(*ddr),
     M.AttrType.init('L2 cache', 'Byte').add_to_parts('CPU'),
     M.AttrType.init('Front side bus', 'Megatransfer/Second').add_to_parts('CPU'),
+    M.AttrType.init('Data rate', 'Megatransfer/Second').add_to_parts(*ddr),
     M.AttrType.init('Clock multiplier', 'Factor').add_to_parts('CPU'),
     M.AttrType.init('Voltage range', 'Volt', from_to=True).add_to_parts('CPU'),
     M.AttrType.init('Thermal design power', 'Watt').add_to_parts('CPU'),
@@ -285,6 +291,13 @@ def get_attr_types():
     M.AttrType.init('Part number', 'Text', multi_value=True).add_to_parts('CPU'),
     M.AttrType.init('URL', 'Text').add_to_parts('CPU'),
     M.AttrType.init('Number of cores', 'Count').add_to_parts('CPU'),
+    M.AttrType.init('Cycle time', 'Nanosecond').add_to_parts(*ddr),
+    M.AttrType.init('Module name', 'Text').add_to_parts(*ddr),
+    M.AttrType.init('Peak transfer rate', 'Megabyte/Second').add_to_parts(*ddr),
+    M.AttrType.init('Column Address Strobe latency [CL]', 'Number of clock cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Address to Column Address Delay [T<lower>RCD</lower>]', 'Number of clock cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Precharge Time [T<lower>RP</lower>]', 'Number of clock cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Active Time [T<lower>RAS</lower>]', 'Number of clock cycles').add_to_parts(*ddr),
 
     # PC of BA
     M.AttrType.init('Modified', 'Boolean', note='Was this computer modified after initial delivery?').add_to_parts('Computer'),
