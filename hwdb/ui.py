@@ -83,25 +83,31 @@ def units():
 
 @bp.route("/combinations")
 def combinations():
-    def _get_html(part):
+    def _get_html(part, level):
         li_elements = []
         for mapping in part.contained_maps:
             if not mapping.contained_part.is_standard:
-                li_elements.append(_get_html(mapping.contained_part))
-        return H.li(
-                H.a(href="/parts?id=%s" % part.id)(part.name),
-                H.ul(li_elements)
-            )
+                li_elements.append(_get_html(mapping.contained_part, level+1))
+
+        if level == 1:
+            style, icon = '', 'icon-minus'
+        else:
+            style, icon = 'display: none;', 'icon-plus'
+        li = [H.i(class_=icon)()] if li_elements else []
+        li.append(H.a(href="/parts?id=%s" % part.id)(part.name))
+        li.append(H.ul(class_='icons collapsible', style=style)(li_elements))
+        return H.li(li)
 
     query = M.db_session.query(M.Part).\
         filter(and_(M.Part.contained_maps!=None,
                     M.Part.container_maps==None,
-                    M.Part.is_standard==False))
+                    M.Part.is_standard==False)).\
+        order_by(M.Part.name)
 
     li_elements = []
     for part in query:
-        li_elements.append(_get_html(part))
-    doc = H.ul(li_elements)
+        li_elements.append(_get_html(part, 1))
+    doc = H.ul(class_='icons collapsible')(li_elements)
     return render_template_string(base_template, heading='Combinations', content=doc)
 
 @bp.route("/attributes")

@@ -5,6 +5,38 @@
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-combined.min.css" rel="stylesheet">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<style type='text/css'>
+ul { list-style:square url("sqpurple.gif"); }
+
+/* make room for long AttrType names */
+.dl-horizontal dt { width: 260px; }
+.dl-horizontal dd { margin-left: 280px; }
+
+/* <li> with custom icon */
+ul.icons {
+  list-style-type: none;
+  margin-left: 2em;
+  text-indent: -1.0em;
+}
+li [class^="icon-"], li [class*=" icon-"] {
+  display: inline-block;
+  width: 1.25em;
+  text-align: center;
+}
+</style>
+<script type="text/javascript">
+$(function() {
+
+$("i", "ul.collapsible").each(function(){
+  $(this).click(function () {
+    $(this).toggleClass('icon-minus').toggleClass('icon-plus');
+    $(this).find('~ ul').toggle(100);
+  })
+});
+
+});
+
+</script>
   </head>
 
   <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
@@ -29,8 +61,6 @@
      </div>
    </div>
  </div>
-
-
 
     {% block body %}
     {% endblock %}
