@@ -343,11 +343,10 @@ def get_objects_computer_BA():
     })
     M.Part.append('32bit (Standard)', [p_hp_pentium4])
 
-    system = M.System()
-    system.add_part_mapping(p_hpd530, p_mini_tower)
-    system.add_part_mapping(p_mini_tower, p_hpmboard)
-    system.add_part_mapping(p_hpmboard, p_hp_pentium4)
-    return [system]
+    p_hpd530.add_part_connection(p_hpd530, p_mini_tower)
+    p_hpd530.add_part_connection(p_mini_tower, p_hpmboard)
+    p_hpd530.add_part_connection(p_hpmboard, p_hp_pentium4)
+    return [p_hpd530]
 
 
 def get_objects_computer_alt():
@@ -437,38 +436,35 @@ def get_objects_computer_alt():
     p_audiocontr = M.Part.search('Audio controller') # anonymous
     p_sata = M.Part.search('SATA') # anonymous
 
-    system = M.System()
-    system.add_part_mapping(p_m1935, p_mini_tower)
+    p_m1935.add_part_connection(p_m1935, p_mini_tower)
 
-    system.add_part_mapping(p_mini_tower, p_power_supply)
-    system.add_part_mapping(p_mini_tower, p_motherboard)
-    system.add_part_mapping(p_mini_tower, p_mem_card_sd)
-    system.add_part_mapping(p_mini_tower, p_mem_card_mmc)
-    system.add_part_mapping(p_mini_tower, p_mem_card_mmcplus)
-    system.add_part_mapping(p_mini_tower, p_mem_card_xd)
-    system.add_part_mapping(p_mini_tower, p_mem_card_ms)
-    system.add_part_mapping(p_mini_tower, p_mem_card_mspro)
+    p_m1935.add_part_connection(p_mini_tower, p_power_supply)
+    p_m1935.add_part_connection(p_mini_tower, p_motherboard)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_sd)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_mmc)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_mmcplus)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_xd)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_ms)
+    p_m1935.add_part_connection(p_mini_tower, p_mem_card_mspro)
 
-    system.add_part_mapping(p_motherboard, p_cpusocket)
-    system.add_part_mapping(p_motherboard, p_ramsocket, 4)
-    system.add_part_mapping(p_motherboard, p_chipset)
-    system.add_part_mapping(p_motherboard, p_pci)
-    system.add_part_mapping(p_motherboard, p_usb2_port, 6)
-    system.add_part_mapping(p_motherboard, p_usb3_port, 2)
-    system.add_part_mapping(p_motherboard, p_audioport, 2)
-    system.add_part_mapping(p_motherboard, p_rj45)
-    system.add_part_mapping(p_motherboard, p_audiocontr)
-    system.add_part_mapping(p_motherboard, p_card_reader_controller)
-    system.add_part_mapping(p_motherboard, p_sata)
-    system.add_part_mapping(p_ramsocket, p_ram, 2)
-    system.add_part_mapping(p_sata, p_harddrive)
-    system.add_part_mapping(p_cpusocket, p_cpu)
-    system.add_part_mapping(p_cpu, p_mem_contr)
-    system.add_part_mapping(p_cpu, M.Part.search('SSE 4.x (Standard)'))
-    system.add_part_mapping(p_cpu, M.Part.search('64bit (Standard)'))
-    system.add_part_mapping(p_cpu, M.Part.search('XD bit (Standard)'))
-    system.add_part_mapping(p_cpu, M.Part.search('Smart Cache (Standard)'))
+    p_m1935.add_part_connection(p_motherboard, p_cpusocket)
+    p_m1935.add_part_connection(p_motherboard, p_ramsocket, 4)
+    p_m1935.add_part_connection(p_motherboard, p_chipset)
+    p_m1935.add_part_connection(p_motherboard, p_pci)
+    p_m1935.add_part_connection(p_motherboard, p_usb2_port, 6)
+    p_m1935.add_part_connection(p_motherboard, p_usb3_port, 2)
+    p_m1935.add_part_connection(p_motherboard, p_audioport, 2)
+    p_m1935.add_part_connection(p_motherboard, p_rj45)
+    p_m1935.add_part_connection(p_motherboard, p_audiocontr)
+    p_m1935.add_part_connection(p_motherboard, p_card_reader_controller)
+    p_m1935.add_part_connection(p_motherboard, p_sata)
+    p_m1935.add_part_connection(p_ramsocket, p_ram, 2)
+    p_m1935.add_part_connection(p_sata, p_harddrive)
+    p_m1935.add_part_connection(p_cpusocket, p_cpu)
+    p_m1935.add_part_connection(p_cpu, p_mem_contr)
+    p_m1935.add_part_connection(p_cpu, M.Part.search('SSE 4.x (Standard)'))
+    p_m1935.add_part_connection(p_cpu, M.Part.search('64bit (Standard)'))
+    p_m1935.add_part_connection(p_cpu, M.Part.search('XD bit (Standard)'))
+    p_m1935.add_part_connection(p_cpu, M.Part.search('Smart Cache (Standard)'))
 
-    return [system]
-
-
+    return [p_m1935]
