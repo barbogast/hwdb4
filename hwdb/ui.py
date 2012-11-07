@@ -2,7 +2,7 @@
 Author: Benjamin Arbogast
 """
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, render_template_string, request
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import and_
 from sqlalchemy import func
@@ -72,3 +72,38 @@ def attributes():
                     filter(stmt.c.cnt > 1).\
                     all()
     return render_template('attributes.html', attributes=attributes)
+
+@bp.route("/standards")
+def standards():
+    def _get_html(parent_part):
+        lis = []
+        query = M.db_session.query(M.Part).\
+            filter(and_(M.Part.parent_part==parent_part,
+                        M.Part.is_standard==True))
+        for standard in query:
+            # remove " (Standard)" from the end of the name
+            name = standard.name[:-1*len(' (Standard)')]
+            parts = []
+            for pc in standard.contained_maps:
+                if parts:
+                    parts.append(', ')
+                a = H.a(href="/parts?id=%s" % pc.contained_part.id)(pc.contained_part.name)
+                parts.append(a)
+            contained_parts = [': '] + parts if parts else ''
+
+            lis.append(H.li(
+                H.a(href="/parts?id=%s" % standard.id)(name),
+                contained_parts,
+                _get_html(standard)))
+        return H.ul(lis)
+
+    doc = _get_html(None)
+
+    tmpl = '''
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Standards</h1>
+    {{ doc }}
+{% endblock %}'''
+    return render_template_string(tmpl, doc=doc)
