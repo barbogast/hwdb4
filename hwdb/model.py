@@ -70,6 +70,13 @@ class Unit(_TableWithNameColMixin, Base):
     note = Column(String, nullable=True, unique=False)
 
 
+# Note: this is used to store attributes which were inserted into the
+# database. It is used to access Attr objects before they are commited
+# to the database. This way newly created Attr objects can be shared
+# between different parts before they are inserted. The key for this
+# dict is '%s.%s' % (attr_type.id, value)
+_attr_cache = {}
+
 class Part(_TableWithNameColMixin, Base):
     """
     A Part represents a hardware part or an IT standard.
@@ -116,11 +123,16 @@ class Part(_TableWithNameColMixin, Base):
             attr_type = AttrType.search(attr_type_name)
             if not search_PartAttrTypeMap(part, attr_type):
                 raise Exception('AttrType %s is not registered for %s' % (attr_type.name, part.name))
-            attr = db_session.query(Attr).\
-                filter(and_(Attr.attr_type==attr_type, Attr.value==value)).\
-                first()
+
+            key = '%s.%s' % (attr_type.id, value)
+            attr = _attr_cache.get(key)
+            if not attr:
+                attr = db_session.query(Attr).\
+                    filter(and_(Attr.attr_type==attr_type, Attr.value==value)).\
+                    first()
             if not attr:
                 attr = Attr(value=value, attr_type=attr_type)
+                _attr_cache[key] = attr
             attr_map = PartAttrMap(part=part, attr=attr)
             part.attr_maps.append(attr_map)
         return part

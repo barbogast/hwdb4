@@ -312,17 +312,6 @@ def get_attr_types():
     ]
 
 
-def get_common_attributes():
-    # Note: Attributes whose values should be contained in multiple Parts
-    # have to be defined here so that the inserts can be commited and
-    # SQLAlchemy can find them.
-    return [
-    M.Attr(attr_type=M.AttrType.search('Vendor'), value='Hewlett-Packard'),
-    M.Attr(attr_type=M.AttrType.search('Vendor'), value='Intel'),
-    M.Attr(attr_type=M.AttrType.search('Serial number'), value='CZC4301WB9')
-    ]
-
-
 def get_objects_computer_BA():
     p_hpd530 = M.Part.init('HP d530 CMT(DF368A)', 'Desktop', {
         'Vendor': 'Hewlett-Packard',
