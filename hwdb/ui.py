@@ -83,8 +83,26 @@ def units():
 
 @bp.route("/combinations")
 def combinations():
-    root_parts = M.db_session.query(M.Part).filter(and_(M.Part.contained_maps!=None, M.Part.container_maps==None))
-    return render_template('combinations.html', root_parts=root_parts)
+    def _get_html(part):
+        li_elements = []
+        for mapping in part.contained_maps:
+            if not mapping.contained_part.is_standard:
+                li_elements.append(_get_html(mapping.contained_part))
+        return H.li(
+                H.a(href="/parts?id=%s" % part.id)(part.name),
+                H.ul(li_elements)
+            )
+
+    query = M.db_session.query(M.Part).\
+        filter(and_(M.Part.contained_maps!=None,
+                    M.Part.container_maps==None,
+                    M.Part.is_standard==False))
+
+    li_elements = []
+    for part in query:
+        li_elements.append(_get_html(part))
+    doc = H.ul(li_elements)
+    return render_template_string(base_template, heading='Combinations', content=doc)
 
 @bp.route("/attributes")
 def attributes():
