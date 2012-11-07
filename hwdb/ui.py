@@ -13,6 +13,16 @@ import hwdb.model as M
 
 bp = Blueprint('ui', __name__, template_folder='templates')
 
+base_template = '''
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>{{heading}}</h1>
+    {{content}}
+  </div>
+{% endblock %}'''
+
+
 @bp.route("/")
 def index():
     return render_template('index.html')
@@ -59,14 +69,7 @@ def parts():
                                         _get_html(part)))
             return H.ul(li_elements)
         doc = _get_html(None)
-        tmpl = '''
-{% extends "base.html" %}
-{% block body %}
-  <div class="container">
-    <h1>Parts</h1>
-    {{doc}}
-{% endblock %}'''
-        return render_template_string(tmpl, doc=doc)
+        return render_template_string(base_template, heading='Parts', content=doc)
 
 @bp.route('/attr_types')
 def attr_types():
@@ -125,12 +128,4 @@ def standards():
         return H.ul(lis)
 
     doc = _get_html(None)
-
-    tmpl = '''
-{% extends "base.html" %}
-{% block body %}
-  <div class="container">
-    <h1>Standards</h1>
-    {{ doc }}
-{% endblock %}'''
-    return render_template_string(tmpl, doc=doc)
+    return render_template_string(base_template, heading='Standards', content=doc)
