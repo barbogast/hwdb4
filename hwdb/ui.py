@@ -35,8 +35,25 @@ def parts():
         chain = H.join(reversed(li_elements))
         return render_template('parts_detail.html', part=part, parent_part_chain=chain)
     else:
-        root_parts = M.db_session.query(M.Part).filter_by(parent_part=None)
-        return render_template('parts.html', root_parts=root_parts)
+        def _get_html(parent_part):
+            query = M.db_session.query(M.Part).\
+                filter(and_(M.Part.parent_part==parent_part,
+                            M.Part.is_standard==False)).\
+                order_by(M.Part.name)
+            li_elements = []
+            for part in query:
+                a = H.a(href="/parts?id=%s" % part.id)(part.name)
+                li_elements.append(H.li(a, _get_html(part)))
+            return H.ul(li_elements)
+        doc = _get_html(None)
+        tmpl = '''
+{% extends "base.html" %}
+{% block body %}
+  <div class="container">
+    <h1>Parts</h1>
+    {{doc}}
+{% endblock %}'''
+        return render_template_string(tmpl, doc=doc)
 
 @bp.route('/attr_types')
 def attr_types():
