@@ -44,7 +44,7 @@ def parts():
         return render_template('parts.html', root_parts=root_parts)
 
 @bp.route('/attr_types')
-def attributes():
+def attr_types():
     attributes = M.db_session.query(M.AttrType).order_by('name')
     return render_template('attr_types.html', attributes=attributes)
 
