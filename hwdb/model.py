@@ -205,7 +205,7 @@ class PartConnection(Base):
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'contained_part_id', 'parent_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartConnection.container_part_id', backref='content_maps')
+    container_part = relationship(Part, primaryjoin='Part.id==PartConnection.container_part_id', backref='contained_maps')
     contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     contained_part = relationship(Part, primaryjoin='Part.id==PartConnection.contained_part_id', backref='container_maps')
     parent_part_id = Column(Integer, ForeignKey(Part.id))
