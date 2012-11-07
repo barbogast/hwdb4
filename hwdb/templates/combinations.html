@@ -7,24 +7,24 @@
     <li>
       {{ root_part.parent_part.name }}: <a href="/parts?id={{root_part.id}}">{{ root_part.name }}</a>
       <ul>
-        {% for content_map in root_part.content_maps %}
+        {% for content_map in root_part.contained_maps %}
         <li>
-          {{content_map.content_part.parent_part.name}}: <a href="/parts?id={{content_map.content_part.id}}">{{ content_map.content_part.name }}</a>
+          {{content_map.contained_part.parent_part.name}}: <a href="/parts?id={{content_map.contained_part.id}}">{{ content_map.contained_part.name }}</a>
 
           <ul>
-            {% for content_map_inner in content_map.content_part.content_maps %}
+            {% for content_map_inner in content_map.contained_part.contained_maps %}
             <li>
-              {{content_map_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner.content_part.id}}">{{ content_map_inner.content_part.name }}</a>
+              {{content_map_inner.contained_part.parent_part.name }}: <a href="/parts?id={{content_map_inner.contained_part.id}}">{{ content_map_inner.contained_part.name }}</a>
 
               <ul>
-                {% for content_map_inner_inner in content_map_inner.content_part.content_maps %}
+                {% for content_map_inner_inner in content_map_inner.contained_part.contained_maps %}
                 <li>
-                  {{content_map_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner.content_part.id}}">{{ content_map_inner_inner.content_part.name }}</a>
+                  {{content_map_inner_inner.contained_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner.contained_part.id}}">{{ content_map_inner_inner.contained_part.name }}</a>
 
                     <ul>
-                      {% for content_map_inner_inner_inner in content_map_inner_inner.content_part.content_maps %}
+                      {% for content_map_inner_inner_inner in content_map_inner_inner.contained_part.contained_maps %}
                       <li>
-                        {{content_map_inner_inner_inner.content_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner_inner.content_part.id}}">{{ content_map_inner_inner_inner.content_part.name }}</a>
+                        {{content_map_inner_inner_inner.contained_part.parent_part.name }}: <a href="/parts?id={{content_map_inner_inner_inner.contained_part.id}}">{{ content_map_inner_inner_inner.contained_part.name }}</a>
                       </li>
                       {% endfor %}
                     </ul>
