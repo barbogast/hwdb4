@@ -24,7 +24,7 @@ from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
 db_session = None
-
+SERVER_DEFAULT_FALSE = '0'
 
 class _TableWithNameColMixin(object):
     """ Adds a default representation for SQLAlchemy objects """
@@ -93,8 +93,8 @@ class Part(_TableWithNameColMixin, Base):
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
     name = Column(String, nullable=False)
     note = Column(String, nullable=True, unique=False)
-    is_standard = Column(Boolean)
-    is_connector = Column(Boolean)
+    is_standard = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
+    is_connector = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
 
     @classmethod
     def init(cls, name, parent_part_name, attributes={}):
@@ -153,8 +153,8 @@ class AttrType(_TableWithNameColMixin, Base):
     """
     name = Column(String, nullable=False, unique=False)
     note = Column(String, nullable=True, unique=False)
-    from_to = Column(Boolean)
-    multi_value = Column(Boolean)
+    from_to = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
+    multi_value = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
     unit_id = Column(Integer, ForeignKey(Unit.id), nullable=False)
     unit = relationship(Unit, backref='attr_types')
 
