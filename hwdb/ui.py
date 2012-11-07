@@ -42,8 +42,21 @@ def parts():
                 order_by(M.Part.name)
             li_elements = []
             for part in query:
+                standards = []
+                for pc in part.container_maps:
+                    standard = pc.container_part
+                    if not standard.is_standard:
+                        continue
+                    if standards:
+                        standards.append(', ')
+                    a = H.a(href="/parts?id=%s" % standard.id)(standard.name)
+                    standards.append(a)
+                container_parts = [': '] + standards if standards else ''
+
                 a = H.a(href="/parts?id=%s" % part.id)(part.name)
-                li_elements.append(H.li(a, _get_html(part)))
+                li_elements.append(H.li(a,
+                                        H.small(container_parts),
+                                        _get_html(part)))
             return H.ul(li_elements)
         doc = _get_html(None)
         tmpl = '''
