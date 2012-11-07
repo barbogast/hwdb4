@@ -120,8 +120,10 @@ def attributes():
                     subquery()
 
     attributes = M.db_session.query(M.Attr).\
+                    join(M.AttrType).\
                     join(stmt, M.Attr.id == stmt.c.attr_id).\
                     filter(stmt.c.cnt > 1).\
+                    order_by(M.AttrType.name).\
                     all()
     return render_template('attributes.html', attributes=attributes)
 
