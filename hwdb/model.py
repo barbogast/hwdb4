@@ -129,8 +129,14 @@ class Part(_TableWithNameColMixin, Base):
     def append(cls, container_part_name, contained_parts):
         container = cls.search(container_part_name)
         for contained_part in contained_parts:
-            mapping = PartPartMap(content_part=contained_part, container_part=container)
+            mapping = PartConnection(contained_part=contained_part, container_part=container)
             contained_part.container_maps.append(mapping)
+
+    def add_part_connection(self, container_part, contained_part, quantity=1):
+        part_conn = PartConnection(container_part=container_part,
+                                   contained_part=contained_part,
+                                   quantity=quantity)
+        self.part_connection_children.append(part_conn)
 
 
 class AttrType(_TableWithNameColMixin, Base):
@@ -190,19 +196,20 @@ class PartAttrTypeMap(Base):
 
 class PartConnection(Base):
     """
-    A m:n connection from Part to itself. Used to describe that a Part contains
-    other Parts. For examples see docstring of Part. The column `quantity` is
-    used if a Part is contained multiple times. To order the contained Parts
-    each one should be associated with the attribute `Position`.
-    Each PartMap is associated with a System.
+    This table is used to describe that one or multiple Parts are contained in /
+    connected to another Part.
+    Examples: CPU contained in Socket, Socket contained to Motherboard.
+    The connetions can be in turn assigned to a Part using the column parent_part.
+    Example: 'Socket X' connected with 'CPU Y' belongs to 'PC Z'.
+    The column quantity can be used if the same Part is contained multiple times.
     """
-    __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id', 'system_id'),)
+    __table_args__ = (UniqueConstraint('container_part_id', 'contained_part_id', 'parent_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartPartMap.container_part_id', backref='content_maps')
+    container_part = relationship(Part, primaryjoin='Part.id==PartConnection.container_part_id', backref='content_maps')
     contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    contained_part = relationship(Part, primaryjoin='Part.id==PartPartMap.content_part_id', backref='container_maps')
-    parent_part_id = Column(Integer, ForeignKey(System.id))# TODO: , nullable=False)
-    parent_part = relationship(System, backref='part_maps')
+    contained_part = relationship(Part, primaryjoin='Part.id==PartConnection.contained_part_id', backref='container_maps')
+    parent_part_id = Column(Integer, ForeignKey(Part.id))
+    parent_part = relationship(Part, primaryjoin='Part.id==PartConnection.parent_part_id', backref='part_connection_children')
     quantity = Column(Integer, nullable=False, server_default='1')
 
 
