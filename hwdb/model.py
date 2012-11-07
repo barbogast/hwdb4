@@ -125,18 +125,23 @@ class Part(_TableWithNameColMixin, Base):
             part.attr_maps.append(attr_map)
         return part
 
-    @classmethod
-    def append(cls, container_part_name, contained_parts):
-        container = cls.search(container_part_name)
-        for contained_part in contained_parts:
-            mapping = PartConnection(contained_part=contained_part, container_part=container)
-            contained_part.container_maps.append(mapping)
-
     def add_part_connection(self, container_part, contained_part, quantity=1):
+        """ Add a PartConnection as child of this Part """
         part_conn = PartConnection(container_part=container_part,
                                    contained_part=contained_part,
                                    quantity=quantity)
         self.part_connection_children.append(part_conn)
+
+
+def add_standards_to_part(part, *standard_names):
+    """
+    Add the Standards (=Parts) looked up by the given standard names to the
+    given Part
+    """
+    for standard_name in standard_names:
+        standard = Part.search(standard_name)
+        mapping = PartConnection(container_part=standard, contained_part=part)
+        part.container_maps.append(mapping)
 
 
 class AttrType(_TableWithNameColMixin, Base):
