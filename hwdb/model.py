@@ -205,11 +205,11 @@ class PartConnection(Base):
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'contained_part_id', 'parent_part_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    container_part = relationship(Part, primaryjoin='Part.id==PartConnection.container_part_id', backref='contained_maps')
+    container_part = relationship(Part, backref='contained_maps', primaryjoin='Part.id==PartConnection.container_part_id')
     contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
-    contained_part = relationship(Part, primaryjoin='Part.id==PartConnection.contained_part_id', backref='container_maps')
+    contained_part = relationship(Part, backref='container_maps', primaryjoin='Part.id==PartConnection.contained_part_id')
     parent_part_id = Column(Integer, ForeignKey(Part.id))
-    parent_part = relationship(Part, primaryjoin='Part.id==PartConnection.parent_part_id', backref='part_connection_children')
+    parent_part = relationship(Part, backref='part_connection_children', primaryjoin='Part.id==PartConnection.parent_part_id')
     quantity = Column(Integer, nullable=False, server_default='1')
 
 
