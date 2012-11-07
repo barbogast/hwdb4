@@ -91,7 +91,9 @@ def standards():
         lis = []
         query = M.db_session.query(M.Part).\
             filter(and_(M.Part.parent_part==parent_part,
-                        M.Part.is_standard==True))
+                        M.Part.is_standard==True)).\
+            order_by(M.Part.name)
+
         for standard in query:
             # remove " (Standard)" from the end of the name
             name = standard.name[:-1*len(' (Standard)')]
