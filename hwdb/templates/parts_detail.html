@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
   <div class="container">
-    {{parent_part_chain}}
     <h1>{{part.name}}</h1>
-
+    <ul class="breadcrumb">
+      <li><a href="/parts">Part</a></li>
+      {{parent_part_chain}}
+    </ul>
     <dl>
     {% for attr_map in part.attr_maps %}
         <dt>{{attr_map.attr.attr_type.name}}<dt>
