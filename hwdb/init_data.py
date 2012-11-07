@@ -418,7 +418,6 @@ def get_objects_computer_alt():
     p_harddrive = M.Part.init('Anonymous harddrive', 'Harddrive', {
         'Harddrive size': 500
     })
-    M.Part.append('SATA', [p_harddrive])
 
     # HELP: A memory card reader can be seperated into a controller being on the
     # motherboard and the card ports being in the casing
