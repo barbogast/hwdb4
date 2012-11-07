@@ -114,6 +114,8 @@ class Part(_TableWithNameColMixin, Base):
         part = cls(name=name, parent_part=parent_part)
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
+            if not search_PartAttrTypeMap(part, attr_type):
+                raise Exception('AttrType %s is not registered for %s' % (attr_type.name, part.name))
             attr = db_session.query(Attr).\
                 filter(and_(Attr.attr_type==attr_type, Attr.value==value)).\
                 first()
@@ -146,7 +148,7 @@ class AttrType(_TableWithNameColMixin, Base):
     unit = relationship(Unit, backref='attr_types')
 
     @classmethod
-    def init(cls, name, unit_name, part_names=[], from_to=False, note=None, multi_value=False):
+    def init(cls, name, unit_name, from_to=False, note=None, multi_value=False):
         """
         Creates + returns an AttrType object with a PartAttrTypeMap for every
         given part name. The corresponding Part object and the Unit object will
@@ -155,6 +157,7 @@ class AttrType(_TableWithNameColMixin, Base):
         unit = Unit.search(unit_name)
         attr_type = db_session.query(cls).filter(and_(cls.name==name,cls.unit==unit)).first()
         if not attr_type:
+
             attr_type = cls(name=name,
                             unit=unit,
                             from_to=from_to,
@@ -162,7 +165,7 @@ class AttrType(_TableWithNameColMixin, Base):
                             multi_value=multi_value)
         return attr_type
 
-    def append(self, part_names):
+    def add_to_parts(self, *part_names):
         for part_name in part_names:
             part = Part.search(part_name)
             part_map = PartAttrTypeMap(part=part, attr_type=self)
@@ -212,7 +215,7 @@ class PartPartMap(Base):
     each one should be associated with the attribute `Position`.
     Each PartMap is associated with a System.
     """
-    __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id'),)
+    __table_args__ = (UniqueConstraint('container_part_id', 'content_part_id', 'system_id'),)
     container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
     container_part = relationship(Part, primaryjoin='Part.id==PartPartMap.container_part_id', backref='content_maps')
     content_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)

@@ -76,12 +76,17 @@ def get_parts():
     M.Part(name='Harddrive'),
     M.Part(name='Memory card reader'),
     M.Part(name='Memory card controller'),
+    M.Part(name='RAM', children=[
+        M.Part(name='DDR3 SDRAM', children=[
+            M.Part(name='DDR3-1333')
+        ]),
+    ]),
     ]
 
     M.db_session.add_all(objs)
     M.db_session.flush()
 
-    pin_count = M.AttrType.init('Pin count', 'Count').append(['DIMM'])
+    pin_count = M.AttrType.init('Pin count', 'Count').add_to_parts('DIMM')
     M.db_session.add(M.Attr(attr_type=pin_count, value='240'))
     M.db_session.flush()
 
@@ -92,10 +97,11 @@ def get_parts():
     dimm240_ddr2 = M.Part.init('240-pin DIMM (DDR2 SDRAM)', 'DIMM', {'Pin count': 240})
     dimm240_ddr3 = M.Part.init('240-pin DIMM (DDR3 SDRAM)', 'DIMM', {'Pin count': 240})
 
-    M.Part.append('SDRAM', [dimm168])
-    M.Part.append('DDR SDRAM', [dimm184])
-    M.Part.append('DDR2 SDRAM', [dimm240_ddr2])
-    M.Part.append('DDR3 SDRAM', [dimm240_ddr3])
+    M.Part.append('SDRAM (Standard)', [dimm168])
+    M.Part.append('DDR SDRAM (Standard)', [dimm184])
+    M.Part.append('DDR2 SDRAM (Standard)', [dimm240_ddr2])
+    M.Part.append('DDR3 SDRAM (Standard)', [dimm240_ddr3, M.Part.search('DDR3 SDRAM')])
+    M.Part.append('DDR3-1333 (Standard)', [dimm240_ddr3, M.Part.search('DDR3-1333')])
     return objs
 
 
@@ -110,7 +116,7 @@ def get_standards():
         M.Part(name='Smart Cache'),
     ]),
 
-    M.Part(name='RAM Standards', children=[
+    M.Part(name='RAM', children=[
         M.Part(name='SDRAM', children=[
             # http://de.wikipedia.org/wiki/Synchronous_Dynamic_Random_Access_Memory#Verschiedene_Typen
             M.Part(name='PC-66'),
@@ -243,6 +249,7 @@ def get_standards():
 
     def _standardify(objs):
         for o in objs:
+            o.name += ' (Standard)'
             o.is_standard = True
             _standardify(o.children)
 
@@ -259,45 +266,45 @@ def get_attr_types():
     #TODO: at_socket_package = M.AttrType(name='Package', part=p_cpusocket)
     M.AttrType.init('Year of introduction', 'Year'),
 
-    M.AttrType.init('Pin count', 'Count').append(['CPU-Socket']),
-    M.AttrType.init('Pin pitch', 'Millimeter', ['CPU-Socket']),
-    M.AttrType.init('Bus speed', 'Megahertz', ['CPU-Socket'], from_to=True),
+    M.AttrType.init('Pin count', 'Count').add_to_parts('CPU-Socket'),
+    M.AttrType.init('Pin pitch', 'Millimeter').add_to_parts('CPU-Socket'),
+    M.AttrType.init('Bus speed', 'Megahertz', from_to=True).add_to_parts('CPU-Socket'),
 
     # CPU
-    M.AttrType.init('Frequency', 'Megahertz', ['CPU']),
-    M.AttrType.init('L2 cache', 'Byte', ['CPU']),
-    M.AttrType.init('Front side bus', 'Megatransfer/Second', ['CPU']),
-    M.AttrType.init('Clock multiplier', 'Factor', ['CPU']),
-    M.AttrType.init('Voltage range', 'Volt', ['CPU'], from_to=True),
-    M.AttrType.init('Thermal design power', 'Watt', ['CPU']),
-    M.AttrType.init('Release date', 'Date', ['CPU']),
-    M.AttrType.init('Release price', 'Dollar', ['CPU']),
-    M.AttrType.init('Part number', 'Text', ['CPU'], multi_value=True),
-    M.AttrType.init('URL', 'Text', ['CPU']),
-    M.AttrType.init('Number of cores', 'Count', ['CPU']),
+    M.AttrType.init('Frequency', 'Megahertz').add_to_parts('CPU'),
+    M.AttrType.init('L2 cache', 'Byte').add_to_parts('CPU'),
+    M.AttrType.init('Front side bus', 'Megatransfer/Second').add_to_parts('CPU'),
+    M.AttrType.init('Clock multiplier', 'Factor').add_to_parts('CPU'),
+    M.AttrType.init('Voltage range', 'Volt', from_to=True).add_to_parts('CPU'),
+    M.AttrType.init('Thermal design power', 'Watt').add_to_parts('CPU'),
+    M.AttrType.init('Release date', 'Date').add_to_parts('CPU'),
+    M.AttrType.init('Release price', 'Dollar').add_to_parts('CPU'),
+    M.AttrType.init('Part number', 'Text', multi_value=True).add_to_parts('CPU'),
+    M.AttrType.init('URL', 'Text').add_to_parts('CPU'),
+    M.AttrType.init('Number of cores', 'Count').add_to_parts('CPU'),
 
     # PC of BA
-    M.AttrType.init('Modified', 'Boolean', ['Computer'], note='Was this computer modified after initial delivery?'),
-    M.AttrType.init('Vendor', 'Text', ['Computer', 'Motherboard', 'Casing', 'CPU', 'Chipset']),
-    M.AttrType.init('Serial number', 'Text', ['Computer', 'Motherboard']),
-    M.AttrType.init('L1 cache', 'Byte', ['CPU']),
-    M.AttrType.init('Hyperthreading', 'Boolean', ['CPU']),
-    M.AttrType.init('RAM Size', 'Byte', ['RAM']),
-    M.AttrType.init('Casing Size', 'Text', ['Casing'], note='Minitower, miditower, bigtower'),
-    M.AttrType.init('Vendor hex', 'Hex', ['RAM']),
-    M.AttrType.init('Version', 'Text', ['Pentium 4']),
+    M.AttrType.init('Modified', 'Boolean', note='Was this computer modified after initial delivery?').add_to_parts('Computer'),
+    M.AttrType.init('Vendor', 'Text').add_to_parts('Computer', 'Motherboard', 'Casing', 'CPU', 'Chipset'),
+    M.AttrType.init('Serial number', 'Text').add_to_parts('Computer', 'Motherboard'),
+    M.AttrType.init('L1 cache', 'Byte').add_to_parts('CPU'),
+    M.AttrType.init('Hyperthreading', 'Boolean').add_to_parts('CPU'),
+    M.AttrType.init('RAM Size', 'Byte').add_to_parts('RAM'),
+    M.AttrType.init('Casing Size', 'Text', note='Minitower, miditower, bigtower').add_to_parts('Casing'),
+    M.AttrType.init('Vendor hex', 'Hex').add_to_parts('RAM'),
+    M.AttrType.init('Version', 'Text').add_to_parts('Pentium 4'),
 
     # PC alt
-    M.AttrType.init('Color', 'Text', ['Casing']),
-    M.AttrType.init('Width', 'Millimeter', ['Casing']),
-    M.AttrType.init('Length', 'Millimeter', ['Casing']),
-    M.AttrType.init('Height', 'Millimeter', ['Casing']),
-    M.AttrType.init('Power', 'Watt', ['Power supply'], note='electric power (output? input?)'),
-    M.AttrType.init('Memory channels', 'Count', ['Memory controller']),
+    M.AttrType.init('Color', 'Text').add_to_parts('Casing'),
+    M.AttrType.init('Width', 'Millimeter').add_to_parts('Casing'),
+    M.AttrType.init('Length', 'Millimeter').add_to_parts('Casing'),
+    M.AttrType.init('Height', 'Millimeter').add_to_parts('Casing'),
+    M.AttrType.init('Power', 'Watt', note='electric power (output? input?)').add_to_parts('Power supply'),
+    M.AttrType.init('Memory channels', 'Count').add_to_parts('Memory controller'),
     M.AttrType.init('Average half-pitch of a memory cell', 'Count', note='not yet connected ;-)'),
-    M.AttrType.init('Maximal power consumption', 'Watt', ['CPU']),
-    M.AttrType.init('Maximal RAM capacity', 'Megabyte', ['Motherboard']),
-    M.AttrType.init('Harddrive size', 'Gigabyte', ['Harddrive']),
+    M.AttrType.init('Maximal power consumption', 'Watt').add_to_parts('CPU'),
+    M.AttrType.init('Maximal RAM capacity', 'Megabyte').add_to_parts('Motherboard'),
+    M.AttrType.init('Harddrive size', 'Gigabyte').add_to_parts('Harddrive'),
     # TODO: Bauform, GPU-Takt, Prozessorkern (Sandy bridge)
     ]
 
@@ -334,7 +341,7 @@ def get_objects_computer_BA():
         'Version': '15.2.9',
         'Frequency': '2800',
     })
-    M.Part.append('32bit', [p_hp_pentium4])
+    M.Part.append('32bit (Standard)', [p_hp_pentium4])
 
     system = M.System()
     system.add_part_mapping(p_hpd530, p_mini_tower)
@@ -382,8 +389,7 @@ def get_objects_computer_alt():
         'Maximal RAM capacity': 16384
     })
 
-    p_ram = M.Part.init('Anonymous RAM', 'DDR SDRAM', {'RAM Size': 2048})
-    M.Part.append('DDR3-1333', [p_ram])
+    p_ram = M.Part.init('Anonymous RAM', 'DDR3-1333', {'RAM Size': 2048})
 
     p_ramsocket = M.Part.search('240-pin DIMM (DDR3 SDRAM)')
 
@@ -394,37 +400,37 @@ def get_objects_computer_alt():
     p_usb2_port = M.Part(name='Anonymous USB 2.0 Port',
                          parent_part=M.Part.search('USB 2.0 Port'),
                          is_connector=True)
-    M.Part.append('USB 2.0', [p_usb2_port])
+    M.Part.append('USB 2.0 (Standard)', [p_usb2_port])
 
     # HELP: Ports may support multiple standards
     p_usb3_port = M.Part(name='Anonymous USB 3.0 Port',
                          parent_part=M.Part.search('USB 3.0 Port'),
                          is_connector=True)
-    M.Part.append('USB 2.0', [p_usb3_port])
-    M.Part.append('USB 3.0', [p_usb3_port])
+    M.Part.append('USB 2.0 (Standard)', [p_usb3_port])
+    M.Part.append('USB 3.0 (Standard)', [p_usb3_port])
 
     p_rj45 = M.Part(name='Anonymous RJ-45',
                     parent_part=M.Part.search('RJ-45'),
                     is_connector=True)
-    M.Part.append('Ethernet (10Mbits)', [p_rj45])
-    M.Part.append('Fast Ethernet (100Mbits)', [p_rj45])
-    M.Part.append('Gigabit Ethernet (1000Mbits)', [p_rj45])
+    M.Part.append('Ethernet (10Mbits) (Standard)', [p_rj45])
+    M.Part.append('Fast Ethernet (100Mbits) (Standard)', [p_rj45])
+    M.Part.append('Gigabit Ethernet (1000Mbits) (Standard)', [p_rj45])
 
     p_harddrive = M.Part.init('Anonymous harddrive', 'Harddrive', {
         'Harddrive size': 500
     })
-    M.Part.append('SATA (Standard)', [p_harddrive])
+    M.Part.append('SATA', [p_harddrive])
 
     # HELP: A memory card reader can be seperated into a controller being on the
     # motherboard and the card ports being in the casing
     p_card_reader_controller = M.Part(name='Anonymous card reader controller',
                                       parent_part=M.Part.search('Memory card controller'))
-    M.Part.append('SD card', [p_card_reader_controller])
-    M.Part.append('MMC card', [p_card_reader_controller])
-    M.Part.append('MMCplus card', [p_card_reader_controller])
-    M.Part.append('xD card', [p_card_reader_controller])
-    M.Part.append('MS card', [p_card_reader_controller])
-    M.Part.append('MS PRO card', [p_card_reader_controller])
+    M.Part.append('SD card (Standard)', [p_card_reader_controller])
+    M.Part.append('MMC card (Standard)', [p_card_reader_controller])
+    M.Part.append('MMCplus card (Standard)', [p_card_reader_controller])
+    M.Part.append('xD card (Standard)', [p_card_reader_controller])
+    M.Part.append('MS card (Standard)', [p_card_reader_controller])
+    M.Part.append('MS PRO card (Standard)', [p_card_reader_controller])
 
     p_cpusocket = M.Part.search('CPU-Socket') # anonymous
     p_audioport = M.Part.search('Audio port') # anonymous
@@ -458,10 +464,10 @@ def get_objects_computer_alt():
     system.add_part_mapping(p_sata, p_harddrive)
     system.add_part_mapping(p_cpusocket, p_cpu)
     system.add_part_mapping(p_cpu, p_mem_contr)
-    system.add_part_mapping(p_cpu, M.Part.search('SSE 4.x'))
-    system.add_part_mapping(p_cpu, M.Part.search('64bit'))
-    system.add_part_mapping(p_cpu, M.Part.search('XD bit'))
-    system.add_part_mapping(p_cpu, M.Part.search('Smart Cache'))
+    system.add_part_mapping(p_cpu, M.Part.search('SSE 4.x (Standard)'))
+    system.add_part_mapping(p_cpu, M.Part.search('64bit (Standard)'))
+    system.add_part_mapping(p_cpu, M.Part.search('XD bit (Standard)'))
+    system.add_part_mapping(p_cpu, M.Part.search('Smart Cache (Standard)'))
 
     return [system]
 
