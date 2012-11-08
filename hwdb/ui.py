@@ -33,13 +33,21 @@ menu_items = OrderedDict([
     ('/standards', 'Standards'),
 ])
 
+
+admin_menu = OrderedDict()
+for name in sorted(M.get_model_classes()):
+    admin_menu['/admin/%sview' % name.lower()] = name
+
+
 def _render(template, **kwargs):
     """ Adds common template arguments """
-    return render_template(template, menu_items=menu_items, **kwargs)
+    return render_template(template, menu_items=menu_items,
+                           admin_menu=admin_menu, **kwargs)
 
 def _render_string(tmpl_str, **kwargs):
     """ Adds common template arguments """
-    return render_template_string(tmpl_str, menu_items=menu_items, **kwargs)
+    return render_template_string(tmpl_str, menu_items=menu_items,
+                                  admin_menu=admin_menu, **kwargs)
 
 @bp.route("/")
 def index():

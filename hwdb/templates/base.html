@@ -54,6 +54,17 @@ $("i", "ul.collapsible").each(function(){
         {% for href, name in menu_items.iteritems() %}
           <li><a href="{{href}}">{{name}}</a></li>
         {% endfor %}
+        <li class="dropdown">
+          <a href="/admin" class="dropdown-toggle" data-toggle="dropdown">
+            Admin
+            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            {% for href, name in admin_menu.iteritems() %}
+              <li><a href="{{href}}">{{name}}</a></li>
+            {% endfor %}
+          </ul>
+        </li>
        </div>
      </div>
    </div>
