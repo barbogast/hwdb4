@@ -2,6 +2,8 @@
 Author: Benjamin Arbogast
 """
 
+from collections import OrderedDict
+
 from flask import Blueprint, render_template, render_template_string, request
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import and_
@@ -22,10 +24,26 @@ base_template = '''
   </div>
 {% endblock %}'''
 
+menu_items = OrderedDict([
+    ('/parts', 'Parts'),
+    ('/attr_types', 'Attribute Types'),
+    ('/attributes', 'Attributes'),
+    ('/units', 'Units'),
+    ('/combinations', 'Combinations'),
+    ('/standards', 'Standards'),
+])
+
+def _render(template, **kwargs):
+    """ Adds common template arguments """
+    return render_template(template, menu_items=menu_items, **kwargs)
+
+def _render_string(tmpl_str, **kwargs):
+    """ Adds common template arguments """
+    return render_template_string(tmpl_str, menu_items=menu_items, **kwargs)
 
 @bp.route("/")
 def index():
-    return render_template('index.html')
+    return _render('index.html')
 
 @bp.route("/parts")
 def parts():
@@ -43,7 +61,7 @@ def parts():
             li_elements.append(H.li(divider, a))
             parent_part = parent_part.parent_part
         chain = H.join(reversed(li_elements))
-        return render_template('parts_detail.html', part=part, parent_part_chain=chain)
+        return _render('parts_detail.html', part=part, parent_part_chain=chain)
     else:
         def _get_html(parent_part):
             query = M.db_session.query(M.Part).\
@@ -69,17 +87,17 @@ def parts():
                                         _get_html(part)))
             return H.ul(li_elements)
         doc = _get_html(None)
-        return render_template_string(base_template, heading='Parts', content=doc)
+        return _render_string(base_template, heading='Parts', content=doc)
 
 @bp.route('/attr_types')
 def attr_types():
     attributes = M.db_session.query(M.AttrType).order_by('name')
-    return render_template('attr_types.html', attributes=attributes)
+    return _render('attr_types.html', attributes=attributes)
 
 @bp.route('/units')
 def units():
     units = M.db_session.query(M.Unit).order_by('name')
-    return render_template('units.html', units=units)
+    return _render('units.html', units=units)
 
 @bp.route("/combinations")
 def combinations():
@@ -108,7 +126,7 @@ def combinations():
     for part in query:
         li_elements.append(_get_html(part, 1))
     doc = H.ul(class_='icons collapsible')(li_elements)
-    return render_template_string(base_template, heading='Combinations', content=doc)
+    return _render_string(base_template, heading='Combinations', content=doc)
 
 @bp.route("/attributes")
 def attributes():
@@ -125,7 +143,7 @@ def attributes():
                     filter(stmt.c.cnt > 1).\
                     order_by(M.AttrType.name).\
                     all()
-    return render_template('attributes.html', attributes=attributes)
+    return _render('attributes.html', attributes=attributes)
 
 @bp.route("/standards")
 def standards():
@@ -154,4 +172,4 @@ def standards():
         return H.ul(lis)
 
     doc = _get_html(None)
-    return render_template_string(base_template, heading='Standards', content=doc)
+    return _render_string(base_template, heading='Standards', content=doc)
