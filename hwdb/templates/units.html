@@ -5,7 +5,7 @@
 
     <ul>
     {% for unit in units %}
-        <li>{{unit.name}} {{'<small>('|safe + unit.note + ')</small>'|safe if unit.note else ''}}</li>
+        <li>{{unit.label}} {{'<small>('|safe + unit.note + ')</small>'|safe if unit.note else ''}}</li>
     {% endfor %}
     </ul>
   </div>

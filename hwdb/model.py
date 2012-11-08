@@ -64,8 +64,11 @@ Base = declarative_base(cls=_MyBase, class_registry=_model_classes)
 class Unit(_TableWithNameColMixin, Base):
     """
     The unit which describes the values of Attributes. Examples: meter, volt
+    Format should be a Python format string which will be used to display values
+    with this unit.
     """
     name = Column(String, nullable=False, unique=True)
+    label = Column(String, nullable=False, unique=True)
     format = Column(String, nullable=False, server_default='%(unit)s')
     note = Column(String, nullable=True, unique=False)
 
