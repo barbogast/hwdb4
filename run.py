@@ -43,7 +43,8 @@ def run_ui(args):
     db = SQLAlchemy(app)
     M.db_session = db.session
     init_admin(app)
-    toolbar = DebugToolbarExtension(app)
+    if False:
+        toolbar = DebugToolbarExtension(app)
     app.run()
 
 
