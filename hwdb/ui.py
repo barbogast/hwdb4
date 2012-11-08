@@ -43,7 +43,12 @@ def _render_string(tmpl_str, **kwargs):
 
 @bp.route("/")
 def index():
-    return _render('index.html')
+    li_list = [H.li(H.a(href=href)(name)) for href, name in menu_items.iteritems()]
+    doc = H.join(
+        H.ul(li_list),
+        H.a(href="/admin")('Admin')
+    )
+    return _render_string(base_template, heading='Welcome to HWDB', content=doc)
 
 @bp.route("/parts")
 def parts():
