@@ -20,7 +20,7 @@ import os
 from sqlalchemy import (Column, Integer, String, ForeignKey, UniqueConstraint,
                         Boolean, Float, Table, create_engine, and_)
 from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
-from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
@@ -42,6 +42,8 @@ class _TableWithNameColMixin(object):
             return db_session.query(cls).filter_by(name=name).one()
         except NoResultFound:
             raise Exception('No %s found with name %r' % (cls.__name__, name))
+        except MultipleResultsFound:
+            raise Exception('Multiple %ss found with name %r' % (cls.__name__, name))
 
 
 def _convert_camel_to_underscore(s):
