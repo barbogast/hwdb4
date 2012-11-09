@@ -111,7 +111,7 @@ class Part(_TableWithNameColMixin, Base):
     is_connector = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
 
     @classmethod
-    def init(cls, name, parent_part_name, attributes={}):
+    def init(cls, name, parent_part_name, attributes={}, is_standard=False, is_connector=False):
         """
         Create a Part and return it.
         :param attributes: dict (key=AttrType-name, value=value). For each
@@ -125,7 +125,8 @@ class Part(_TableWithNameColMixin, Base):
           parent_part
         """
         parent_part = Part.search(parent_part_name)
-        part = cls(name=name, parent_part=parent_part)
+        part = cls(name=name, parent_part=parent_part, is_standard=is_standard,
+                   is_connector=is_connector)
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
             if not search_PartAttrTypeMap(part, attr_type):
