@@ -64,7 +64,6 @@ def reset_db(args):
 
     M.db_session.add_all(init_data.get_units())
     M.db_session.add_all(init_data.get_standards())
-    M.db_session.flush()
     M.db_session.add_all(init_data.get_connectors())
     M.db_session.add_all(init_data.get_parts())
     M.db_session.flush()
@@ -72,7 +71,6 @@ def reset_db(args):
     M.db_session.flush()
     M.db_session.add_all(init_data.get_sub_parts())
     M.db_session.flush()
-
     M.db_session.add_all(init_data.get_objects_computer_BA())
     M.db_session.add_all(init_data.get_objects_computer_alt())
     M.db_session.flush()
