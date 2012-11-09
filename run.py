@@ -59,20 +59,21 @@ def reset_db(args):
 
     engine = M.get_engine(dbpath, debug)
     print 'Creating db...'
+    M.enable_auto_add_objects_to_session()
     M.create_all(engine)
     M.init_scoped_session(engine)
 
-    M.db_session.add_all(init_data.get_units())
-    M.db_session.add_all(init_data.get_standards())
-    M.db_session.add_all(init_data.get_connectors())
-    M.db_session.add_all(init_data.get_parts())
+    init_data.add_units()
+    init_data.add_standards()
+    init_data.add_connectors()
+    init_data.add_parts()
     M.db_session.flush()
-    M.db_session.add_all(init_data.get_attr_types())
+    init_data.add_attr_types()
     M.db_session.flush()
-    M.db_session.add_all(init_data.get_sub_parts())
+    init_data.add_sub_parts()
     M.db_session.flush()
-    M.db_session.add_all(init_data.get_objects_computer_BA())
-    M.db_session.add_all(init_data.get_objects_computer_alt())
+    init_data.add_objects_computer_BA()
+    init_data.add_objects_computer_alt()
     M.db_session.flush()
 
     if args.wikipedia:

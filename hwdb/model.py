@@ -18,14 +18,23 @@ import re
 import os
 
 from sqlalchemy import (Column, Integer, String, ForeignKey, UniqueConstraint,
-                        Boolean, Float, Table, create_engine, and_)
-from sqlalchemy.orm import relationship, backref, sessionmaker, scoped_session
+                        Boolean, Float, Table, create_engine, and_, event)
+from sqlalchemy.orm import (relationship, backref, sessionmaker, scoped_session,
+                            mapper)
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 
 
 db_session = None
 SERVER_DEFAULT_FALSE = '0'
+
+
+
+def enable_auto_add_objects_to_session():
+    def auto_add(target, args, kwargs):
+        db_session.add(target)
+    event.listen(mapper, 'init', auto_add)
+
 
 class _TableWithNameColMixin(object):
     """ Adds a default representation for SQLAlchemy objects """

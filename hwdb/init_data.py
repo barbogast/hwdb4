@@ -1,8 +1,7 @@
 from hwdb import model as M
 
 
-def get_units():
-    return [
+def add_units():
     M.Unit(name='ns',     label='Nanosecond', format='%(unit)s ns'),
     M.Unit(name='nm',     label='Nanometer', format='%(unit)s nm'),
     M.Unit(name='mm',     label='Millimeter', format='%(unit)s mm'),
@@ -27,10 +26,9 @@ def get_units():
     M.Unit(name='bool',   label='Boolean'),
     M.Unit(name='hex',    label='Hex'),
     M.Unit(name='clock_cycles', label='Number of clock cycles', note='Should this be merged with "Count"? Used for RAM timings'),
-    ]
 
 
-def get_connectors():
+def add_connectors():
     objs = [
     M.Part(name='Socket', note='Generic parent for all kinds of sockets', children=[
         M.Part(name='CPU-Socket'),
@@ -55,12 +53,11 @@ def get_connectors():
             _connectify(c.children)
 
     _connectify(objs)
-    return objs
 
-def get_parts():
-    objs = [
-    M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)'),
-    M.Part(name='Audio controller'),
+
+def add_parts():
+    M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)')
+    M.Part(name='Audio controller')
     M.Part(name='CPU Core', children=[
         M.Part(name='Intel 80486'),
         M.Part(name='P5'),
@@ -74,7 +71,7 @@ def get_parts():
         M.Part(name='Westmere'),
         M.Part(name='Ivy Bridge'),
         M.Part(name='Haswell Bridge'),
-    ]),
+    ])
     M.Part(name='CPU', children=[
         M.Part(name='Desktop CPU', children=[
             M.Part(name='Pentium', children=[
@@ -84,12 +81,12 @@ def get_parts():
                 M.Part(name='Mobile Pentium 4')
             ]),
         ]),
-    ]),
+    ])
     M.Part(name='Computer', note='Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)', children=[
         M.Part(name='Desktop'),
         M.Part(name='Laptop'),
         M.Part(name='Server'),
-    ]),
+    ])
     M.Part(name='Casing', note='Computer casing'),
     M.Part(name='Motherboard'),
     M.Part(name='Flash memory'),
@@ -103,12 +100,10 @@ def get_parts():
         M.Part(name='DDR3 SDRAM', children=[
             M.Part(name='DDR3-1333')
         ]),
-    ]),
-    ]
-    return objs
+    ])
 
 
-def get_sub_parts():
+def add_sub_parts():
     M.Part.search('DDR3 SDRAM').add_standards('DDR3 SDRAM (Standard)')
     M.Part.search('DDR3-1333').add_standards('DDR3-1333 (Standard)')
 
@@ -149,10 +144,8 @@ def get_sub_parts():
     M.Part.init('Cedar Mill', 'Netburst', attributes={'L2 cache': 2048, 'Front side bus': 800}),
     M.Part.init('Gallatin', 'Netburst', attributes={'L2 cache': 512, 'L3 cache': 2048}),
 
-    return []
 
-
-def get_standards():
+def add_standards():
     objs = [
 
     M.Part(name='CPU Instruction set', children=[
@@ -264,78 +257,75 @@ def get_standards():
             _standardify(o.children)
 
     _standardify(objs)
-    return objs
 
 
-def get_attr_types():
+def add_attr_types():
     ddr = ('DDR SDRAM (Standard)', 'DDR2 SDRAM (Standard)', 'DDR3 SDRAM (Standard)', )
-    return [
-    M.AttrType.init('Position', 'order', note='The position of the associated Part in relation to other Parts'),
+    M.AttrType.init('Position', 'order', note='The position of the associated Part in relation to other Parts')
 
     # Socket
     #TODO: at_socket_package = M.AttrType(name='Package', part=p_cpusocket)
-    M.AttrType.init('Year of introduction', 'year'),
+    M.AttrType.init('Year of introduction', 'year')
 
-    M.AttrType.init('Pin count', 'count').add_to_parts('CPU-Socket', 'DIMM'),
-    M.AttrType.init('Pin pitch', 'mm').add_to_parts('CPU-Socket'),
-    M.AttrType.init('Bus speed', 'MHz', from_to=True).add_to_parts('CPU-Socket'),
-    M.AttrType.init('Area (mm<sup>2</sup>', 'mm^2').add_to_parts('CPU Stepping (Standard)'),
-    M.AttrType.init('CPUID', 'text').add_to_parts('CPU Stepping (Standard)'),
-    M.AttrType.init('Maximal Clock', 'MHz').add_to_parts('CPU Stepping (Standard)'),
+    M.AttrType.init('Pin count', 'count').add_to_parts('CPU-Socket', 'DIMM')
+    M.AttrType.init('Pin pitch', 'mm').add_to_parts('CPU-Socket')
+    M.AttrType.init('Bus speed', 'MHz', from_to=True).add_to_parts('CPU-Socket')
+    M.AttrType.init('Area (mm<sup>2</sup>', 'mm^2').add_to_parts('CPU Stepping (Standard)')
+    M.AttrType.init('CPUID', 'text').add_to_parts('CPU Stepping (Standard)')
+    M.AttrType.init('Maximal Clock', 'MHz').add_to_parts('CPU Stepping (Standard)')
 
-    M.AttrType.init('Frequency', 'MHz').add_to_parts('CPU'),
-    M.AttrType.init('Memory clock', 'MHz').add_to_parts(*ddr),
-    M.AttrType.init('I/O bus clock', 'MHz').add_to_parts(*ddr),
-    M.AttrType.init('Data rate', 'MT/s').add_to_parts(*ddr),
-    M.AttrType.init('Clock multiplier', 'factor').add_to_parts('CPU'),
-    M.AttrType.init('Voltage range', 'V', from_to=True).add_to_parts('CPU'),
-    M.AttrType.init('Thermal design power', 'W').add_to_parts('CPU'),
-    M.AttrType.init('Release date', 'date').add_to_parts('CPU'),
-    M.AttrType.init('Release price', '$').add_to_parts('CPU'),
-    M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU'),
-    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', *ddr),
-    M.AttrType.init('Number of cores', 'count').add_to_parts('CPU'),
-    M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr),
-    M.AttrType.init('Module name', 'text').add_to_parts(*ddr),
-    M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr),
-    M.AttrType.init('Column Address Strobe latency [CL]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Address to Column Address Delay [T<sub>RCD</sub>]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Precharge Time [T<sub>RP</sub>]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Active Time [T<sub>RAS</sub>]', 'clock_cycles').add_to_parts(*ddr),
+    M.AttrType.init('Frequency', 'MHz').add_to_parts('CPU')
+    M.AttrType.init('Memory clock', 'MHz').add_to_parts(*ddr)
+    M.AttrType.init('I/O bus clock', 'MHz').add_to_parts(*ddr)
+    M.AttrType.init('Data rate', 'MT/s').add_to_parts(*ddr)
+    M.AttrType.init('Clock multiplier', 'factor').add_to_parts('CPU')
+    M.AttrType.init('Voltage range', 'V', from_to=True).add_to_parts('CPU')
+    M.AttrType.init('Thermal design power', 'W').add_to_parts('CPU')
+    M.AttrType.init('Release date', 'date').add_to_parts('CPU')
+    M.AttrType.init('Release price', '$').add_to_parts('CPU')
+    M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU')
+    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', *ddr)
+    M.AttrType.init('Number of cores', 'count').add_to_parts('CPU')
+    M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr)
+    M.AttrType.init('Module name', 'text').add_to_parts(*ddr)
+    M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr)
+    M.AttrType.init('Column Address Strobe latency [CL]', 'clock_cycles').add_to_parts(*ddr)
+    M.AttrType.init('Row Address to Column Address Delay [T<sub>RCD</sub>]', 'clock_cycles').add_to_parts(*ddr)
+    M.AttrType.init('Row Precharge Time [T<sub>RP</sub>]', 'clock_cycles').add_to_parts(*ddr)
+    M.AttrType.init('Row Active Time [T<sub>RAS</sub>]', 'clock_cycles').add_to_parts(*ddr)
 
     # PC of BA
-    M.AttrType.init('Modified', 'bool', note='Was this computer modified after initial delivery?').add_to_parts('Computer'),
-    M.AttrType.init('Vendor', 'text').add_to_parts('Computer', 'Motherboard', 'Casing', 'CPU', 'Chipset'),
-    M.AttrType.init('Serial number', 'text').add_to_parts('Computer', 'Motherboard'),
-    M.AttrType.init('Hyperthreading', 'bool').add_to_parts('CPU'),
-    M.AttrType.init('RAM Size', 'B').add_to_parts('RAM'),
-    M.AttrType.init('Casing Size', 'text', note='Minitower, miditower, bigtower').add_to_parts('Casing'),
-    M.AttrType.init('Vendor hex', 'hex').add_to_parts('RAM'),
-    M.AttrType.init('Version', 'text').add_to_parts('Pentium 4'),
+    M.AttrType.init('Modified', 'bool', note='Was this computer modified after initial delivery?').add_to_parts('Computer')
+    M.AttrType.init('Vendor', 'text').add_to_parts('Computer', 'Motherboard', 'Casing', 'CPU', 'Chipset')
+    M.AttrType.init('Serial number', 'text').add_to_parts('Computer', 'Motherboard')
+    M.AttrType.init('Hyperthreading', 'bool').add_to_parts('CPU')
+    M.AttrType.init('RAM Size', 'B').add_to_parts('RAM')
+    M.AttrType.init('Casing Size', 'text', note='Minitower, miditower, bigtower').add_to_parts('Casing')
+    M.AttrType.init('Vendor hex', 'hex').add_to_parts('RAM')
+    M.AttrType.init('Version', 'text').add_to_parts('Pentium 4')
 
     # PC alt
-    M.AttrType.init('Color', 'text').add_to_parts('Casing'),
-    M.AttrType.init('Width', 'mm').add_to_parts('Casing'),
-    M.AttrType.init('Length', 'mm').add_to_parts('Casing'),
-    M.AttrType.init('Height', 'mm').add_to_parts('Casing'),
-    M.AttrType.init('Power', 'W', note='electric power (output? input?)').add_to_parts('Power supply'),
-    M.AttrType.init('Memory channels', 'count').add_to_parts('Memory controller'),
-    M.AttrType.init('Maximal power consumption', 'W').add_to_parts('CPU'),
-    M.AttrType.init('Maximal RAM capacity', 'MB').add_to_parts('Motherboard'),
-    M.AttrType.init('Harddrive size', 'GB').add_to_parts('Harddrive'),
+    M.AttrType.init('Color', 'text').add_to_parts('Casing')
+    M.AttrType.init('Width', 'mm').add_to_parts('Casing')
+    M.AttrType.init('Length', 'mm').add_to_parts('Casing')
+    M.AttrType.init('Height', 'mm').add_to_parts('Casing')
+    M.AttrType.init('Power', 'W', note='electric power (output? input?)').add_to_parts('Power supply')
+    M.AttrType.init('Memory channels', 'count').add_to_parts('Memory controller')
+    M.AttrType.init('Maximal power consumption', 'W').add_to_parts('CPU')
+    M.AttrType.init('Maximal RAM capacity', 'MB').add_to_parts('Motherboard')
+    M.AttrType.init('Harddrive size', 'GB').add_to_parts('Harddrive')
     # TODO: Bauform, GPU-Takt
 
-    M.AttrType.init('L1 cache', 'B').add_to_parts('CPU'),
-    M.AttrType.init('L2 cache', 'KB').add_to_parts('CPU', 'CPU Core'),
-    M.AttrType.init('L3 cache', 'KB').add_to_parts('CPU', 'CPU Core'),
-    M.AttrType.init('Front side bus', 'MT/s').add_to_parts('CPU', 'CPU Core'),
-    M.AttrType.init('Transistors', 'count').add_to_parts('CPU Core'),
-    M.AttrType.init('Die size', 'mm^2').add_to_parts('CPU Core'),
-    M.AttrType.init('Average half-pitch of a memory cell', 'nm').add_to_parts('CPU Core'),
-    ]
+    M.AttrType.init('L1 cache', 'B').add_to_parts('CPU')
+    M.AttrType.init('L2 cache', 'KB').add_to_parts('CPU', 'CPU Core')
+    M.AttrType.init('L3 cache', 'KB').add_to_parts('CPU', 'CPU Core')
+    M.AttrType.init('Front side bus', 'MT/s').add_to_parts('CPU', 'CPU Core')
+    M.AttrType.init('Transistors', 'count').add_to_parts('CPU Core')
+    M.AttrType.init('Die size', 'mm^2').add_to_parts('CPU Core')
+    M.AttrType.init('Average half-pitch of a memory cell', 'nm').add_to_parts('CPU Core')
 
 
-def get_objects_computer_BA():
+def add_objects_computer_BA():
     p_hpd530 = M.Part.init('HP d530 CMT(DF368A)', 'Desktop', {
         'Vendor': 'Hewlett-Packard',
         'Serial number': 'CZC4301WB9',
@@ -360,10 +350,9 @@ def get_objects_computer_BA():
     p_hpd530.add_part_connection(p_hpd530, p_mini_tower)
     p_hpd530.add_part_connection(p_mini_tower, p_hpmboard)
     p_hpd530.add_part_connection(p_hpmboard, p_hp_pentium4)
-    return [p_hpd530]
 
 
-def get_objects_computer_alt():
+def add_objects_computer_alt():
     p_m1935 = M.Part.init('Acer Aspire M1935', 'Desktop', {
         'Vendor': 'Acer',
     })
@@ -476,5 +465,3 @@ def get_objects_computer_alt():
     p_m1935.add_part_connection(p_cpu, M.Part.search('64bit (Standard)'))
     p_m1935.add_part_connection(p_cpu, M.Part.search('XD bit (Standard)'))
     p_m1935.add_part_connection(p_cpu, M.Part.search('Smart Cache (Standard)'))
-
-    return [p_m1935]
