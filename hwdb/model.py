@@ -114,7 +114,7 @@ class Part(_TableWithNameColMixin, Base):
     is_connector = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
 
     @classmethod
-    def init(cls, name, parent_part_name, attributes={}, is_standard=False, is_connector=False):
+    def init(cls, name, parent_part_name, attributes={}, is_standard=False, is_connector=False, standards=[]):
         """
         Create a Part and return it.
         :param attributes: dict (key=AttrType-name, value=value). For each
@@ -146,6 +146,8 @@ class Part(_TableWithNameColMixin, Base):
                 _attr_cache[key] = attr
             attr_map = PartAttrMap(part=part, attr=attr)
             part.attr_maps.append(attr_map)
+
+        part.add_standards(*standards)
         return part
 
     def add_part_connection(self, container_part, contained_part, quantity=1):
@@ -156,15 +158,15 @@ class Part(_TableWithNameColMixin, Base):
         self.part_connection_children.append(part_conn)
 
 
-def add_standards_to_part(part, *standard_names):
-    """
-    Add the Standards (=Parts) looked up by the given standard names to the
-    given Part
-    """
-    for standard_name in standard_names:
-        standard = Part.search(standard_name)
-        mapping = PartConnection(container_part=standard, contained_part=part)
-        part.container_maps.append(mapping)
+    def add_standards(self, *standard_names):
+        """
+        Add the Standards (=Parts) looked up by the given standard names to the
+        Part
+        """
+        for standard_name in standard_names:
+            standard = Part.search(standard_name)
+            mapping = PartConnection(container_part=standard, contained_part=self)
+            self.container_maps.append(mapping)
 
 
 class AttrType(_TableWithNameColMixin, Base):

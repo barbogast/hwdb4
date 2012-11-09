@@ -109,50 +109,48 @@ def get_parts():
     M.db_session.add_all(objs)
     M.db_session.flush()
 
-    M.add_standards_to_part(M.Part.search('DDR3 SDRAM'), 'DDR3 SDRAM (Standard)')
-    M.add_standards_to_part(M.Part.search('DDR3-1333'), 'DDR3-1333 (Standard)')
+    M.Part.search('DDR3 SDRAM').add_standards('DDR3 SDRAM (Standard)')
+    M.Part.search('DDR3-1333').add_standards('DDR3-1333 (Standard)')
 
     return objs
 
 
 def get_sub_parts():
     # http://en.wikipedia.org/wiki/DIMM
-    dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168})
-    dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184})
-    dimm240_ddr2 = M.Part.init('240-pin DIMM (DDR2 SDRAM)', 'DIMM', {'Pin count': 240})
-    dimm240_ddr3 = M.Part.init('240-pin DIMM (DDR3 SDRAM)', 'DIMM', {'Pin count': 240})
-
-    M.add_standards_to_part(dimm168, 'SDRAM (Standard)')
-    M.add_standards_to_part(dimm184, 'DDR SDRAM (Standard)')
-    M.add_standards_to_part(dimm240_ddr2, 'DDR2 SDRAM (Standard)')
-    M.add_standards_to_part(dimm240_ddr3, 'DDR3 SDRAM (Standard)')
+    dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168}, standards=('SDRAM (Standard)',))
+    dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184}, standards=('DDR SDRAM (Standard)',))
+    dimm240_ddr2 = M.Part.init('240-pin DIMM (DDR2 SDRAM)', 'DIMM',
+                               attributes={'Pin count': 240},
+                               standards=('DDR2 SDRAM (Standard)',))
+    dimm240_ddr3 = M.Part.init('240-pin DIMM (DDR3 SDRAM)', 'DIMM',
+                               attributes={'Pin count': 240},
+                               standards=('DDR3 SDRAM (Standard)',))
 
     # CPU cores
-    M.Part.init('Willamette', 'Netburst', attributes={
+    willamette = M.Part.init('Willamette', 'Netburst', attributes={
         'Average half-pitch of a memory cell': 180,
         'L2 cache': 256,
         'Front side bus': 400,
         'Transistors': 42000000,
         'Die size': 217,
-    }),
+    }, standards=('B2 (Stepping 65nm) (Standard)',
+                  'C1 (Stepping 45nm) (Standard)',
+                  'D0 (CPU Stepping) (Standard)',
+                  'E0 (Stepping 45nm) (Standard)',
+                  'MMX (Standard)',
+                  'SSE (Standard)',
+                  'SSE2 (Standard)')
+    )
+
     M.Part.init('Northwood', 'Netburst', attributes={
         'L2 cache': 512,
-
-    }),
+    })
     M.Part.init('Prescott', 'Netburst', attributes={'L2 cache': 1024, 'Front side bus': 533}),
     M.Part.init('Prescott (HT)', 'Netburst', attributes={'L2 cache': 1024, 'Front side bus': 800}),
     M.Part.init('Prescott 2M', 'Netburst', attributes={'L2 cache': 2048}),
     M.Part.init('Cedar Mill', 'Netburst', attributes={'L2 cache': 2048, 'Front side bus': 800}),
     M.Part.init('Gallatin', 'Netburst', attributes={'L2 cache': 512, 'L3 cache': 2048}),
-    M.db_session.flush()
-    M.add_standards_to_part(M.Part.search('Willamette'),
-                            'B2 (Stepping 65nm) (Standard)',
-                            'C1 (Stepping 45nm) (Standard)',
-                            'D0 (CPU Stepping) (Standard)',
-                            'E0 (Stepping 45nm) (Standard)',
-                            'MMX (Standard)',
-                            'SSE (Standard)',
-                            'SSE2 (Standard)')
+
     return []
 
 
@@ -359,8 +357,7 @@ def get_objects_computer_BA():
         'Vendor': 'Intel',
         'Version': '15.2.9',
         'Frequency': '2800',
-    })
-    M.add_standards_to_part(p_hp_pentium4, '32bit (Standard)')
+    }, standards=('32bit (Standard)',))
 
     p_hpd530.add_part_connection(p_hpd530, p_mini_tower)
     p_hpd530.add_part_connection(p_mini_tower, p_hpmboard)
@@ -415,24 +412,20 @@ def get_objects_computer_alt():
 
     p_pci = M.Part.search('PCIe x16 Socket')
 
-    p_usb2_port = M.Part(name='Anonymous USB 2.0 Port',
-                         parent_part=M.Part.search('USB 2.0 Port'),
-                         is_connector=True)
-    M.add_standards_to_part(p_usb2_port, 'USB 2.0 (Standard)')
+    p_usb2_port = M.Part.init('Anonymous USB 2.0 Port', 'USB 2.0 Port',
+                         is_connector=True, standards=('USB 2.0 (Standard)',))
 
     # HELP: Ports may support multiple standards
-    p_usb3_port = M.Part(name='Anonymous USB 3.0 Port',
-                         parent_part=M.Part.search('USB 3.0 Port'),
-                         is_connector=True)
-    M.add_standards_to_part(p_usb3_port, 'USB 2.0 (Standard)', 'USB 3.0 (Standard)')
+    p_usb3_port = M.Part.init('Anonymous USB 3.0 Port', 'USB 3.0 Port',
+                              is_connector=True,
+                              standards=('USB 2.0 (Standard)', 'USB 3.0 (Standard)'))
 
-    p_rj45 = M.Part(name='Anonymous RJ-45',
-                    parent_part=M.Part.search('RJ-45'),
-                    is_connector=True)
-    M.add_standards_to_part(p_rj45,
-                          'Ethernet (10Mbits) (Standard)',
-                          'Fast Ethernet (100Mbits) (Standard)',
-                          'Gigabit Ethernet (1000Mbits) (Standard)')
+    p_rj45 = M.Part.init('Anonymous RJ-45', 'RJ-45', is_connector=True,
+                         standards=(
+                             'Ethernet (10Mbits) (Standard)',
+                             'Fast Ethernet (100Mbits) (Standard)',
+                             'Gigabit Ethernet (1000Mbits) (Standard)')
+                    )
 
     p_harddrive = M.Part.init('Anonymous harddrive', 'Harddrive', {
         'Harddrive size': 500
@@ -442,7 +435,7 @@ def get_objects_computer_alt():
     # motherboard and the card ports being in the casing
     p_card_reader_controller = M.Part(name='Anonymous card reader controller',
                                       parent_part=M.Part.search('Memory card controller'))
-    M.add_standards_to_part(p_card_reader_controller,
+    p_card_reader_controller.add_standards(
                           'SD card (Standard)',
                           'MMC card (Standard)',
                           'MMCplus card (Standard)',
