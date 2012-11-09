@@ -6,12 +6,14 @@ def get_units():
     M.Unit(name='ns',     label='Nanosecond', format='%(unit)s ns'),
     M.Unit(name='nm',     label='Nanometer', format='%(unit)s nm'),
     M.Unit(name='mm',     label='Millimeter', format='%(unit)s mm'),
+    M.Unit(name='mm^2',     label='Square millimeter', format='%(unit)s mm<sup>2</sup>'),
     M.Unit(name='MHz',    label='Megahertz', format='%(unit)s MHz', note='We dont use the minimal unit Hertz because processors are in the MHz area'),
     M.Unit(name='date',   label='Date'),
     M.Unit(name='year',   label='Year'),
     M.Unit(name='count',  label='Count'),
     M.Unit(name='order',  label='Order', note='Information about the order/sequence of a Part'),
     M.Unit(name='B',      label='Byte', format='%(unit)s Byte'),
+    M.Unit(name='KB',      label='Kilobyte', format='%(unit)s Kilobyte'),
     M.Unit(name='MB',     label='Megabyte', format='%(unit)s Megabyte'),
     M.Unit(name='GB',     label='Gigabyte', format='%(unit)s Gigabyte'),
     M.Unit(name='MT/s',   label='Megatransfer/Second', format='%(unit)s MT/s'),
@@ -45,7 +47,6 @@ def get_connectors():
         M.Part(name='Audio port')
     ]),
     M.Part(name='PCIe'), # number of lanes as attribute
-
     ]
 
     def _connectify(objs):
@@ -64,14 +65,7 @@ def get_parts():
         M.Part(name='Intel 80486'),
         M.Part(name='P5'),
         M.Part(name='P6'),
-        M.Part(name='Netburst', children=[
-            M.Part(name='Willamette'),
-            M.Part(name='Northwood'),
-            M.Part(name='Prescott'),
-            M.Part(name='Prescott 2M'),
-            M.Part(name='Cedar Mill'),
-            M.Part(name='Gallatin'),
-        ]),
+        M.Part(name='Netburst'),
         M.Part(name='Intel Core'),
         M.Part(name='Enhanced Pentium M'),
         M.Part(name='Nehalem'),
@@ -118,11 +112,10 @@ def get_parts():
     M.add_standards_to_part(M.Part.search('DDR3 SDRAM'), 'DDR3 SDRAM (Standard)')
     M.add_standards_to_part(M.Part.search('DDR3-1333'), 'DDR3-1333 (Standard)')
 
-
-    pin_count = M.AttrType.init('Pin count', 'count').add_to_parts('DIMM')
-    M.db_session.flush()
+    return objs
 
 
+def get_sub_parts():
     # http://en.wikipedia.org/wiki/DIMM
     dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168})
     dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184})
@@ -133,18 +126,58 @@ def get_parts():
     M.add_standards_to_part(dimm184, 'DDR SDRAM (Standard)')
     M.add_standards_to_part(dimm240_ddr2, 'DDR2 SDRAM (Standard)')
     M.add_standards_to_part(dimm240_ddr3, 'DDR3 SDRAM (Standard)')
-    return objs
+
+    # CPU cores
+    M.Part.init('Willamette', 'Netburst', attributes={
+        'Average half-pitch of a memory cell': 180,
+        'L2 cache': 256,
+        'Front side bus': 400,
+        'Transistors': 42000000,
+        'Die size': 217,
+    }),
+    M.Part.init('Northwood', 'Netburst', attributes={
+        'L2 cache': 512,
+
+    }),
+    M.Part.init('Prescott', 'Netburst', attributes={'L2 cache': 1024, 'Front side bus': 533}),
+    M.Part.init('Prescott (HT)', 'Netburst', attributes={'L2 cache': 1024, 'Front side bus': 800}),
+    M.Part.init('Prescott 2M', 'Netburst', attributes={'L2 cache': 2048}),
+    M.Part.init('Cedar Mill', 'Netburst', attributes={'L2 cache': 2048, 'Front side bus': 800}),
+    M.Part.init('Gallatin', 'Netburst', attributes={'L2 cache': 512, 'L3 cache': 2048}),
+    M.db_session.flush()
+    M.add_standards_to_part(M.Part.search('Willamette'),
+                            'B2 (Stepping 65nm) (Standard)',
+                            'C1 (Stepping 45nm) (Standard)',
+                            'D0 (CPU Stepping) (Standard)',
+                            'E0 (Stepping 45nm) (Standard)',
+                            'MMX (Standard)',
+                            'SSE (Standard)',
+                            'SSE2 (Standard)')
+    return []
 
 
 def get_standards():
     objs = [
 
     M.Part(name='CPU Instruction set', children=[
+        M.Part(name='MMX'),
+        M.Part(name='SSE'),
+        M.Part(name='SSE2'),
         M.Part(name='SSE 4.x'),
         M.Part(name='32bit'),
         M.Part(name='64bit'),
         M.Part(name='XD bit'),
         M.Part(name='Smart Cache'),
+    ]),
+
+    M.Part(name='CPU Stepping', children=[
+        M.Part(name='D0 (CPU Stepping)'),
+        M.Part(name='CPU Stepping 65nm',
+            children=[M.Part(name=name+' (Stepping 65nm)') for name in 'B2 B3 L2 E1 G0 G2 M0 A1'.split()]
+        ),
+        M.Part(name='CPU Stepping 45nm',
+            children=[M.Part(name=name+' (Stepping 45nm)') for name in 'C0 M0 C1 M1 E0 R0 A1'.split()]
+        )
     ]),
 
     M.Part(name='RAM', children=[
@@ -247,15 +280,16 @@ def get_attr_types():
     #TODO: at_socket_package = M.AttrType(name='Package', part=p_cpusocket)
     M.AttrType.init('Year of introduction', 'year'),
 
-    M.AttrType.init('Pin count', 'count').add_to_parts('CPU-Socket'),
+    M.AttrType.init('Pin count', 'count').add_to_parts('CPU-Socket', 'DIMM'),
     M.AttrType.init('Pin pitch', 'mm').add_to_parts('CPU-Socket'),
     M.AttrType.init('Bus speed', 'MHz', from_to=True).add_to_parts('CPU-Socket'),
+    M.AttrType.init('Area (mm<sup>2</sup>', 'mm^2').add_to_parts('CPU Stepping (Standard)'),
+    M.AttrType.init('CPUID', 'text').add_to_parts('CPU Stepping (Standard)'),
+    M.AttrType.init('Maximal Clock', 'MHz').add_to_parts('CPU Stepping (Standard)'),
 
     M.AttrType.init('Frequency', 'MHz').add_to_parts('CPU'),
     M.AttrType.init('Memory clock', 'MHz').add_to_parts(*ddr),
     M.AttrType.init('I/O bus clock', 'MHz').add_to_parts(*ddr),
-    M.AttrType.init('L2 cache', 'B').add_to_parts('CPU'),
-    M.AttrType.init('Front side bus', 'MT/s').add_to_parts('CPU'),
     M.AttrType.init('Data rate', 'MT/s').add_to_parts(*ddr),
     M.AttrType.init('Clock multiplier', 'factor').add_to_parts('CPU'),
     M.AttrType.init('Voltage range', 'V', from_to=True).add_to_parts('CPU'),
@@ -277,7 +311,6 @@ def get_attr_types():
     M.AttrType.init('Modified', 'bool', note='Was this computer modified after initial delivery?').add_to_parts('Computer'),
     M.AttrType.init('Vendor', 'text').add_to_parts('Computer', 'Motherboard', 'Casing', 'CPU', 'Chipset'),
     M.AttrType.init('Serial number', 'text').add_to_parts('Computer', 'Motherboard'),
-    M.AttrType.init('L1 cache', 'B').add_to_parts('CPU'),
     M.AttrType.init('Hyperthreading', 'bool').add_to_parts('CPU'),
     M.AttrType.init('RAM Size', 'B').add_to_parts('RAM'),
     M.AttrType.init('Casing Size', 'text', note='Minitower, miditower, bigtower').add_to_parts('Casing'),
@@ -291,11 +324,18 @@ def get_attr_types():
     M.AttrType.init('Height', 'mm').add_to_parts('Casing'),
     M.AttrType.init('Power', 'W', note='electric power (output? input?)').add_to_parts('Power supply'),
     M.AttrType.init('Memory channels', 'count').add_to_parts('Memory controller'),
-    M.AttrType.init('Average half-pitch of a memory cell', 'count', note='not yet connected ;-)'),
     M.AttrType.init('Maximal power consumption', 'W').add_to_parts('CPU'),
     M.AttrType.init('Maximal RAM capacity', 'MB').add_to_parts('Motherboard'),
     M.AttrType.init('Harddrive size', 'GB').add_to_parts('Harddrive'),
-    # TODO: Bauform, GPU-Takt, Prozessorkern (Sandy bridge)
+    # TODO: Bauform, GPU-Takt
+
+    M.AttrType.init('L1 cache', 'B').add_to_parts('CPU'),
+    M.AttrType.init('L2 cache', 'KB').add_to_parts('CPU', 'CPU Core'),
+    M.AttrType.init('L3 cache', 'KB').add_to_parts('CPU', 'CPU Core'),
+    M.AttrType.init('Front side bus', 'MT/s').add_to_parts('CPU', 'CPU Core'),
+    M.AttrType.init('Transistors', 'count').add_to_parts('CPU Core'),
+    M.AttrType.init('Die size', 'mm^2').add_to_parts('CPU Core'),
+    M.AttrType.init('Average half-pitch of a memory cell', 'nm').add_to_parts('CPU Core'),
     ]
 
 
