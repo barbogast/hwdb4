@@ -189,15 +189,12 @@ class AttrType(_TableWithNameColMixin, Base):
         be looked up by the given names.
         """
         unit = Unit.search(unit_name)
-        attr_type = db_session.query(cls).filter(and_(cls.name==name,cls.unit==unit)).first()
-        if not attr_type:
+        return cls(name=name,
+                        unit=unit,
+                        from_to=from_to,
+                        note=note,
+                        multi_value=multi_value)
 
-            attr_type = cls(name=name,
-                            unit=unit,
-                            from_to=from_to,
-                            note=note,
-                            multi_value=multi_value)
-        return attr_type
 
     def add_to_parts(self, *part_names):
         for part_name in part_names:
