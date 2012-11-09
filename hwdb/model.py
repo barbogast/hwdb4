@@ -130,10 +130,16 @@ class Part(_TableWithNameColMixin, Base):
         parent_part = Part.search(parent_part_name)
         part = cls(name=name, parent_part=parent_part, is_standard=is_standard,
                    is_connector=is_connector)
+        part.add_attributes(attributes)
+        part.add_standards(*standards)
+        return part
+
+
+    def add_attributes(self, attributes):
         for attr_type_name, value in attributes.iteritems():
             attr_type = AttrType.search(attr_type_name)
-            if not search_PartAttrTypeMap(part, attr_type):
-                raise Exception('AttrType %s is not registered for %s' % (attr_type.name, part.name))
+            if not search_PartAttrTypeMap(self, attr_type):
+                raise Exception('AttrType %s is not registered for %s' % (attr_type.name, self.name))
 
             key = '%s.%s' % (attr_type.id, value)
             attr = _attr_cache.get(key)
@@ -144,11 +150,9 @@ class Part(_TableWithNameColMixin, Base):
             if not attr:
                 attr = Attr(value=value, attr_type=attr_type)
                 _attr_cache[key] = attr
-            attr_map = PartAttrMap(part=part, attr=attr)
-            part.attr_maps.append(attr_map)
+            attr_map = PartAttrMap(part=self, attr=attr)
+            self.attr_maps.append(attr_map)
 
-        part.add_standards(*standards)
-        return part
 
     def add_part_connection(self, container_part, contained_part, quantity=1):
         """ Add a PartConnection as child of this Part """
