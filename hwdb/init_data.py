@@ -293,9 +293,9 @@ def get_attr_types():
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr),
     M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr),
     M.AttrType.init('Column Address Strobe latency [CL]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Address to Column Address Delay [T<lower>RCD</lower>]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Precharge Time [T<lower>RP</lower>]', 'clock_cycles').add_to_parts(*ddr),
-    M.AttrType.init('Row Active Time [T<lower>RAS</lower>]', 'clock_cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Address to Column Address Delay [T<sub>RCD</sub>]', 'clock_cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Precharge Time [T<sub>RP</sub>]', 'clock_cycles').add_to_parts(*ddr),
+    M.AttrType.init('Row Active Time [T<sub>RAS</sub>]', 'clock_cycles').add_to_parts(*ddr),
 
     # PC of BA
     M.AttrType.init('Modified', 'bool', note='Was this computer modified after initial delivery?').add_to_parts('Computer'),
