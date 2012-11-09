@@ -287,7 +287,7 @@ def get_attr_types():
     M.AttrType.init('Release date', 'date').add_to_parts('CPU'),
     M.AttrType.init('Release price', '$').add_to_parts('CPU'),
     M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU'),
-    M.AttrType.init('URL', 'url').add_to_parts('CPU'),
+    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', *ddr),
     M.AttrType.init('Number of cores', 'count').add_to_parts('CPU'),
     M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr),
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr),
