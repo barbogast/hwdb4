@@ -60,10 +60,36 @@ def get_parts():
     objs = [
     M.Part(name='Memory controller', note='Seems to be integrated into a cpu (pc alt)'),
     M.Part(name='Audio controller'),
+    M.Part(name='CPU Core', children=[
+        M.Part(name='Intel 80486'),
+        M.Part(name='P5'),
+        M.Part(name='P6'),
+        M.Part(name='Netburst', children=[
+            M.Part(name='Willamette'),
+            M.Part(name='Northwood'),
+            M.Part(name='Prescott'),
+            M.Part(name='Prescott 2M'),
+            M.Part(name='Cedar Mill'),
+            M.Part(name='Gallatin'),
+        ]),
+        M.Part(name='Intel Core'),
+        M.Part(name='Enhanced Pentium M'),
+        M.Part(name='Nehalem'),
+        M.Part(name='Penryn'),
+        M.Part(name='Sandy Bridge'),
+        M.Part(name='Westmere'),
+        M.Part(name='Ivy Bridge'),
+        M.Part(name='Haswell Bridge'),
+    ]),
     M.Part(name='CPU', children=[
-        M.Part(name='Pentium', children=[
-            M.Part(name='Pentium 4'),
-        ])
+        M.Part(name='Desktop CPU', children=[
+            M.Part(name='Pentium', children=[
+                M.Part(name='Pentium 4'),
+                M.Part(name='Pentium 4 Extreme Edition'),
+                M.Part(name='Pentium 4-M'),
+                M.Part(name='Mobile Pentium 4')
+            ]),
+        ]),
     ]),
     M.Part(name='Computer', note='Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)', children=[
         M.Part(name='Desktop'),
