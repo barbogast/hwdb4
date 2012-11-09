@@ -105,25 +105,23 @@ def get_parts():
         ]),
     ]),
     ]
-
-    M.db_session.add_all(objs)
-    M.db_session.flush()
-
-    M.Part.search('DDR3 SDRAM').add_standards('DDR3 SDRAM (Standard)')
-    M.Part.search('DDR3-1333').add_standards('DDR3-1333 (Standard)')
-
     return objs
 
 
 def get_sub_parts():
-    # http://en.wikipedia.org/wiki/DIMM
-    dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168}, standards=('SDRAM (Standard)',))
-    dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184}, standards=('DDR SDRAM (Standard)',))
+    M.Part.search('DDR3 SDRAM').add_standards('DDR3 SDRAM (Standard)')
+    M.Part.search('DDR3-1333').add_standards('DDR3-1333 (Standard)')
+
+    dimm_url = 'http://en.wikipedia.org/wiki/DIMM'
+    dimm168 = M.Part.init('168-pin DIMM', 'DIMM', {'Pin count': 168, 'Source': dimm_url},
+                          standards=('SDRAM (Standard)',))
+    dimm184 = M.Part.init('184-pin DIMM', 'DIMM', {'Pin count': 184, 'Source': dimm_url},
+                          standards=('DDR SDRAM (Standard)',))
     dimm240_ddr2 = M.Part.init('240-pin DIMM (DDR2 SDRAM)', 'DIMM',
-                               attributes={'Pin count': 240},
+                               attributes={'Pin count': 240, 'Source': dimm_url},
                                standards=('DDR2 SDRAM (Standard)',))
     dimm240_ddr3 = M.Part.init('240-pin DIMM (DDR3 SDRAM)', 'DIMM',
-                               attributes={'Pin count': 240},
+                               attributes={'Pin count': 240, 'Source': dimm_url},
                                standards=('DDR3 SDRAM (Standard)',))
 
     # CPU cores
@@ -295,7 +293,7 @@ def get_attr_types():
     M.AttrType.init('Release date', 'date').add_to_parts('CPU'),
     M.AttrType.init('Release price', '$').add_to_parts('CPU'),
     M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU'),
-    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', *ddr),
+    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', *ddr),
     M.AttrType.init('Number of cores', 'count').add_to_parts('CPU'),
     M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr),
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr),
