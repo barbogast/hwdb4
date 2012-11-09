@@ -5,7 +5,7 @@
     <ul>
     {% for attribute in attributes %}
         <li>
-            {{attribute.attr_type.name}}: <strong>{{attribute.value}}</strong>
+            {{attribute.attr_type.name|safe}}: <strong>{{attribute.attr_type.unit.format|safe % {'unit': attribute.value}}}</strong>
             <ul>
             {% for part_attr_map in attribute.part_maps %}
                 <li>

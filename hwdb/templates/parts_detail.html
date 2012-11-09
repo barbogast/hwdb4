@@ -8,7 +8,7 @@
     </ul>
     <dl class="dl-horizontal">
     {% for attr_map in part.attr_maps %}
-        <dt>{{attr_map.attr.attr_type.name}}</dt>
+        <dt>{{attr_map.attr.attr_type.name|safe}}</dt>
         <dd>
           {% if attr_map.attr.part_maps|length > 1 %}
             <a href="/attributes">

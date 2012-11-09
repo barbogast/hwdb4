@@ -16,7 +16,7 @@
       <tbody>
         {% for attr in attributes %}
         <tr>
-          <td>{{attr.name}}</td>
+          <td>{{attr.name|safe}}</td>
           <td><a href="/units?id={{attr.unit.id}}">{{attr.unit.label}}</a></td>
           <td>
             {% for part_map in attr.part_maps %}
