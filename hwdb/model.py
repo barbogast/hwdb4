@@ -103,6 +103,7 @@ class Part(_TableWithNameColMixin, Base):
     attr_type_maps are a n:m relation to AttrTypes using PartAttrTypeMap to
     mark which Attr Types are allowed for this Part
     """
+    __table_args__ = (UniqueConstraint('id', 'parent_part_id'),)
     parent_part_id = Column(Integer, ForeignKey('part.id'))
     parent_part = relationship('Part', remote_side='Part.id', backref='children')
     name = Column(String, nullable=False)
