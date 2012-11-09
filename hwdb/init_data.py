@@ -130,77 +130,27 @@ def get_standards():
         ]),
 
         M.Part(name='DDR SDRAM', children=[
-            # http://en.wikipedia.org/wiki/DDR_SDRAM#Chips_and_modules
             M.Part(name='DDR-200'),
             M.Part(name='DDR-266'),
             M.Part(name='DDR-333'),
-            M.Part(name='DDR-400', children=[
-                M.Part(name='DDR-400A'),
-                M.Part(name='DDR-400B'),
-                M.Part(name='DDR-400C'),
-            ]),
+            M.Part(name='DDR-400'),
         ]),
 
         M.Part(name='DDR2 SDRAM', children=[
-            # http://en.wikipedia.org/wiki/DDR2_SDRAM#Chips_and_modules
-            M.Part(name='DDR2-400', children=[
-                M.Part(name='DDR2-400B'),
-                M.Part(name='DDR2-400C'),
-            ]),
-            M.Part(name='DDR2-533', children=[
-                M.Part(name='DDR2-533B'),
-                M.Part(name='DDR2-533C'),
-            ]),
-            M.Part(name='DDR2-667', children=[
-                M.Part(name='DDR2-667C'),
-                M.Part(name='DDR2-667D'),
-            ]),
-            M.Part(name='DDR2-800', children=[
-                M.Part(name='DDR2-800C'),
-                M.Part(name='DDR2-800D'),
-                M.Part(name='DDR2-800E'),
-            ]),
-            M.Part(name='DDR2-1066', children=[
-                M.Part(name='DDR2-1066E'),
-                M.Part(name='DDR2-1066F'),
-            ]),
+            M.Part(name='DDR2-400'),
+            M.Part(name='DDR2-533'),
+            M.Part(name='DDR2-667'),
+            M.Part(name='DDR2-800'),
+            M.Part(name='DDR2-1066'),
         ]),
 
         M.Part(name='DDR3 SDRAM', children=[
-            # http://en.wikipedia.org/wiki/DDR3_SDRAM#JEDEC_standard_modules
-            M.Part(name='DDR3-800', children=[
-                M.Part(name='DDR3-800D'),
-                M.Part(name='DDR3-800E'),
-            ]),
-            M.Part(name='DDR3-1066', children=[
-                M.Part(name='DDR3-1066E'),
-                M.Part(name='DDR3-1066F'),
-                M.Part(name='DDR3-1066G'),
-            ]),
-            M.Part(name='DDR3-1333', children=[
-                M.Part(name='DDR3-1333F'),
-                M.Part(name='DDR3-1333G'),
-                M.Part(name='DDR3-1333H'),
-                M.Part(name='DDR3-1333J'),
-            ]),
-            M.Part(name='DDR3-1600', children=[
-                M.Part(name='DDR3-1600G'),
-                M.Part(name='DDR3-1600H'),
-                M.Part(name='DDR3-1600J'),
-                M.Part(name='DDR3-1600K'),
-            ]),
-            M.Part(name='DDR3-1866', children=[
-                M.Part(name='DDR3-1866J'),
-                M.Part(name='DDR3-1866K'),
-                M.Part(name='DDR3-1866L'),
-                M.Part(name='DDR3-1866M'),
-            ]),
-            M.Part(name='DDR3-2133', children=[
-                M.Part(name='DDR3-2133K'),
-                M.Part(name='DDR3-2133L'),
-                M.Part(name='DDR3-2133M'),
-                M.Part(name='DDR3-2133N'),
-            ]),
+            M.Part(name='DDR3-800'),
+            M.Part(name='DDR3-1066'),
+            M.Part(name='DDR3-1333'),
+            M.Part(name='DDR3-1600'),
+            M.Part(name='DDR3-1866'),
+            M.Part(name='DDR3-2133'),
         ]),
     ]),
 
