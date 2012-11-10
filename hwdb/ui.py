@@ -88,13 +88,12 @@ def parts():
             for part in query:
                 standards = []
                 for pc in part.container_maps:
-                    standard = pc.container_part
-                    if not standard.is_standard:
-                        continue
-                    if standards:
-                        standards.append(', ')
-                    a = H.a(href="/parts?id=%s" % standard.id)(standard.name)
-                    standards.append(a)
+                    container = pc.container_part
+                    if container and container.is_standard:
+                        if standards:
+                            standards.append(', ')
+                        a = H.a(href="/parts?id=%s" % container.id)(container.name)
+                        standards.append(a)
                 container_parts = [': '] + standards if standards else ''
 
                 a = H.a(href="/parts?id=%s" % part.id)(part.name)
