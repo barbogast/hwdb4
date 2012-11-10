@@ -148,6 +148,54 @@ def combinations():
     return _render_string(base_template, heading='Combinations', content=doc)
 
 
+@bp.route("/combinations")
+def combinations():
+    def _get_html(connection_parent, container_part, level):
+        li_elements = []
+
+        # Query for Part connections with the current connection parent
+        query = M.db_session.query(M.PartConnection).\
+            filter(and_(M.PartConnection.parent_part==connection_parent,
+                        M.PartConnection.container_part==container_part))
+        for part_connection in query:
+            contained_part = part_connection.contained_part
+            contained_part_html = _get_html(connection_parent, contained_part, level)
+
+            # Query for Part connections whose parent is the contained part
+            query = M.db_session.query(M.PartConnection).\
+                filter(M.PartConnection.parent_part==contained_part)
+            for part_sub_connection in query:
+                pass
+
+            li_elements.append([
+                contained_part.name,
+
+            ])
+
+
+        for mapping in part.contained_maps:
+            if not mapping.contained_part.is_standard:
+                li_elements.append(_get_html(mapping.contained_part, level+1))
+
+        if level == 1:
+            style, icon = '', 'icon-minus'
+        else:
+            style, icon = 'display: none;', 'icon-plus'
+        li = [H.i(class_=icon)()] if li_elements else []
+        li.append(H.a(href="/parts?id=%s" % part.id)(part.name))
+        li.append(H.ul(class_='icons collapsible', style=style)(li_elements))
+        return H.li(li)
+
+    query = M.db_session.query(M.Part).\
+        filter(M.Part.part_connection_children!=None).order_by(M.Part.name)
+
+    li_elements = []
+    for part in query:
+        li_elements.append(_get_html(part, part, 1))
+    doc = H.ul(class_='icons collapsible')(li_elements)
+    return _render_string(base_template, heading='Combinations', content=doc)
+
+
 @bp.route("/attributes")
 def attributes():
     stmt = M.db_session.query(M.Attr.id.label('attr_id'),

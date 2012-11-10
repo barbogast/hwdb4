@@ -121,9 +121,10 @@ class Part(_TableWithNameColMixin, Base):
     note = Column(String, nullable=True, unique=False)
     is_standard = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
     is_connector = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
+    is_system = Column(Boolean, nullable=False, server_default=SERVER_DEFAULT_FALSE)
 
     @classmethod
-    def init(cls, name, parent_part_name, attributes={}, is_standard=False, is_connector=False, standards=[]):
+    def init(cls, name, parent_part_name, attributes={}, is_standard=False, is_connector=False, standards=[], is_system=False):
         """
         Create a Part and return it.
         :param attributes: dict (key=AttrType-name, value=value). For each
@@ -138,7 +139,7 @@ class Part(_TableWithNameColMixin, Base):
         """
         parent_part = Part.search(parent_part_name)
         part = cls(name=name, parent_part=parent_part, is_standard=is_standard,
-                   is_connector=is_connector)
+                   is_connector=is_connector, is_system=is_system)
         part.add_attributes(attributes)
         part.add_standards(*standards)
         return part
@@ -165,7 +166,10 @@ class Part(_TableWithNameColMixin, Base):
 
     def add_part_connection(self, container_part, contained_part, quantity=1):
         """ Add a PartConnection as child of this Part """
-        part_conn = PartConnection(container_part=container_part,
+        if not self.is_system:
+            raise Exception('Only system Parts are allowed to have PartConnections')
+        part_conn = PartConnection(parent_part=self,
+                                   container_part=container_part,
                                    contained_part=contained_part,
                                    quantity=quantity)
         self.part_connection_children.append(part_conn)
@@ -244,9 +248,9 @@ class PartConnection(Base):
     The column quantity can be used if the same Part is contained multiple times.
     """
     __table_args__ = (UniqueConstraint('container_part_id', 'contained_part_id', 'parent_part_id'),)
-    container_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    container_part_id = Column(Integer, ForeignKey(Part.id), nullable=True)
     container_part = relationship(Part, backref='contained_maps', primaryjoin='Part.id==PartConnection.container_part_id')
-    contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=False)
+    contained_part_id = Column(Integer, ForeignKey(Part.id), nullable=True)
     contained_part = relationship(Part, backref='container_maps', primaryjoin='Part.id==PartConnection.contained_part_id')
     parent_part_id = Column(Integer, ForeignKey(Part.id))
     parent_part = relationship(Part, backref='part_connection_children', primaryjoin='Part.id==PartConnection.parent_part_id')

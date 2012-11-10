@@ -202,11 +202,13 @@ def add_standards():
         ]),
     ]),
 
-    M.Part(name='CPU Socket Standard', children=[
-        M.Part(name='Socket 1155')
+    M.Part(name='CPU Socket', children=[
+        M.Part(name='Socket 1155'),
+        M.Part(name='Socket 423'),
+        M.Part(name='Socket 478'),
     ]),
-    M.Part(name='AGP (Standard)'),
-    M.Part(name='PCI (Standard)', children=[
+    M.Part(name='AGP'),
+    M.Part(name='PCI', children=[
         # http://en.wikipedia.org/wiki/Conventional_PCI#History
         M.Part(name='PCI 1.0'), # year=1992
         M.Part(name='PCI 2.0'), # year=1993
@@ -232,7 +234,7 @@ def add_standards():
     M.Part(name='Ethernet (10Mbits)'),
     M.Part(name='Fast Ethernet (100Mbits)'),
     M.Part(name='Gigabit Ethernet (1000Mbits)'),
-    M.Part(name='SATA (Standard)', children=[
+    M.Part(name='SATA', children=[
         M.Part(name='SATA 1.0'),
         M.Part(name='SATA 2.0'),
         M.Part(name='SATA 3.0'),
@@ -281,11 +283,12 @@ def add_attr_types():
     M.AttrType.init('Clock multiplier', 'factor').add_to_parts('CPU')
     M.AttrType.init('Voltage range', 'V', from_to=True).add_to_parts('CPU')
     M.AttrType.init('Thermal design power', 'W').add_to_parts('CPU')
-    M.AttrType.init('Release date', 'date').add_to_parts('CPU')
+    M.AttrType.init('Release date', 'date').add_to_parts('CPU', 'CPU Stepping (Standard)')
     M.AttrType.init('Release price', '$').add_to_parts('CPU')
     M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU')
-    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', *ddr)
+    M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', 'CPU Stepping (Standard)', *ddr)
     M.AttrType.init('Number of cores', 'count').add_to_parts('CPU')
+    M.AttrType.init('S-Spec', 'text').add_to_parts('Pentium')
     M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr)
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr)
     M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr)
@@ -317,7 +320,7 @@ def add_attr_types():
     # TODO: Bauform, GPU-Takt
 
     M.AttrType.init('L1 cache', 'B').add_to_parts('CPU')
-    M.AttrType.init('L2 cache', 'KB').add_to_parts('CPU', 'CPU Core')
+    M.AttrType.init('L2 cache', 'KB').add_to_parts('CPU', 'CPU Core', 'CPU Stepping (Standard)')
     M.AttrType.init('L3 cache', 'KB').add_to_parts('CPU', 'CPU Core')
     M.AttrType.init('Front side bus', 'MT/s').add_to_parts('CPU', 'CPU Core')
     M.AttrType.init('Transistors', 'count').add_to_parts('CPU Core')
@@ -329,7 +332,7 @@ def add_objects_computer_BA():
     p_hpd530 = M.Part.init('HP d530 CMT(DF368A)', 'Desktop', {
         'Vendor': 'Hewlett-Packard',
         'Serial number': 'CZC4301WB9',
-    })
+    }, is_system=True)
 
     p_mini_tower = M.Part.init('Anonymous Mini Tower', 'Casing', {
         'Vendor': 'Hewlett-Packard',
@@ -355,7 +358,7 @@ def add_objects_computer_BA():
 def add_objects_computer_alt():
     p_m1935 = M.Part.init('Acer Aspire M1935', 'Desktop', {
         'Vendor': 'Acer',
-    })
+    }, is_system=True)
 
     p_mini_tower = M.Part.init('Anonymous Tower', 'Casing', {
         'Width': '180',

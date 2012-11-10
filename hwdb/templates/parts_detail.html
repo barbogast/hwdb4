@@ -11,7 +11,7 @@
         <dt>{{attr_map.attr.attr_type.name|safe}}</dt>
         <dd>
           {% if attr_map.attr.part_maps|length > 1 %}
-            <a href="/attributes">
+            <a href="/attributes?attr_type={{attr_map.attr.attr_type.id}}&value={{attr_map.attr.value}}">
           {% endif %}
           {{attr_map.attr.attr_type.unit.format|safe % {'unit': attr_map.attr.value}}}<dd>
           {% if attr_map.attr.part_maps|length > 1 %}
