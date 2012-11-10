@@ -44,10 +44,12 @@ def _render(template, **kwargs):
     return render_template(template, menu_items=menu_items,
                            admin_menu=admin_menu, **kwargs)
 
+
 def _render_string(tmpl_str, **kwargs):
     """ Adds common template arguments """
     return render_template_string(tmpl_str, menu_items=menu_items,
                                   admin_menu=admin_menu, **kwargs)
+
 
 @bp.route("/")
 def index():
@@ -57,6 +59,7 @@ def index():
         H.a(href="/admin")('Admin')
     )
     return _render_string(base_template, heading='Welcome to HWDB', content=doc)
+
 
 @bp.route("/parts")
 def parts():
@@ -102,15 +105,18 @@ def parts():
         doc = _get_html(None)
         return _render_string(base_template, heading='Parts', content=doc)
 
+
 @bp.route('/attr_types')
 def attr_types():
     attributes = M.db_session.query(M.AttrType).order_by('name')
     return _render('attr_types.html', attributes=attributes)
 
+
 @bp.route('/units')
 def units():
     units = M.db_session.query(M.Unit).order_by('name')
     return _render('units.html', units=units)
+
 
 @bp.route("/combinations")
 def combinations():
@@ -141,6 +147,7 @@ def combinations():
     doc = H.ul(class_='icons collapsible')(li_elements)
     return _render_string(base_template, heading='Combinations', content=doc)
 
+
 @bp.route("/attributes")
 def attributes():
     stmt = M.db_session.query(M.Attr.id.label('attr_id'),
@@ -157,6 +164,7 @@ def attributes():
                     order_by(M.AttrType.name).\
                     all()
     return _render('attributes.html', attributes=attributes)
+
 
 @bp.route("/standards")
 def standards():
