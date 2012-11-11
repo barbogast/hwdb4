@@ -14,6 +14,7 @@ def add_units():
     M.Unit(name='B',      label='Byte', format='%(unit)s Byte'),
     M.Unit(name='KB',      label='Kilobyte', format='%(unit)s Kilobyte'),
     M.Unit(name='MB',     label='Megabyte', format='%(unit)s Megabyte'),
+    M.Unit(name='MiB',     label='Mebibyte', format='%(unit)s Mebibyte'),
     M.Unit(name='GB',     label='Gigabyte', format='%(unit)s Gigabyte'),
     M.Unit(name='MT/s',   label='Megatransfer/Second', format='%(unit)s MT/s'),
     M.Unit(name='MB/s',   label='Megabyte/Second', format='%(unit)s MB/s'),
@@ -126,10 +127,10 @@ def add_sub_parts():
         'Front side bus': 400,
         'Transistors': 42000000,
         'Die size': 217,
-    }, standards=('B2 (Stepping 65nm) (Standard)',
-                  'C1 (Stepping 45nm) (Standard)',
+    }, standards=('B2 (CPU Stepping 65nm) (Standard)',
+                  'C1 (CPU Stepping 45nm) (Standard)',
                   'D0 (CPU Stepping) (Standard)',
-                  'E0 (Stepping 45nm) (Standard)',
+                  'E0 (CPU Stepping 45nm) (Standard)',
                   'MMX (Standard)',
                   'SSE (Standard)',
                   'SSE2 (Standard)')
@@ -162,10 +163,10 @@ def add_standards():
     M.Part(name='CPU Stepping', children=[
         M.Part(name='D0 (CPU Stepping)'),
         M.Part(name='CPU Stepping 65nm',
-            children=[M.Part(name=name+' (Stepping 65nm)') for name in 'B2 B3 L2 E1 G0 G2 M0 A1'.split()]
+            children=[M.Part(name=name+' (CPU Stepping 65nm)') for name in 'B2 B3 L2 E1 G0 G2 M0 A1'.split()]
         ),
         M.Part(name='CPU Stepping 45nm',
-            children=[M.Part(name=name+' (Stepping 45nm)') for name in 'C0 M0 C1 M1 E0 R0 A1'.split()]
+            children=[M.Part(name=name+' (CPU Stepping 45nm)') for name in 'C0 M0 C1 M1 E0 R0 A1'.split()]
         )
     ]),
 
@@ -272,7 +273,7 @@ def add_attr_types():
     M.AttrType.init('Pin count', 'count').add_to_parts('CPU-Socket', 'DIMM')
     M.AttrType.init('Pin pitch', 'mm').add_to_parts('CPU-Socket')
     M.AttrType.init('Bus speed', 'MHz', from_to=True).add_to_parts('CPU-Socket')
-    M.AttrType.init('Area (mm<sup>2</sup>', 'mm^2').add_to_parts('CPU Stepping (Standard)')
+    M.AttrType.init('Area (mm<sup>2</sup>)', 'mm^2').add_to_parts('CPU Stepping (Standard)')
     M.AttrType.init('CPUID', 'text').add_to_parts('CPU Stepping (Standard)')
     M.AttrType.init('Maximal Clock', 'MHz').add_to_parts('CPU Stepping (Standard)')
 
