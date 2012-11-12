@@ -27,6 +27,7 @@ def add_units():
     M.Unit(name='bool',   label='Boolean'),
     M.Unit(name='hex',    label='Hex'),
     M.Unit(name='clock_cycles', label='Number of clock cycles', note='Should this be merged with "Count"? Used for RAM timings'),
+    M.Unit(name='json', label='JSON encoded string'),
 
 
 def add_connectors():
@@ -286,10 +287,10 @@ def add_attr_types():
     M.AttrType.init('Thermal design power', 'W').add_to_parts('CPU')
     M.AttrType.init('Release date', 'date').add_to_parts('CPU', 'CPU Stepping (Standard)')
     M.AttrType.init('Release price', '$').add_to_parts('CPU')
-    M.AttrType.init('Part number', 'text', multi_value=True).add_to_parts('CPU')
+    M.AttrType.init('Part number', 'json', multi_value=True).add_to_parts('CPU')
     M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', 'CPU Stepping (Standard)', *ddr)
     M.AttrType.init('Number of cores', 'count').add_to_parts('CPU')
-    M.AttrType.init('S-Spec', 'text').add_to_parts('Pentium')
+    M.AttrType.init('S-Spec', 'json').add_to_parts('Pentium')
     M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr)
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr)
     M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr)
