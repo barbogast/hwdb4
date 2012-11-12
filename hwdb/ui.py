@@ -119,78 +119,67 @@ def units():
 
 @bp.route("/combinations")
 def combinations():
-    def _get_html(part, level):
-        li_elements = []
-        for mapping in part.contained_maps:
-            if not mapping.contained_part.is_standard:
-                li_elements.append(_get_html(mapping.contained_part, level+1))
-
+    def _render_li(part, sub_parts, level, border=False):
+        ul_dict = dict(class_='icons collapsible')
+        li_dict = {}
         if level == 1:
-            style, icon = '', 'icon-minus'
+            icon = 'icon-minus'
         else:
-            style, icon = 'display: none;', 'icon-plus'
-        li = [H.i(class_=icon)()] if li_elements else []
-        li.append(H.a(href="/parts?id=%s" % part.id)(part.name))
-        li.append(H.ul(class_='icons collapsible', style=style)(li_elements))
-        return H.li(li)
+            icon = 'icon-plus'
+            ul_dict['style'] = 'display: none;'
 
-    query = M.db_session.query(M.Part).\
-        filter(and_(M.Part.contained_maps!=None,
-                    M.Part.container_maps==None,
-                    M.Part.is_standard==False)).\
-        order_by(M.Part.name)
+        if level > 1 and border:
+            li_dict['class_'] = 'system'
 
-    li_elements = []
-    for part in query:
-        li_elements.append(_get_html(part, 1))
-    doc = H.ul(class_='icons collapsible')(li_elements)
-    return _render_string(base_template, heading='Combinations', content=doc)
+        li_elements = [H.i(class_=icon)()] if sub_parts else []
+        li_elements.append(H.a(href="/parts?id=%s" % part.id)(part.name))
+        if sub_parts:
+            li_elements.append(H.ul(**ul_dict)(sub_parts))
+            return H.li(**li_dict)(li_elements)
+        else:
+            return H.li(**li_dict)(class_='noicon')(li_elements)
 
 
-@bp.route("/combinations")
-def combinations():
-    def _get_html(connection_parent, container_part, level):
-        li_elements = []
-
-        # Query for Part connections with the current connection parent
+    def _render_part(system_part, part, level):
+        level += 1
+        sub_parts = []
         query = M.db_session.query(M.PartConnection).\
-            filter(and_(M.PartConnection.parent_part==connection_parent,
-                        M.PartConnection.container_part==container_part))
+            filter(and_(M.PartConnection.parent_part==system_part,
+                        M.PartConnection.container_part==part))
         for part_connection in query:
             contained_part = part_connection.contained_part
-            contained_part_html = _get_html(connection_parent, contained_part, level)
+            if contained_part.is_system:
+                subpart_html = _render_system(contained_part, level)
+            else:
+                subpart_html = _render_part(system_part, contained_part, level)
+            sub_parts.append(subpart_html)
 
-            # Query for Part connections whose parent is the contained part
-            query = M.db_session.query(M.PartConnection).\
-                filter(M.PartConnection.parent_part==contained_part)
-            for part_sub_connection in query:
-                pass
-
-            li_elements.append([
-                contained_part.name,
-
-            ])
+        return _render_li(part, sub_parts, level)
 
 
-        for mapping in part.contained_maps:
-            if not mapping.contained_part.is_standard:
-                li_elements.append(_get_html(mapping.contained_part, level+1))
+    def _render_system(system_part, level):
+        level += 1
+        sub_parts = []
 
-        if level == 1:
-            style, icon = '', 'icon-minus'
-        else:
-            style, icon = 'display: none;', 'icon-plus'
-        li = [H.i(class_=icon)()] if li_elements else []
-        li.append(H.a(href="/parts?id=%s" % part.id)(part.name))
-        li.append(H.ul(class_='icons collapsible', style=style)(li_elements))
-        return H.li(li)
+        # Get root parts of this system
+        query = M.db_session.query(M.PartConnection).\
+            filter(and_(M.PartConnection.parent_part==system_part,
+                        M.PartConnection.container_part==system_part))
+        for part_connection in query:
+            contained_part = part_connection.contained_part
+
+            contained_html = _render_part(system_part, contained_part, level)
+            sub_parts.append(contained_html)
+
+        return _render_li(system_part, sub_parts, level, border=True)
+
 
     query = M.db_session.query(M.Part).\
-        filter(M.Part.part_connection_children!=None).order_by(M.Part.name)
+        filter(M.Part.is_system==True).order_by(M.Part.name)
 
     li_elements = []
     for part in query:
-        li_elements.append(_get_html(part, part, 1))
+        li_elements.append(_render_system(part, 1))
     doc = H.ul(class_='icons collapsible')(li_elements)
     return _render_string(base_template, heading='Combinations', content=doc)
 
