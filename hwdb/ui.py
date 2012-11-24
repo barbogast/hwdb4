@@ -4,7 +4,8 @@ Author: Benjamin Arbogast
 
 from collections import OrderedDict
 
-from flask import Blueprint, render_template, render_template_string, request
+from flask import (Blueprint, render_template, render_template_string,
+                    request, jsonify)
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import and_
 from sqlalchemy import func
@@ -114,7 +115,13 @@ def attr_types():
 @bp.route('/units')
 def units():
     units = M.db_session.query(M.Unit).order_by('name')
-    return _render('units.html', units=units)
+    if 'download' in request.args:
+        return jsonify(units=[{'name': u.name,
+                          'label': u.label,
+                          'format': u.format,
+                          'note': u.note} for u in units])
+    else:
+        return _render('units.html', units=units)
 
 
 @bp.route("/combinations")
