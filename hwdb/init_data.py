@@ -290,7 +290,7 @@ def add_attr_types():
     M.AttrType.init('Part number', 'json', multi_value=True).add_to_parts('CPU')
     M.AttrType.init('Source', 'url', note='Where does the information for this part come from?').add_to_parts('CPU', 'DIMM', 'CPU Stepping (Standard)', *ddr)
     M.AttrType.init('Number of cores', 'count').add_to_parts('CPU')
-    M.AttrType.init('S-Spec', 'json').add_to_parts('Pentium')
+    M.AttrType.init('S-Spec', 'json').add_to_parts('CPU')
     M.AttrType.init('Cycle time', 'ns').add_to_parts(*ddr)
     M.AttrType.init('Module name', 'text').add_to_parts(*ddr)
     M.AttrType.init('Peak transfer rate', 'MB/s').add_to_parts(*ddr)
@@ -307,7 +307,7 @@ def add_attr_types():
     M.AttrType.init('RAM Size', 'B').add_to_parts('RAM')
     M.AttrType.init('Casing Size', 'text', note='Minitower, miditower, bigtower').add_to_parts('Casing')
     M.AttrType.init('Vendor hex', 'hex').add_to_parts('RAM')
-    M.AttrType.init('Version', 'text').add_to_parts('Pentium 4')
+    M.AttrType.init('Version', 'text').add_to_parts('CPU')
 
     # PC alt
     M.AttrType.init('Color', 'text').add_to_parts('Casing')
