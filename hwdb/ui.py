@@ -64,7 +64,37 @@ def index():
 
 @bp.route("/parts")
 def parts():
-    if 'id' in request.args:
+    if 'download' in request.args:
+        def _get_children(parent_part):
+            res = []
+            query = M.db_session.query(M.Part).\
+            filter(and_(M.Part.parent_part==parent_part,
+                        M.Part.is_standard==False,
+                        M.Part.is_connector==False)).\
+            order_by(M.Part.name)
+            for part in query:
+                d = {'name': part.name}
+                if part.note:
+                    d['note'] = part.note
+
+                children = _get_children(part)
+
+                if children:
+                    d['children'] = children
+
+                attr_types = []
+                for attr_type_map in part.attr_type_maps:
+                    attr_types.append(attr_type_map.attr_type.name)
+                if attr_types:
+                    d['attr_types'] = attr_types
+
+                res.append(d)
+            return res
+
+        return jsonify(parts=_get_children(None))
+
+
+    elif 'id' in request.args:
         part = M.db_session.query(M.Part).filter_by(id=request.args['id']).one()
         has_parent = bool(part.parent_part)
 
@@ -102,14 +132,29 @@ def parts():
                                         H.small(container_parts),
                                         _get_html(part)))
             return H.ul(li_elements)
-        doc = _get_html(None)
+
+        doc = H.div(
+            _get_html(None),
+            H.h3('Export'),
+            H.a(href="/parts?download=json")('Download parts as JSON'),
+        )
         return _render_string(base_template, heading='Parts', content=doc)
 
 
 @bp.route('/attr_types')
 def attr_types():
     attributes = M.db_session.query(M.AttrType).order_by('name')
-    return _render('attr_types.html', attributes=attributes)
+    if 'download' in request.args:
+        l = []
+        for attr in attributes:
+            d = {'name': attr.name, 'unit': attr.unit.name}
+            if attr.note:
+                d['note'] = attr.note
+            l.append(d)
+        return jsonify(attr_types=l)
+
+    else:
+        return _render('attr_types.html', attributes=attributes)
 
 
 @bp.route('/units')
