@@ -470,3 +470,133 @@ def add_objects_computer_alt():
     p_m1935.add_part_connection(p_cpu, M.Part.search('64bit (Standard)'))
     p_m1935.add_part_connection(p_cpu, M.Part.search('XD bit (Standard)'))
     p_m1935.add_part_connection(p_cpu, M.Part.search('Smart Cache (Standard)'))
+
+
+
+from hwdb import data
+
+
+def import_units():
+    for d in data.units:
+        M.Unit(**d)
+
+
+def import_attr_types():
+    for d in data.attr_types:
+        unit = M.Unit.search(d.pop('unit'))
+        M.AttrType(unit=unit, **d)
+
+
+def import_parts():
+    for name, details in data.parts.iteritems():
+        part = M.Part(name=name, note=details.pop('__note__', None))
+        M.db_session.add(part)
+
+        for attr_type_name in details.pop('__attr_types__', []):
+            attr_type = M.AttrType.search(attr_type_name)
+            pa_map = M.PartAttrTypeMap(part=part, attr_type=attr_type)
+            M.db_session.add(pa_map)
+
+        assert not details, details
+
+
+def _get_or_add_part(name, **kwargs):
+    part = M.db_session.query(M.Part).filter_by(name=name).first()
+    if not part:
+        if kwargs.get('is_standard', True):
+            name += ' (Standard)'
+        part = M.Part(name=name, **kwargs)
+    return part
+
+
+def _import(container, parent, **part_kwargs):
+    if isinstance(container, dict):
+        is_detail = False
+        is_list = False
+        for name, sub_container in container.iteritems():
+            if name.startswith('__'):
+                is_detail = True
+                if name == '__attrs__':
+                    parent.add_attributes(sub_container)
+                elif name == '__standards__':
+                    parent.add_standards(*sub_container)
+                elif name == '__note__':
+                    parent.note = sub_container
+                elif name == '__children__':
+                    _import(sub_container, parent, **part_kwargs)
+                else:
+                    raise Exception(name)
+            else:
+                is_list = True
+                part = _get_or_add_part(name, parent_part=parent, **part_kwargs)
+                _import(sub_container, part)
+        assert not (is_detail and is_list)
+
+    elif isinstance(container, list):
+        for element in container:
+            _import(element, parent)
+    elif isinstance(container, basestring):
+        assert not container.startswith('__')
+        _get_or_add_part(container, parent_part=parent, **part_kwargs)
+    else:
+        raise Exception(container, type(container))
+
+
+
+def import_standards():
+    _import(data.standards, None, is_standard=True)
+
+
+def import_connectors():
+    _import(data.connectors, None, is_connector=True)
+
+
+def import_subparts():
+    _import(data.subparts, None)
+
+'''
+def import_systems():
+    def _inflate_dicts(containers):
+        def _inflate(container):
+            if isinstance(container, dict):
+                for k, v in container.iteritems():
+                    if k.startswith('__'):
+                        return container
+                    else:
+                        assert not is_detail
+                        _inflate(v)
+            elif isinstance(container, list):
+                for el in container:
+                    _inflate(el)
+
+            elif isinstance(container, basestring):
+                return { '__count__': 1, '__name__':  }
+
+
+
+
+    for k, v in data.systems.iteritems():
+        data.systems[k] = _inflate_dicts(v)
+
+
+    def _import_connections(system, container, content):
+        if isinstance(content, dict):
+            for name, subcontent in content.iteritems():
+                if name.startswith('__'):
+                    return subcontent
+                else:
+                    part = M.Part.search(name)
+                    #M.PartConnection(parent_part=system,
+                    #                 container_part=container,
+                    #                 contained_part=part)
+                    _import_connections(system,
+
+
+            elif isinstance(
+
+    for sytem_name, connections in data.systems.iteritems():
+        system = M.Part.search(system_name)
+        _import_connections(system, system, connections)
+
+
+'''
