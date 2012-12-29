@@ -72,6 +72,8 @@ def reset_db(args):
     M.db_session.flush()
     init_data.import_connectors()
     init_data.import_subparts()
+    M.db_session.flush()
+    init_data.import_systems()
 
     if args.wikipedia:
         wikitext = wikipedia.fetch_from_wikipedia()
