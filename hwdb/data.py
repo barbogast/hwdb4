@@ -168,19 +168,19 @@ connectors = [{
                     [{
                     '168-pin DIMM': {
                         '<attrs>': {'Pin count': 168, 'Source': _dimm_url},
-                        '<standards>': ('SDRAM (Standard)',)
+                        '<standards>': ('SDRAM',)
                     },
                     '184-pin DIMM': {
                         '<attrs>': {'Pin count': 184, 'Source': _dimm_url},
-                        '<standards>': ('DDR SDRAM (Standard)',)
+                        '<standards>': ('DDR SDRAM',)
                     },
                     '240-pin DIMM (DDR2 SDRAM)': {
                         '<attrs>': {'Pin count': 240, 'Source': _dimm_url},
-                        '<standards>': ('DDR2 SDRAM (Standard)',)
+                        '<standards>': ('DDR2 SDRAM',)
                     },
                     '240-pin DIMM (DDR3 SDRAM)': {
                         '<attrs>': {'Pin count': 240, 'Source': _dimm_url},
-                        '<standards>': ('DDR3 SDRAM (Standard)',)
+                        '<standards>': ('DDR3 SDRAM',)
                     },
                 }],
             },
@@ -193,13 +193,13 @@ connectors = [{
         '<children>': [
             {
             'USB 2.0 Port': [{
-                'Anonymous USB 2.0 Port': { '<standards>': ('USB 2.0 (Standard)',) },
+                'Anonymous USB 2.0 Port': { '<standards>': ('USB 2.0',) },
             }],
             'USB 3.0 Port': [{
-                'Anonymous USB 3.0 Port': { '<standards>': ('USB 2.0 (Standard)', 'USB 3.0 (Standard)') },
+                'Anonymous USB 3.0 Port': { '<standards>': ('USB 2.0', 'USB 3.0') },
             }],
             'RJ-45': [{
-                'Anonymous RJ-45':  { '<standards>': ( 'Ethernet (10Mbits) (Standard)', 'Fast Ethernet (100Mbits) (Standard)', 'Gigabit Ethernet (1000Mbits) (Standard)') },
+                'Anonymous RJ-45':  { '<standards>': ( 'Ethernet (10Mbits)', 'Fast Ethernet (100Mbits)', 'Gigabit Ethernet (1000Mbits)') },
             }],
             },
             'SATA', 'Audio port', 'SD card port', 'MMC card port', 'MMCplus card port',
@@ -223,9 +223,9 @@ subparts = [{
                     'Transistors': 42000000,
                     'Die size': 217,
                 },
-                '<standards>': ( 'B2 (CPU Stepping 65nm) (Standard)', 'C1 (CPU Stepping 45nm) (Standard)',
-                                    'D0 (CPU Stepping) (Standard)','E0 (CPU Stepping 45nm) (Standard)',
-                                    'MMX (Standard)', 'SSE (Standard)', 'SSE2 (Standard)')
+                '<standards>': ( 'B2 (CPU Stepping 65nm)', 'C1 (CPU Stepping 45nm)',
+                                    'D0 (CPU Stepping)','E0 (CPU Stepping 45nm)',
+                                    'MMX', 'SSE', 'SSE2')
             },
             'Northwood': { '<attrs>': { 'L2 cache': 512 }},
             'Prescott': { '<attrs>': {'L2 cache': 1024, 'Front side bus': 533} },
@@ -242,7 +242,7 @@ subparts = [{
                 { 'Pentium 4': [{
                     'Intel Pentium 4 2.80GHz 15.2.9': {
                         '<attrs>': { 'Vendor': 'Intel','Version': '15.2.9', 'Frequency': '2800' },
-                        '<standards>': ('32bit (Standard)',)
+                        '<standards>': ('32bit',)
                     }
                 }]
                 },
@@ -252,12 +252,11 @@ subparts = [{
             ],
             'Intel Pentium Processor G645 (2,9 GHz)': {
                 '<attrs>': { 'Number of cores': '2', 'Frequency': '2900', 'Front side bus': '5000', 'Maximal power consumption': '65', 'Vendor': 'Intel' },
-                '<standards>': ('SSE 4.x (Standard)', '64bit (Standard)', 'XD bit (Standard)', 'Smart Cache (Standard)' ),
+                '<standards>': ('SSE 4.x', '64bit', 'XD bit', 'Smart Cache' ),
             },
         }],
     }],
     'Computer': {
-        '<note>': 'Part to safe fix compilations of parts, i.e. PCs, Laptops, Servers, ...)',
         '<children>': [
             { 'Desktop': [{
                 'HP d530 CMT(DF368A)': { '<attrs>': { 'Vendor': 'Hewlett-Packard', 'Serial number': 'CZC4301WB9', }},
@@ -296,8 +295,8 @@ subparts = [{
     'Memory card controller': [{
         'Anonymous card reader controller': {
             '<standards>': (
-                'SD card (Standard)', 'MMC card (Standard)', 'MMCplus card (Standard)',
-                'xD card (Standard)', 'MS card (Standard)', 'MS PRO card (Standard)')
+                'SD card', 'MMC card', 'MMCplus card',
+                'xD card', 'MS card', 'MS PRO card')
         }
     }]
 }]

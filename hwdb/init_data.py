@@ -489,8 +489,6 @@ def import_attr_types():
 
 
 def _get_or_add_part(name, **kwargs):
-    if kwargs.get('is_standard', False):
-        name += ' (Standard)'
     part = M.db_session.query(M.Part).filter_by(name=name).first()
     if not part:
         part = M.Part(name=name, **kwargs)
