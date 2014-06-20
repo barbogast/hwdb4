@@ -266,7 +266,7 @@ def standards():
 
         for standard in query:
             # remove " (Standard)" from the end of the name
-            name = standard.name[:-1*len(' (Standard)')]
+            name = standard.name
             parts = []
             for pc in standard.contained_maps:
                 if parts:
