@@ -11,7 +11,7 @@ from flask import Flask, send_file
 from sqlalchemy.orm import scoped_session
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.admin import Admin, AdminIndexView
-from flask.ext.admin.contrib.sqlamodel import ModelView
+from flask.ext.admin.contrib.sqla import ModelView
 from flask_debugtoolbar import DebugToolbarExtension
 import sadisplay
 
