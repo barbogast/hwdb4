@@ -310,7 +310,11 @@ def init_session(engine):
 
 
 def get_model_classes():
-    return _model_classes
+    # Remove the key '_sa_module_registry'
+    # TODO: '_sa_module_registry' should not be in this dict?!
+    tmp = dict(_model_classes)
+    tmp.pop('_sa_module_registry')
+    return tmp
 
 
 def search_PartAttrTypeMap(part, attr_type):
