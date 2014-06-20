@@ -26,14 +26,16 @@ base_template = '''
   </div>
 {% endblock %}'''
 
-menu_items = OrderedDict([
-    ('/parts', 'Parts'),
-    ('/attr_types', 'Attribute Types'),
-    ('/attributes', 'Attributes'),
-    ('/units', 'Units'),
-    ('/combinations', 'Combinations'),
-    ('/standards', 'Standards'),
-])
+
+def _get_menu_items():
+    return OrderedDict([
+        (url_for('ui.parts'), 'Parts'),
+        (url_for('ui.attr_types'), 'Attribute Types'),
+        (url_for('ui.attributes'), 'Attributes'),
+        (url_for('ui.units'), 'Units'),
+        (url_for('ui.combinations'), 'Combinations'),
+        (url_for('ui.standards'), 'Standards'),
+    ])
 
 
 def _get_admin_menu():
@@ -45,13 +47,13 @@ def _get_admin_menu():
 
 def _render(template, **kwargs):
     """ Adds common template arguments """
-    return render_template(template, menu_items=menu_items,
+    return render_template(template, menu_items=_get_menu_items(),
                            admin_menu=_get_admin_menu(), **kwargs)
 
 
 def _render_string(tmpl_str, **kwargs):
     """ Adds common template arguments """
-    return render_template_string(tmpl_str, menu_items=menu_items,
+    return render_template_string(tmpl_str, menu_items=_get_menu_items(),
                                   admin_menu=_get_admin_menu(), **kwargs)
 
 
