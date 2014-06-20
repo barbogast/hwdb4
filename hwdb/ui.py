@@ -4,6 +4,7 @@ Author: Benjamin Arbogast
 
 from collections import OrderedDict
 
+import six
 from flask import (Blueprint, render_template, render_template_string,
                     request, jsonify)
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -54,7 +55,7 @@ def _render_string(tmpl_str, **kwargs):
 
 @bp.route("/")
 def index():
-    li_list = [H.li(H.a(href=href)(name)) for href, name in menu_items.iteritems()]
+    li_list = [H.li(H.a(href=href)(name)) for href, name in six.iteritems(menu_items)]
     doc = H.join(
         H.ul(li_list),
         H.a(href="/admin")('Admin')

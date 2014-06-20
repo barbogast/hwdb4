@@ -17,6 +17,7 @@ Open questions:
 import re
 import os
 
+import six
 from sqlalchemy import (Column, Integer, String, ForeignKey, UniqueConstraint,
                         Boolean, Float, Table, create_engine, and_, event)
 from sqlalchemy.orm import (relationship, backref, sessionmaker, scoped_session,
@@ -146,7 +147,7 @@ class Part(_TableWithNameColMixin, Base):
 
 
     def add_attributes(self, attributes):
-        for attr_type_name, value in attributes.iteritems():
+        for attr_type_name, value in six.iteritems(attributes):
             attr_type = AttrType.search(attr_type_name)
             if not search_PartAttrTypeMap(self, attr_type):
                 raise Exception('AttrType %s is not registered for %s' % (attr_type.name, self.name))

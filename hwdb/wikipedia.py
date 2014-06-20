@@ -219,4 +219,4 @@ def get_all_rows(wikitext):
 
 if __name__ == '__main__':
     wikitext = open('wikiarticle.txt').read()
-    print get_all_rows(wikitext)
+    print(get_all_rows(wikitext))

@@ -1,3 +1,5 @@
+import six
+
 class WrongTreeError(Exception): pass
 class MixedBracketsError(Exception): pass
 
@@ -26,13 +28,13 @@ def inflate_tree(tree):
 
         inflated_elements = []
         for el in l:
-            if isinstance(el, basestring):
+            if isinstance(el, six.string_types):
                 inflated_elements.append({'<name>': el})
 
             elif isinstance(el, dict):
                 if keys_have_brackets(el):
                     raise WrongTreeError('The keys in this dict should not have brackets: %s; keys: %s'%(el, el.keys()))
-                for k, v in el.iteritems():
+                for k, v in six.iteritems(el):
                     inflated_el = { '<name>': k }
 
                     if isinstance(v, dict):
@@ -75,7 +77,7 @@ def _deep_sort(el):
         elif isinstance(ell, dict):
             for v in ell.values():
                 sort(v)
-        elif isinsance(ell, basestring):
+        elif isinsance(ell, six.string_types):
             pass
         else:
             raise Exception('Datatype %s not supported.'%type(ell))

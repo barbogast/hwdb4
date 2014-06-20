@@ -7,6 +7,7 @@ import argparse
 import os
 import subprocess
 
+import six
 from flask import Flask, send_file
 from sqlalchemy.orm import scoped_session
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -51,14 +52,14 @@ def run_ui(args):
 def reset_db(args):
     if os.path.exists(filepath):
         if not args.force:
-            answer = raw_input('Really delete file %r (y,N)? ' % filepath)
+            answer = six.moves.input('Really delete file %r (y,N)? ' % filepath)
             if answer != 'y':
-                print 'Abort'
+                print('Abort')
                 return
         os.remove(filepath)
 
     engine = M.get_engine(dbpath, debug)
-    print 'Creating db...'
+    print('Creating db...')
     M.enable_auto_add_objects_to_session()
     M.create_all(engine)
     M.init_scoped_session(engine)
@@ -83,7 +84,7 @@ def reset_db(args):
 
     M.db_session.commit()
     M.db_session.close()
-    print 'Creation of db was successful'
+    print('Creation of db was successful')
     _make_ER()
 
 
@@ -101,10 +102,10 @@ def _make_ER():
     try:
         subprocess.check_call("dot -Tpng %s > %s" % (dot_filename, png_filename), shell=True)
     except subprocess.CalledProcessError:
-        print 'Info: Conversion of dot file %r to png failed. Maybe the program "dot" (Graphviz) is missing?' % dot_filename
+        print('Info: Conversion of dot file %r to png failed. Maybe the program "dot" (Graphviz) is missing?' % dot_filename)
     else:
         os.remove(dot_filename)
-        print 'Written ER-diagram to file %r' % png_filename
+        print ('Written ER-diagram to file %r' % png_filename)
 
 
 COMMANDS = {

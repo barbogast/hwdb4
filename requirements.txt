@@ -9,3 +9,4 @@ nose
 
 # Debugtoolbar
 Flask-DebugToolbar
+six
