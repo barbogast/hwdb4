@@ -1,10 +1,17 @@
+--allow-all-external
+
 Flask
 Flask-Admin>=1.0.3
 Flask-SQLAlchemy
 SQLAlchemy
 requests
-Flask-HTMLBuilder
-sadisplay
+
+#Flask-HTMLBuilder
+git+git://github.com/majorz/flask-htmlbuilder.git
+
+# sadisplay
+http://bitbucket.org/estin/sadisplay/get/tip.tar.gz
+
 nose
 
 # Debugtoolbar
