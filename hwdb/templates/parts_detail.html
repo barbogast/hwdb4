@@ -3,7 +3,7 @@
   <div class="container">
     <h1>{{part.name}}</h1>
     <ul class="breadcrumb">
-      <li><a href="/parts">Part</a></li>
+      <li><a href="{{ url_for('ui.parts') }}">Part</a></li>
       {{parent_part_chain}}
     </ul>
     <dl class="dl-horizontal">
