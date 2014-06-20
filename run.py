@@ -6,6 +6,7 @@ Author: Benjamin Arbogast
 import argparse
 import os
 import subprocess
+import logging
 
 import six
 from flask import Flask, send_file
@@ -37,19 +38,24 @@ def init_admin(app):
         admin.add_view(ModelView(klass, M.db_session))
 
 
-def run_ui(args):
+def _make_app():
     app = Flask(__name__, static_folder=static_folder, template_folder='hwdb/templates')
     app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
     app.config['SQLALCHEMY_ECHO'] = False
-    app.debug = True
     app.secret_key = 'Todo'
     app.register_blueprint(ui.bp)
 
     db = SQLAlchemy(app)
     M.db_session = db.session
-    init_admin(app)
+    return app
+
+
+def run_ui(args):
+    app = _make_app()
+    app.debug = True
     if False:
         toolbar = DebugToolbarExtension(app)
+    init_admin(app)
     app.run()
 
 
@@ -111,17 +117,30 @@ def _make_ER():
         print ('Written ER-diagram to file %r' % png_filename)
 
 
-COMMANDS = {
-    'run_ui': run_ui,
-    'reset_db': reset_db,
-}
+if __name__ == '__main__':
+    COMMANDS = {
+        'run_ui': run_ui,
+        'reset_db': reset_db,
+    }
 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('command', choices=COMMANDS.keys(), help='Run one of the commands')
-parser.add_argument('--force', action="store_true", help='Force yes on user input for the given command')
-parser.add_argument('--wikipedia', action="store_true", help='Parse Pentium 4 tables from Wikipedia')
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('command', choices=COMMANDS.keys(), help='Run one of the commands')
+    parser.add_argument('--force', action="store_true", help='Force yes on user input for the given command')
+    parser.add_argument('--wikipedia', action="store_true", help='Parse Pentium 4 tables from Wikipedia')
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-COMMANDS[args.command](args)
+    COMMANDS[args.command](args)
+
+else:
+    app = _make_app()
+    init_admin(app)
+
+    file_handler = logging.FileHandler(os.path.join(data_path, 'hwdb4.log'))
+    file_handler.setLevel(logging.WARNING)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s '
+        '[in %(pathname)s:%(lineno)d]'
+    ))
+    app.logger.addHandler(file_handler)
