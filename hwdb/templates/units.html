@@ -8,6 +8,6 @@
         <li>{{unit.label}} {{'<small>('|safe + unit.note + ')</small>'|safe if unit.note else ''}}</li>
     {% endfor %}
     </ul>
-    <a href="/units?download=json">Download JSON</a>
+    <a href={{ url_for('ui.units', download='json') }}">Download JSON</a>
   </div>
 {% endblock %}

@@ -55,7 +55,7 @@ $("i", "ul.collapsible").each(function(){
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
        </a>
-       <a class="brand" href="/">HWDB</a>
+       <a class="brand" href="{{ url_for('ui.index') }}">HWDB</a>
        <div class="nav-collapse" id="main-menu"><ul class="nav" id="main-menu-left">
         {% for href, name in menu_items.items() %}
           <li><a href="{{href}}">{{name}}</a></li>
