@@ -9,7 +9,7 @@
             <ul>
             {% for part_attr_map in attribute.part_maps %}
                 <li>
-                    <a href="/parts?id={{part_attr_map.part.id}}">
+                    <a href="{{ url_for('ui.parts') }}?id={{part_attr_map.part.id}}">
                         {{part_attr_map.part.name}}
                     </a>
                 </li>

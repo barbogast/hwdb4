@@ -17,10 +17,10 @@
         {% for attr in attributes %}
         <tr>
           <td>{{attr.name|safe}}</td>
-          <td><a href="/units?id={{attr.unit.id}}">{{attr.unit.label}}</a></td>
+          <td><a href="{{ url_for('ui.units') }}?id={{attr.unit.id}}">{{attr.unit.label}}</a></td>
           <td>
             {% for part_map in attr.part_maps %}
-              <a href="/parts?id={{part_map.part.id}}">{{part_map.part.name}}</a>{{ ',' if not loop.last else '' }}
+              <a href="{{ url_for('ui.parts') }}?id={{part_map.part.id}}">{{part_map.part.name}}</a>{{ ',' if not loop.last else '' }}
             {% endfor %}
           </td>
           <td>{{'<i class="icon-ok"></i>'|safe if attr.from_to else ''}}</td>
@@ -30,6 +30,6 @@
         {% endfor %}
       </tbody>
     </table>
-    <a href="/attr_types?download=json">Download JSON</a>
+    <a href="{{ url_for('ui.attr_types') }}?download=json">Download JSON</a>
   </div>
 {% endblock %}

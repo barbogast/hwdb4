@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 import six
 from flask import (Blueprint, render_template, render_template_string,
-                    request, jsonify)
+                    request, jsonify, url_for)
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.sql import and_
 from sqlalchemy import func
@@ -36,21 +36,23 @@ menu_items = OrderedDict([
 ])
 
 
-admin_menu = OrderedDict()
-for name in sorted(M.get_model_classes()):
-    admin_menu['/admin/%sview' % name.lower()] = name
+def _get_admin_menu():
+    admin_menu = OrderedDict()
+    for name in sorted(M.get_model_classes()):
+        admin_menu[(url_for('%sview.index_view' % name.lower()))] = name
+    return admin_menu
 
 
 def _render(template, **kwargs):
     """ Adds common template arguments """
     return render_template(template, menu_items=menu_items,
-                           admin_menu=admin_menu, **kwargs)
+                           admin_menu=_get_admin_menu(), **kwargs)
 
 
 def _render_string(tmpl_str, **kwargs):
     """ Adds common template arguments """
     return render_template_string(tmpl_str, menu_items=menu_items,
-                                  admin_menu=admin_menu, **kwargs)
+                                  admin_menu=_get_admin_menu(), **kwargs)
 
 
 @bp.route("/")
@@ -58,7 +60,7 @@ def index():
     li_list = [H.li(H.a(href=href)(name)) for href, name in six.iteritems(menu_items)]
     doc = H.join(
         H.ul(li_list),
-        H.a(href="/admin")('Admin')
+        H.a(href=url_for('admin.index'))('Admin')
     )
     return _render_string(base_template, heading='Welcome to HWDB', content=doc)
 
@@ -105,7 +107,7 @@ def parts():
 
         parent_part = part
         while parent_part:
-            a = H.a(href='/parts?id=%s' % parent_part.id)(parent_part.name)
+            a = H.a(href=url_for('ui.parts', id=parent_part.id))(parent_part.name)
             li_elements.append(H.li(divider, a))
             parent_part = parent_part.parent_part
         chain = H.join(reversed(li_elements))
@@ -124,11 +126,11 @@ def parts():
                     if container and container.is_standard:
                         if standards:
                             standards.append(', ')
-                        a = H.a(href="/parts?id=%s" % container.id)(container.name)
+                        a = H.a(href=url_for('ui.parts', id=container.id))(container.name)
                         standards.append(a)
                 container_parts = [': '] + standards if standards else ''
 
-                a = H.a(href="/parts?id=%s" % part.id)(part.name)
+                a = H.a(href=url_for('ui.parts', id=part.id))(part.name)
                 li_elements.append(H.li(a,
                                         H.small(container_parts),
                                         _get_html(part)))
@@ -137,7 +139,7 @@ def parts():
         doc = H.div(
             _get_html(None),
             H.h3('Export'),
-            H.a(href="/parts?download=json")('Download parts as JSON'),
+            H.a(href=url_for('ui.parts', download='json'))('Download parts as JSON'),
         )
         return _render_string(base_template, heading='Parts', content=doc)
 
@@ -185,7 +187,7 @@ def combinations():
             li_dict['class_'] = 'system'
 
         li_elements = [H.i(class_=icon)()] if sub_parts else []
-        li_elements.append(H.a(href="/parts?id=%s" % part.id)(part.name))
+        li_elements.append(H.a(href=url_for('ui.parts', id=part.id))(part.name))
         if sub_parts:
             li_elements.append(H.ul(**ul_dict)(sub_parts))
             return H.li(**li_dict)(li_elements)
@@ -271,12 +273,12 @@ def standards():
             for pc in standard.contained_maps:
                 if parts:
                     parts.append(', ')
-                a = H.a(href="/parts?id=%s" % pc.contained_part.id)(pc.contained_part.name)
+                a = H.a(href=url_for('ui.parts', id=pc.contained_part.id))(pc.contained_part.name)
                 parts.append(a)
             contained_parts = [': '] + parts if parts else ''
 
             lis.append(H.li(
-                H.a(href="/parts?id=%s" % standard.id)(name),
+                H.a(href=url_for('ui.parts', id=standard.id))(name),
                 contained_parts,
                 _get_html(standard)))
         return H.ul(lis)

@@ -1,6 +1,6 @@
 {% extends 'admin/master.html' %}
 {% block body %}
-    <a href="/">Home</a>
+    <a href="{{ url_for('ui.index') }}">Home</a>
     <h2>ER-Diagram</h2>
-    <img src="/static/schema.png" style="border-style: solid; border-width: 2px;">
+    <img src="{{ url_for('static', filename='schema.png') }}" style="border-style: solid; border-width: 2px;">
 {% endblock %}
