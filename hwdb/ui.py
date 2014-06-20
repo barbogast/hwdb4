@@ -59,7 +59,7 @@ def _render_string(tmpl_str, **kwargs):
 
 @bp.route("/")
 def index():
-    li_list = [H.li(H.a(href=href)(name)) for href, name in six.iteritems(menu_items)]
+    li_list = [H.li(H.a(href=href)(name)) for href, name in six.iteritems(_get_menu_items())]
     doc = H.join(
         H.ul(li_list),
         H.a(href=url_for('admin.index'))('Admin')
