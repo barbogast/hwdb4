@@ -26,6 +26,7 @@ data_path = os.environ.get('DATA_PATH', '.')
 
 filepath = os.path.join(data_path, 'hwdb4.sqlite')
 dbpath = 'sqlite:///' + filepath
+static_folder = os.path.join(data_path, 'hwdb/static')
 
 debug = False
 
@@ -37,7 +38,7 @@ def init_admin(app):
 
 
 def run_ui(args):
-    app = Flask(__name__, static_folder='hwdb/static', template_folder='hwdb/templates')
+    app = Flask(__name__, static_folder=static_folder, template_folder='hwdb/templates')
     app.config['SQLALCHEMY_DATABASE_URI'] = dbpath
     app.config['SQLALCHEMY_ECHO'] = False
     app.debug = True
@@ -93,12 +94,11 @@ def reset_db(args):
 
 def _make_ER():
     desc = sadisplay.describe(M.get_model_classes().values())
-    path = 'hwdb/static'
-    if not os.path.exists(path):
-        os.mkdir(path)
+    if not os.path.exists(static_folder):
+        os.makedirs(static_folder)
 
-    dot_filename = os.path.join(path, 'schema.dot')
-    png_filename = os.path.join(path, 'schema.png')
+    dot_filename = os.path.join(static_folder, 'schema.dot')
+    png_filename = os.path.join(static_folder, 'schema.png')
     if os.path.exists(dot_filename): os.remove(dot_filename)
     if os.path.exists(png_filename): os.remove(png_filename)
     open(dot_filename, 'w').write(sadisplay.dot(desc))
