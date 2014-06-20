@@ -9,8 +9,3 @@ nose
 
 # Debugtoolbar
 Flask-DebugToolbar
-Pygments
-
-# For Python 2.6:
-argparse
-
