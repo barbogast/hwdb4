@@ -22,8 +22,11 @@ from hwdb import wikipedia
 from hwdb import init_data
 
 
-filepath = 'test.db'
+data_path = os.environ.get('DATA_PATH', '.')
+
+filepath = os.path.join(data_path, 'hwdb4.sqlite')
 dbpath = 'sqlite:///' + filepath
+
 debug = False
 
 
